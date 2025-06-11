@@ -4,23 +4,19 @@ import {
   BarChart2, 
   Briefcase, 
   FileText, 
-  Settings, 
-  LogOut, 
-  User, 
-  Building, 
   Bell, 
   ChevronDown,
   Clock,
+  Grid,
+  User,
+  Settings,
   Shield,
-  Menu,
-  X,
-  Grid
+  LogOut
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils';
 
 const Header: React.FC = () => {
   const [time, setTime] = useState(new Date());

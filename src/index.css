@@ -9,7 +9,7 @@ body,
   padding: 0;
   height: 100%;
   width: 100%;
-  background-color: #f3f4f6; /* A light gray to match the app's bg */
+  background-color: hsl(var(--background));
 }
 
 body {
@@ -22,7 +22,7 @@ body {
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 210 40% 98%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -31,10 +31,10 @@ body {
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 142.1 76.2% 36.3%;
-    --primary-foreground: 355.7 100% 97.3%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 98%;
+    --secondary: 210 40% 96%;
     --secondary-foreground: 222.2 84% 4.9%;
 
     --muted: 210 40% 96%;
@@ -48,14 +48,25 @@ body {
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 142.1 76.2% 36.3%;
+    --ring: 221.2 83.2% 53.3%;
 
     --radius: 0.5rem;
+
+    /* Custom semantic colors */
+    --success: 142.1 76.2% 36.3%;
+    --success-foreground: 355.7 100% 97.3%;
+    --warning: 32.5 94.6% 43.7%;
+    --warning-foreground: 210 40% 98%;
+    --info: 221.2 83.2% 53.3%;
+    --info-foreground: 210 40% 98%;
   }
 }
 
 @layer base {
   * {
-    @apply border-gray-200;
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 } 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { 
   Settings, 
   Save, 
@@ -19,10 +19,11 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Checkbox } from '@/components/ui/checkbox'
 import { cn } from '@/lib/utils'
 
 interface AuditEntry {
@@ -301,30 +302,7 @@ const ParametersPage: React.FC = () => {
     // In real app, this would export the audit log
   }
 
-  const CustomCheckbox = ({ checked, onChange, children, disabled = false }: { 
-    checked: boolean, 
-    onChange: (checked: boolean) => void, 
-    children: React.ReactNode,
-    disabled?: boolean
-  }) => (
-    <div className="flex items-center space-x-2">
-      <button
-        onClick={() => !disabled && onChange(!checked)}
-        disabled={disabled}
-        className={cn(
-          "flex items-center justify-center w-4 h-4 border-2 rounded-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1",
-          disabled 
-            ? "border-gray-300 bg-gray-100 cursor-not-allowed" 
-            : checked
-            ? "border-blue-500 bg-blue-500 hover:bg-blue-600 focus:ring-blue-500 cursor-pointer"
-            : "border-gray-300 bg-white hover:border-gray-400 focus:ring-blue-500 cursor-pointer"
-        )}
-      >
-        {checked && <Check className={cn("w-2.5 h-2.5", disabled ? "text-gray-400" : "text-white")} />}
-      </button>
-      <span className={cn("text-xs", disabled ? "text-gray-400" : "text-gray-700")}>{children}</span>
-    </div>
-  )
+  // Using shadcn/ui Checkbox component for consistency
 
   const visibleEntries = settings.showAllAuditEntries ? auditEntries : auditEntries.slice(0, 3)
   const remainingCount = Math.max(0, auditEntries.length - 3)
@@ -582,7 +560,7 @@ const ParametersPage: React.FC = () => {
                         <Info className="w-3 h-3 text-gray-400" />
                       </div>
                     </TooltipTrigger>
-                    <TooltipContent>
+                    <TooltipContent side="right" sideOffset={8}>
                       <p>Calculate and satisfy regulatory deficit requirements first.<br/>
                       Conflicts with "Borrow for deficit when delivery exists".</p>
                     </TooltipContent>
@@ -1047,7 +1025,7 @@ const ParametersPage: React.FC = () => {
                 )}
               </div>
             </CardContent>
-          </Card>
+          </div>
         </div>
       </div>
 
