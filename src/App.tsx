@@ -26,7 +26,7 @@ function App() {
       case 'needs':
         return <NeedsPage onNavigateToParameters={() => setActivePage('parameters')} />
       case 'parameters':
-        return <ParametersPage onBack={() => setActivePage('needs')} />
+        return <ParametersPage />
       default:
         return <CollateralManager />
     }
@@ -38,7 +38,7 @@ function App() {
 
   return (
     <Router>
-      <div className="flex h-screen w-screen bg-gray-100 overflow-hidden">
+      <div className="flex h-screen w-screen bg-gradient-to-br from-slate-50 to-slate-100 overflow-hidden">
         <Sidebar 
           isOpen={isSidebarOpen} 
           setIsOpen={setIsSidebarOpen}

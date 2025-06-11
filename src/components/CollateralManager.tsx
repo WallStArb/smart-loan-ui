@@ -22,6 +22,12 @@ import {
   Clock,
   BarChart3
 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { cn } from '@/lib/utils'
 
 interface Account {
   id: string
@@ -345,40 +351,62 @@ const CollateralManager = () => {
   })
 
   return (
-    <div className="h-full w-full bg-gray-100">
-      <div className="h-full p-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Collateral Management</h1>
-          <p className="text-gray-600">Manage and monitor collateral positions across all accounts</p>
+    <TooltipProvider>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white p-6">
+        {/* Modern Header */}
+        <div className="max-w-7xl mx-auto mb-6">
+          <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center space-x-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-sm">
+                <Shield className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-semibold text-gray-900">Collateral Management</h1>
+                <p className="text-sm text-gray-600">Manage and monitor collateral positions across all accounts</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3">
+              <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200 px-3 py-1">
+                <Clock className="w-4 h-4 mr-1.5" />
+                Updated: {lastUpdate.toLocaleTimeString()}
+              </Badge>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-9 px-4">
+                    <Settings className="w-4 h-4 mr-2" />
+                    Settings
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Configure collateral management settings</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </div>
         </div>
-        <div className="bg-white min-h-screen">
-          {/* Header with compact navigation */}
-          <div className="border-b border-gray-200">
-            <div className="px-4 py-3">
-              {/* Sub Navigation - compact */}
+
+        <div className="max-w-7xl mx-auto">
+          <Card className="border-0 shadow-sm bg-white">
+            <CardHeader className="pb-4 border-b bg-gray-50/50">
+              {/* Sub Navigation */}
               <div className="flex items-center justify-between mb-4">
                 <nav className="flex space-x-6">
                   {subNavItems.map(item => (
-                    <button
+                    <Button
                       key={item}
+                      variant="ghost"
                       onClick={() => setActiveSubNav(item)}
-                      className={`pb-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                      className={cn(
+                        "pb-2 px-1 border-b-2 font-medium text-sm transition-colors h-auto",
                         item === activeSubNav
-                          ? 'border-blue-500 text-blue-600'
-                          : 'border-transparent text-gray-500 hover:text-gray-700'
-                      }`}
+                          ? 'border-blue-500 text-blue-600 bg-transparent hover:bg-transparent'
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-transparent'
+                      )}
                     >
                       {item}
-                    </button>
+                    </Button>
                   ))}
                 </nav>
-                <div className="flex items-center space-x-2 text-sm text-gray-500">
-                  <Clock size={14} />
-                  <span>Updated: {lastUpdate.toLocaleTimeString()}</span>
-                  <button className="text-gray-400 hover:text-gray-600 ml-2">
-                    <Settings size={16} />
-                  </button>
-                </div>
               </div>
 
               {/* Compact Action Bar */}
@@ -386,22 +414,22 @@ const CollateralManager = () => {
                 <div className="flex items-center space-x-3">
                   {/* Tab Toggle */}
                   <div className="flex bg-gray-100 rounded p-1">
-                    <button
+                    <Button
+                      variant={activeTab === 'account' ? 'default' : 'ghost'}
+                      size="sm"
                       onClick={() => setActiveTab('account')}
-                      className={`px-3 py-1 text-sm font-medium rounded ${
-                        activeTab === 'account' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600'
-                      }`}
+                      className="h-8 px-3 text-sm"
                     >
                       By Account
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant={activeTab === 'security' ? 'default' : 'ghost'}
+                      size="sm"
                       onClick={() => setActiveTab('security')}
-                      className={`px-3 py-1 text-sm font-medium rounded ${
-                        activeTab === 'security' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600'
-                      }`}
+                      className="h-8 px-3 text-sm"
                     >
                       By Security
-                    </button>
+                    </Button>
                   </div>
 
                   {/* Compact Search */}
@@ -428,31 +456,29 @@ const CollateralManager = () => {
                     <option value="firm">Firm</option>
                   </select>
 
-                  <button className="flex items-center space-x-1 px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
-                    <Filter size={14} />
-                    <span>Filters</span>
-                  </button>
+                  <Button variant="outline" size="sm" className="h-8">
+                    <Filter className="w-4 h-4 mr-2" />
+                    Filters
+                  </Button>
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <button className="flex items-center space-x-1 px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
-                    <Plus size={14} />
-                    <span>Add Collateral</span>
-                  </button>
-                  <button className="flex items-center space-x-1 px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
-                    <Download size={14} />
-                    <span>Export</span>
-                  </button>
-                  <button className="flex items-center space-x-1 px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
-                    <RefreshCw size={14} />
-                    <span>Refresh</span>
-                  </button>
+                  <Button size="sm" className="h-8">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Collateral
+                  </Button>
+                  <Button variant="outline" size="sm" className="h-8">
+                    <Download className="w-4 h-4 mr-2" />
+                    Export
+                  </Button>
+                  <Button variant="outline" size="sm" className="h-8">
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Refresh
+                  </Button>
                 </div>
               </div>
-            </div>
-          </div>
-
-          <div className="p-4">
+            </CardHeader>
+            <CardContent className="p-4">
             {/* Enhanced Analytics Dashboard */}
             {metrics && (
               <div className="mb-6 space-y-4">
@@ -928,10 +954,11 @@ const CollateralManager = () => {
                 <p className="text-gray-500">Try adjusting your search criteria or filters</p>
               </div>
             )}
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }
 

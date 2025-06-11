@@ -19,6 +19,12 @@ import {
   Users,
   Building
 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { cn } from '@/lib/utils'
 
 // Mock data types
 interface SecurityNeed {
@@ -530,57 +536,77 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
   if (!metrics) return <div>Loading...</div>
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Main Dashboard */}
-      <div className="w-full">
-        {/* Header */}
-        <div className="bg-slate-800 text-white px-4 py-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <button
-                onClick={() => onNavigateToParameters?.()}
-                className="p-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 transition-colors"
-                title="Go to Parameters"
-              >
-                <Settings className="w-4 h-4" />
-              </button>
+    <TooltipProvider>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white p-6">
+        {/* Modern Header */}
+        <div className="max-w-7xl mx-auto mb-6">
+          <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center space-x-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-sm">
+                <TrendingUp className="w-5 h-5 text-white" />
+              </div>
               <div>
-                <h1 className="text-xl font-bold">Smart Loan</h1>
-                <p className="text-slate-300 text-xs">Needs Management</p>
+                <h1 className="text-xl font-semibold text-gray-900">Needs Management <span className="text-sm font-normal text-gray-600">- Monitor and manage securities borrowing needs</span></h1>
               </div>
             </div>
             <div className="flex items-center space-x-3">
-              <div className="text-right">
-                <p className="text-slate-300 text-xs">Last Update</p>
-                <p className="font-medium text-sm">{lastUpdate.toLocaleTimeString()}</p>
-              </div>
+              <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200 px-3 py-1">
+                <Clock className="w-4 h-4 mr-1.5" />
+                Updated: {lastUpdate.toLocaleTimeString()}
+              </Badge>
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => onNavigateToParameters?.()}
+                    className="h-9 px-4"
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    Parameters
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Configure smart loan parameters</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
         </div>
+
+        <div className="max-w-7xl mx-auto">{/* Main Dashboard */}
 
         {/* Ultra-Compact Metrics Cards */}
         <div className="p-2">
 
 
           {/* Need Types Breakdown - Compact with Progress */}
-          <div className="bg-white rounded-lg shadow border border-gray-200 mb-4">
-            <div className="px-4 py-2 border-b border-gray-200">
+          <Card className="border-0 shadow-sm bg-white mb-4">
+            <CardHeader className="pb-3 border-b bg-gray-50/50">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-gray-900">Securities by Need Type</h3>
-                <button
-                  onClick={() => toggleSectionCollapse('needTypes')}
-                  className="p-1 hover:bg-gray-100 rounded transition-colors"
-                  title={collapsedSections.has('needTypes') ? 'Expand section' : 'Collapse section'}
-                >
-                  {collapsedSections.has('needTypes') ? (
-                    <ChevronRight className="w-4 h-4 text-gray-500" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4 text-gray-500" />
-                  )}
-                </button>
+                <CardTitle className="text-sm font-semibold text-gray-900">Securities by Need Type</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => toggleSectionCollapse('needTypes')}
+                      className="h-8 w-8 p-0"
+                    >
+                      {collapsedSections.has('needTypes') ? (
+                        <ChevronRight className="w-4 h-4 text-gray-500" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4 text-gray-500" />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{collapsedSections.has('needTypes') ? 'Expand section' : 'Collapse section'}</p>
+                  </TooltipContent>
+                </Tooltip>
               </div>
-            </div>
+            </CardHeader>
             {!collapsedSections.has('needTypes') && (
               <div className="p-3">
               <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-4">
@@ -1020,7 +1046,7 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
               </div>
             </div>
             )}
-          </div>
+          </Card>
 
           {/* Ultra-Compact Progress and Priority */}
           <div className="bg-white rounded-md shadow border border-gray-200 mb-3">
@@ -1708,8 +1734,9 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
             </div>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   )
 }
 
