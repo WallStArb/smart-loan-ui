@@ -1,59 +1,31 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
+import './App.css'
 import { Toaster } from 'sonner'
 import CollateralManager from './components/CollateralManager'
 import LoginPage from './components/LoginPage'
 import Header from './components/Header'
-import Sidebar from './components/Sidebar'
-import NeedsPage from './components/NeedsPage'
-
-type Page = 'collateral' | 'needs'
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
-  const [activePage, setActivePage] = useState<Page>('collateral')
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
-  const handleLogin = () => {
-    setIsLoggedIn(true)
+  // This would typically be handled by a context or state management library
+  const handleLoginSuccess = () => {
+    setIsAuthenticated(true)
   }
 
-  const renderActivePage = () => {
-    switch (activePage) {
-      case 'collateral':
-        return <CollateralManager />
-      case 'needs':
-        return <NeedsPage />
-      default:
-        return <CollateralManager />
-    }
+  if (!isAuthenticated) {
+    return <LoginPage onLoginSuccess={handleLoginSuccess} />
   }
 
   return (
-    <div className="min-h-screen bg-gray-200">
-      {isLoggedIn ? (
-        <div className="flex h-screen">
-          <Sidebar 
-            isOpen={isSidebarOpen} 
-            setIsOpen={setIsSidebarOpen} 
-            activePage={activePage}
-            setActivePage={setActivePage}
-          />
-          <div className="flex-1 flex flex-col h-screen overflow-y-hidden">
-            <Header />
-            <main className="flex-grow p-4 overflow-y-auto">
-              {renderActivePage()}
-            </main>
-            <Toaster 
-              position="top-right"
-              expand={true}
-              richColors={true}
-              closeButton={true}
-            />
-          </div>
-        </div>
-      ) : (
-        <LoginPage onLogin={handleLogin} />
-      )}
+    <div className="flex h-screen bg-gray-100">
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <Header />
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
+          <CollateralManager />
+        </main>
+        <Toaster richColors position="top-right" />
+      </div>
     </div>
   )
 }
