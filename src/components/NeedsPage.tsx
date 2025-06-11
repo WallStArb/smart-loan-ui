@@ -1360,9 +1360,10 @@ const NeedsPage = () => {
                               <div className="flex items-center justify-between mb-0.5">
                                 <span className="text-xs font-bold text-gray-900 truncate">{counterparty.counterparty}</span>
                                 <div className="flex items-center space-x-1">
-                                  <span className={`text-xs ${trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-                                    {trend === 'up' ? 'G��' : 'G��'}{trendValue}%
-                                  </span>
+                                  <div className={`flex items-center text-xs ${trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+                                    {trend === 'up' ? <TrendingUp className="w-3 h-3 mr-0.5" /> : <TrendingDown className="w-3 h-3 mr-0.5" />}
+                                    <span>{trendValue}%</span>
+                                  </div>
                                   <span className={`text-xs px-1 py-0.5 rounded-full font-bold ${
                                     idx === 0 ? 'bg-red-100 text-red-700' :
                                     idx === 1 ? 'bg-orange-100 text-orange-700' :
@@ -1427,7 +1428,7 @@ const NeedsPage = () => {
                               
                               {/* Hover Details */}
                               <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 mt-1 text-xs text-gray-600 border-t border-gray-200 pt-1">
-                                Avg Time: {(Math.random() * 3 + 0.5).toFixed(1)}min G�� Success: {(92 + Math.random() * 6).toFixed(0)}%
+                                Avg Time: {(Math.random() * 3 + 0.5).toFixed(1)}min • Success: {(92 + Math.random() * 6).toFixed(0)}%
                               </div>
                             </div>
                           )
