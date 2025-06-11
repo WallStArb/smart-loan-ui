@@ -133,14 +133,18 @@ interface AdvancedMetrics {
   }
 }
 
-const NeedsPage = () => {
+interface NeedsPageProps {
+  onNavigateToParameters?: () => void
+}
+
+const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [sortColumn, setSortColumn] = useState('priority')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
   const [selectedSecurity, setSelectedSecurity] = useState<string | null>(null)
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
   const [expandedShorts, setExpandedShorts] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
   const [lastUpdate, setLastUpdate] = useState(new Date())
   const [securityNeeds, setSecurityNeeds] = useState<SecurityNeed[]>([])
@@ -526,32 +530,17 @@ const NeedsPage = () => {
   if (!metrics) return <div>Loading...</div>
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Collapsible Sidebar for Parameters */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold text-gray-900">Smart Loan Parameters</h2>
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="p-1 rounded-md hover:bg-gray-100"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
-        </div>
-        <div className="overflow-y-auto h-full pb-20">
-          {/* Parameters content would go here */}
-        </div>
-      </div>
-
+    <div className="min-h-screen bg-gray-50">
       {/* Main Dashboard */}
-      <div className="flex-1">
+      <div className="w-full">
         {/* Header */}
         <div className="bg-slate-800 text-white px-4 py-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <button
-                onClick={() => setSidebarOpen(true)}
+                onClick={() => onNavigateToParameters?.()}
                 className="p-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 transition-colors"
+                title="Go to Parameters"
               >
                 <Settings className="w-4 h-4" />
               </button>

@@ -7,6 +7,7 @@ import Header from './components/Header'
 import Sidebar from './components/Sidebar'
 import CollateralManager from './components/CollateralManager'
 import NeedsPage from './components/NeedsPage'
+import ParametersPage from './components/ParametersPage'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -23,7 +24,9 @@ function App() {
       case 'collateral':
         return <CollateralManager />
       case 'needs':
-        return <NeedsPage />
+        return <NeedsPage onNavigateToParameters={() => setActivePage('parameters')} />
+      case 'parameters':
+        return <ParametersPage onBack={() => setActivePage('needs')} />
       default:
         return <CollateralManager />
     }

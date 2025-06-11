@@ -2,6 +2,7 @@ import React from 'react';
 import { 
   ShieldCheck, 
   TrendingUp,
+  Settings,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
@@ -17,6 +18,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activePage, setAct
   const menuItems = [
     { id: 'collateral', label: 'Collateral', icon: ShieldCheck },
     { id: 'needs', label: 'Needs', icon: TrendingUp },
+    { id: 'parameters', label: 'Parameters', icon: Settings },
   ];
 
   const NavLink: React.FC<{ item: any; isActive: boolean }> = ({ item, isActive }) => (
