@@ -345,6 +345,330 @@ const CollateralManager = () => {
   })
 
   return (
+    <div className="h-full w-full bg-gray-100">
+      <div className="h-full p-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Collateral Management</h1>
+          <p className="text-gray-600">Manage and monitor collateral positions across all accounts</p>
+        </div>
+        <div className="bg-white min-h-screen">
+          {/* Header with compact navigation */}
+          <div className="border-b border-gray-200">
+            <div className="px-4 py-3">
+              {/* Sub Navigation - compact */}
+              <div className="flex items-center justify-between mb-4">
+                <nav className="flex space-x-6">
+                  {subNavItems.map(item => (
+                    <button
+                      key={item}
+                      onClick={() => setActiveSubNav(item)}
+                      className={`pb-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                        item === activeSubNav
+                          ? 'border-blue-500 text-blue-600'
+                          : 'border-transparent text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </nav>
+                <div className="flex items-center space-x-2 text-sm text-gray-500">
+                  <Clock size={14} />
+                  <span>Updated: {lastUpdate.toLocaleTimeString()}</span>
+                  <button className="text-gray-400 hover:text-gray-600 ml-2">
+                    <Settings size={16} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Compact Action Bar */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  {/* Tab Toggle */}
+                  <div className="flex bg-gray-100 rounded p-1">
+                    <button
+                      onClick={() => setActiveTab('account')}
+                      className={`px-3 py-1 text-sm font-medium rounded ${
+                        activeTab === 'account' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600'
+                      }`}
+                    >
+                      By Account
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('security')}
+                      className={`px-3 py-1 text-sm font-medium rounded ${
+                        activeTab === 'security' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600'
+                      }`}
+                    >
+                      By Security
+                    </button>
+                  </div>
+
+                  {/* Compact Search */}
+                  <div className="relative">
+                    <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+                    <input
+                      type="text"
+                      placeholder="Search accounts..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-7 pr-3 py-1.5 w-48 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+
+                  <select
+                    value={selectedFilter}
+                    onChange={(e) => setSelectedFilter(e.target.value)}
+                    className="px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                  >
+                    <option value="all">All Accounts</option>
+                    <option value="risk">High Risk</option>
+                    <option value="margin">Margin Calls</option>
+                    <option value="customer">Customer</option>
+                    <option value="firm">Firm</option>
+                  </select>
+
+                  <button className="flex items-center space-x-1 px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
+                    <Filter size={14} />
+                    <span>Filters</span>
+                  </button>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <button className="flex items-center space-x-1 px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+                    <Plus size={14} />
+                    <span>Add Collateral</span>
+                  </button>
+                  <button className="flex items-center space-x-1 px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
+                    <Download size={14} />
+                    <span>Export</span>
+                  </button>
+                  <button className="flex items-center space-x-1 px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
+                    <RefreshCw size={14} />
+                    <span>Refresh</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-4">
+            {/* Enhanced Analytics Dashboard */}
+            {metrics && (
+              <div className="mb-6 space-y-4">
+                {/* Primary Metrics Cards - Improved Design */}
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                  {/* Total Collateral Value Card */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <Shield className="text-blue-500" size={16} />
+                          <p className="text-sm font-medium text-gray-600">Total Collateral Value</p>
+                        </div>
+                        <p className="text-2xl font-bold text-gray-900">{formatCurrency(metrics.totalCollateralValue)}</p>
+                        <div className="flex items-center space-x-1 mt-1">
+                          <TrendingUp className="text-green-500" size={12} />
+                          <span className="text-xs text-green-600 font-medium">+2.5% vs last month</span>
+                        </div>
+                      </div>
+                      <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <Shield className="text-blue-600" size={24} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Loan Balance Card */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <DollarSign className="text-green-500" size={16} />
+                          <p className="text-sm font-medium text-gray-600">Total Loan Balance</p>
+                        </div>
+                        <p className="text-2xl font-bold text-gray-900">{formatCurrency(metrics.totalLoanBalance)}</p>
+                        <div className="flex items-center space-x-1 mt-1">
+                          <TrendingDown className="text-red-500" size={12} />
+                          <span className="text-xs text-red-600 font-medium">-1.2% vs last month</span>
+                        </div>
+                      </div>
+                      <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <DollarSign className="text-green-600" size={24} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Utilization Card with Progress Bar */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <Target className="text-purple-500" size={16} />
+                          <p className="text-sm font-medium text-gray-600">Overall Utilization</p>
+                        </div>
+                        <p className="text-2xl font-bold text-gray-900">{metrics.overallUtilization.toFixed(1)}%</p>
+                        <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                          <div 
+                            className={`h-2 rounded-full transition-all ${
+                              metrics.overallUtilization > 85 ? 'bg-red-500' :
+                              metrics.overallUtilization > 70 ? 'bg-orange-500' :
+                              metrics.overallUtilization > 50 ? 'bg-yellow-500' : 'bg-green-500'
+                            }`}
+                            style={{ width: `${Math.min(metrics.overallUtilization, 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                      <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <Target className="text-purple-600" size={24} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Risk Assessment Card */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <AlertTriangle className="text-red-500" size={16} />
+                          <p className="text-sm font-medium text-gray-600">Accounts at Risk</p>
+                        </div>
+                        <p className="text-2xl font-bold text-gray-900">{metrics.accountsAtRisk}</p>
+                        <div className="flex items-center space-x-1 mt-1">
+                          <TrendingDown className="text-green-500" size={12} />
+                          <span className="text-xs text-green-600 font-medium">-5.5% improvement</span>
+                        </div>
+                      </div>
+                      <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                        <AlertTriangle className="text-red-600" size={24} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Compact Secondary Analytics */}
+                <div className="bg-white border border-gray-200 rounded-lg p-3">
+                  <div className="grid grid-cols-5 gap-4">
+                    <div className="text-center">
+                      <div className="flex items-center justify-center mb-1">
+                        <CheckCircle className="text-green-500" size={16} />
+                      </div>
+                      <p className="text-xs text-gray-600 mb-1">Available Capacity</p>
+                      <p className="text-sm font-bold text-green-600">{formatCurrency(metrics.availableCapacity)}</p>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="flex items-center justify-center mb-1">
+                        <Activity className="text-blue-500" size={16} />
+                      </div>
+                      <p className="text-xs text-gray-600 mb-1">Pledged Securities</p>
+                      <p className="text-sm font-bold text-blue-600">{formatNumber(metrics.pledgedSecurities)}</p>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="flex items-center justify-center mb-1">
+                        <TrendingUp className="text-orange-500" size={16} />
+                      </div>
+                      <p className="text-xs text-gray-600 mb-1">Recall Opportunities</p>
+                      <p className="text-sm font-bold text-orange-600">{metrics.recallOpportunities}</p>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="flex items-center justify-center mb-1">
+                        <BarChart3 className="text-gray-500" size={16} />
+                      </div>
+                      <p className="text-xs text-gray-600 mb-1">Total Accounts</p>
+                      <p className="text-sm font-bold text-gray-700">{accounts.length}</p>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="flex items-center justify-center mb-1">
+                        <Target className="text-indigo-500" size={16} />
+                      </div>
+                      <p className="text-xs text-gray-600 mb-1">Credit Line</p>
+                      <p className="text-sm font-bold text-indigo-600">{formatCurrency(metrics.totalCreditLine)}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Side-by-Side Collateral Visualizations */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                  
+                  {/* Pledged Collateral (Left) */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-sm font-medium text-gray-900">Pledged Collateral</h3>
+                      <span className="text-sm font-semibold text-gray-700">{formatCurrency(metrics.totalCollateralValue)}</span>
+                    </div>
+                    
+                    {/* Pledged Stacked Bar */}
+                    <div className="mb-3">
+                      <div className="relative w-full bg-gray-100 rounded h-6 overflow-hidden shadow-inner">
+                        {[
+                          { type: 'Equity', percentage: 42, color: 'bg-blue-500', hoverColor: 'hover:bg-blue-600' },
+                          { type: 'Corp Bonds', percentage: 28, color: 'bg-green-500', hoverColor: 'hover:bg-green-600' },
+                          { type: 'ETFs', percentage: 15, color: 'bg-purple-500', hoverColor: 'hover:bg-purple-600' },
+                          { type: 'Gov Bonds', percentage: 8, color: 'bg-indigo-500', hoverColor: 'hover:bg-indigo-600' },
+                          { type: 'ADRs', percentage: 5, color: 'bg-orange-500', hoverColor: 'hover:bg-orange-600' },
+                          { type: 'Muni', percentage: 2, color: 'bg-teal-500', hoverColor: 'hover:bg-teal-600' }
+                        ].map((segment, index) => (
+                          <div 
+                            key={index}
+                            className={`h-6 ${segment.color} ${segment.hoverColor} inline-block transition-all duration-200 cursor-pointer relative group`}
+                            style={{ width: `${segment.percentage}%` }}
+                            title={`${segment.type}: ${segment.percentage}%`}
+                          >
+                            {segment.percentage > 12 && (
+                              <span className="absolute inset-0 flex items-center justify-center text-white text-xs font-medium">
+                                {segment.percentage}%
+                              </span>
+                            )}
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10">
+                              {segment.type}: {formatCurrency(metrics.totalCollateralValue * (segment.percentage / 100))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Pledged Legend */}
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { type: 'Equity', amount: metrics.totalCollateralValue * 0.42, percentage: 42, color: 'bg-blue-500' },
+                        { type: 'Corp Bonds', amount: metrics.totalCollateralValue * 0.28, percentage: 28, color: 'bg-green-500' },
+                        { type: 'ETFs', amount: metrics.totalCollateralValue * 0.15, percentage: 15, color: 'bg-purple-500' },
+                        { type: 'Gov Bonds', amount: metrics.totalCollateralValue * 0.08, percentage: 8, color: 'bg-indigo-500' },
+                        { type: 'ADRs', amount: metrics.totalCollateralValue * 0.05, percentage: 5, color: 'bg-orange-500' },
+                        { type: 'Muni', amount: metrics.totalCollateralValue * 0.02, percentage: 2, color: 'bg-teal-500' }
+                      ].map((security) => (
+                        <div key={security.type} className="flex items-center space-x-2 py-1">
+                          <div className={`w-2.5 h-2.5 rounded-full ${security.color} flex-shrink-0`}></div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <p className="text-xs font-medium text-gray-900 truncate">{security.type}</p>
+                              <span className="text-xs font-bold text-gray-700">{security.percentage}%</span>
+                            </div>
+                            <p className="text-xs text-gray-500">{formatCurrency(security.amount)}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Available to Pledge (Right) */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-sm font-medium text-gray-900">Available to Pledge</h3>
+                      <span className="text-sm font-semibold text-green-700">{formatCurrency(metrics.availableCapacity * 1.8)}</span>
+                    </div>
+                    
+                    {/* Available Stacked Bar */}
+                    <div className="mb-3">
+                      <div className="relative w-full bg-gray-100 rounded h-6 overflow-hidden shadow-inner">
+                        {[
+                          { type: 'Equity', percentage: 38, color: 'bg-blue-400', hoverColor: 'hover:bg-blue-500' },
+                          { type: 'Corp Bonds', percentage: 32, color: 'bg-green-400', hoverColor: 'hover:bg-green-500' },
+                          { type: 'ETFs', percentage: 12, color: 'bg-purple-400', hoverColor: 'hover:bg-purple-500' },
+                          { type: 'Gov Bonds', percentage: 10, color: 'bg-indigo-400', hoverColor: 'hover:bg-indigo-500' },
     <div className="bg-white min-h-screen">
       {/* Header with compact navigation */}
       <div className="border-b border-gray-200">

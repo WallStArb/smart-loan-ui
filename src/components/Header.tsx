@@ -17,12 +17,7 @@ import {
   Grid
 } from 'lucide-react';
 
-interface HeaderProps {
-  isSidebarOpen: boolean;
-  setIsSidebarOpen: (isOpen: boolean) => void;
-}
-
-const Header: React.FC<HeaderProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
+const Header: React.FC = () => {
   const [time, setTime] = useState(new Date());
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showToolsMenu, setShowToolsMenu] = useState(false);
@@ -43,66 +38,58 @@ const Header: React.FC<HeaderProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
   });
 
   return (
-    <header className="bg-white border-b border-gray-200 shadow-sm z-10">
-      <div className="px-4 mx-auto">
-        <div className="flex items-center justify-between h-16">
+    <header className="bg-[#003366] text-white shadow-md z-20">
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center py-3">
           
           {/* Left: Branding & Environment */}
-          <div className="flex items-center space-x-4">
-            <button 
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
-              className="text-gray-500 hover:text-gray-700"
-            >
-              <Menu size={24} />
-            </button>
-            <div className="flex items-center">
-              <Shield className="text-blue-600" size={28} />
-              <h1 className="text-lg font-bold text-gray-800 ml-2">FIS SMARTLOAN</h1>
-            </div>
-            <div className="hidden lg:flex items-center space-x-2 text-sm">
-              <span className="px-2 py-1 bg-orange-500 text-white rounded text-xs font-semibold">QA</span>
-              <span className="text-gray-500">|</span>
-              <span className="text-gray-500">Firm 9990</span>
+          <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-3">
+              <div className="text-2xl font-bold">
+                <span className="text-green-400">FIS</span> <span className="text-white">SMARTLOAN</span>
+              </div>
+              <div className="h-6 w-px bg-gray-500"></div>
+              <div className="flex items-center space-x-2 text-sm">
+                <span className="px-2 py-1 bg-orange-600 rounded text-xs font-medium">QA</span>
+                <span className="text-gray-300">Loanet - Firm 9990</span>
+              </div>
             </div>
           </div>
 
           {/* Center: Quick Tools */}
-          <div className="relative">
-            <button
-              onMouseEnter={() => setShowToolsMenu(true)}
-              onMouseLeave={() => setShowToolsMenu(false)}
-              className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-            >
-              <Grid size={16} className="mr-2" />
-              Quick Tools
-              <ChevronDown size={16} className="ml-1" />
-            </button>
-            
-            {showToolsMenu && (
-              <div
-                onMouseEnter={() => setShowToolsMenu(true)}
-                onMouseLeave={() => setShowToolsMenu(false)}
-                className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg"
+          <div className="hidden lg:flex items-center space-x-4">
+            <div className="relative">
+              <button
+                onClick={() => setShowToolsMenu(!showToolsMenu)}
+                className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-[#004080] transition-colors"
               >
-                <a href="#" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-50">
-                  <BarChart2 size={16} className="text-blue-500" />
-                  <span>Analytical Reports</span>
-                </a>
-                <a href="#" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-50">
-                  <Briefcase size={16} className="text-green-500" />
-                  <span>Borrow/Loan</span>
-                </a>
-                <a href="#" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-50">
-                  <FileText size={16} className="text-purple-500" />
-                  <span>Scratchpad</span>
-                </a>
-                <div className="border-t border-gray-200 my-2"></div>
-                <a href="#" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-50">
-                  <HelpCircle size={16} className="text-orange-500" />
-                  <span>Help & Support</span>
-                </a>
-              </div>
-            )}
+                <Grid size={16} />
+                <span className="text-sm">Quick Tools</span>
+                <ChevronDown size={14} />
+              </button>
+              
+              {showToolsMenu && (
+                <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
+                  <a href="#" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-50">
+                    <BarChart2 size={16} className="text-blue-500" />
+                    <span>Analytical Reports</span>
+                  </a>
+                  <a href="#" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-50">
+                    <Briefcase size={16} className="text-green-500" />
+                    <span>Borrow/Loan</span>
+                  </a>
+                  <a href="#" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-50">
+                    <FileText size={16} className="text-purple-500" />
+                    <span>Scratchpad</span>
+                  </a>
+                  <div className="border-t border-gray-200 my-2"></div>
+                  <a href="#" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-50">
+                    <HelpCircle size={16} className="text-orange-500" />
+                    <span>Help & Support</span>
+                  </a>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Right: Status, Notifications & User */}
@@ -216,7 +203,7 @@ const Header: React.FC<HeaderProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
       {/* Click outside to close dropdowns */}
       {(showUserMenu || showToolsMenu || showNotifications) && (
         <div 
-          className="fixed inset-0 z-40" 
+          className="fixed inset-0 z-10" 
           onClick={() => {
             setShowUserMenu(false);
             setShowToolsMenu(false);
