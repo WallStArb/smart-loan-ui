@@ -330,14 +330,19 @@ body {
 /* Density Mode Classes for Space Optimization */
 .density-compact {
   --card-padding: 6px;
-  --table-cell-padding: 1px 4px;
-  --text-size: 11px;
-  --line-height: 1.1;
-  --button-height: 24px;
-  --input-height: 24px;
+  --table-cell-padding: 2px 6px;
+  --text-size: 13px;
+  --line-height: 1.2;
+  --button-height: 26px;
+  --input-height: 26px;
   --section-gap: 6px;
   --card-gap: 8px;
   --border-radius: 4px;
+  
+  /* Improve text rendering for compact mode */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* Aggressive card shrinking for compact mode */
@@ -459,8 +464,8 @@ body {
 .density-compact h3 { font-size: 1.1rem !important; }
 .density-compact h4 { font-size: 1rem !important; }
 .density-compact h5 { font-size: 0.9rem !important; }
-.density-compact .text-sm { font-size: 10px !important; }
-.density-compact .text-xs { font-size: 9px !important; }
+.density-compact .text-sm { font-size: 12px !important; }
+.density-compact .text-xs { font-size: 11px !important; }
 
 /* Button and input size reductions */
 .density-compact button,
@@ -501,7 +506,7 @@ body {
 }
 
 .density-compact header .text-sm {
-  font-size: 10px !important;
+  font-size: 12px !important;
 }
 
 /* Hide certain elements in compact mode */
@@ -539,11 +544,11 @@ body {
 
 /* Sidebar icons and text */
 .density-compact nav .text-sm {
-  font-size: 9px !important;
+  font-size: 12px !important;
 }
 
 .density-compact nav .text-xs {
-  font-size: 8px !important;
+  font-size: 11px !important;
 }
 
 /* Sidebar header area */
@@ -559,9 +564,9 @@ body {
 /* Badge optimizations */
 .density-compact .badge,
 .density-compact [class*="badge"] {
-  padding: 1px 4px !important;
-  font-size: 8px !important;
-  height: 16px !important;
+  padding: 2px 6px !important;
+  font-size: 11px !important;
+  height: 18px !important;
 }
 
 /* Card optimizations in header */
@@ -575,9 +580,9 @@ body {
 
 /* Notification badge optimizations */
 .density-compact .w-5.h-5 {
-  width: 14px !important;
-  height: 14px !important;
-  font-size: 8px !important;
+  width: 16px !important;
+  height: 16px !important;
+  font-size: 10px !important;
 }
 
 /* User avatar optimizations */
@@ -599,7 +604,7 @@ body {
 
 /* Logo and branding optimizations */
 .density-compact .fis-headline {
-  font-size: 12px !important;
+  font-size: 14px !important;
 }
 
 /* Separator optimizations */
@@ -609,7 +614,7 @@ body {
 
 /* Time display optimizations */
 .density-compact header .text-sm.fis-body-semibold {
-  font-size: 9px !important;
+  font-size: 12px !important;
 }
 
 /* Quick tools menu optimizations - be more specific to avoid sidebar */
