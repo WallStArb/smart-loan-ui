@@ -15,7 +15,13 @@ import {
   ChevronUp,
   ToggleRight,
   ToggleLeft,
-  Settings2
+  Settings2,
+  Shield,
+  Zap,
+  Building2,
+  TrendingDown,
+  CheckCircle2,
+  Loader2
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -23,7 +29,8 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+
+import { Tooltip } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 
 interface AuditEntry {
@@ -44,6 +51,11 @@ interface AuditEntry {
 }
 
 const ParametersPage: React.FC = () => {
+  // Loading and UI states
+  const [isLoading, setIsLoading] = useState(false)
+  const [lastSaved, setLastSaved] = useState<Date | null>(null)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+
   const [settings, setSettings] = useState({
     // Regulatory Components (Mandatory)
     cnsDeliveryNeeds: true,
@@ -71,7 +83,6 @@ const ParametersPage: React.FC = () => {
     reduceByOpenStockLoanRecall: false,
     priorityOrder: 'normal' as 'normal' | 'reverse',
     cutoffTime: '11:00',
-    cutoffPeriod: 'AM' as 'AM' | 'PM',
     
     // UI state
     customerShortsExpanded: true,
@@ -102,8 +113,7 @@ const ParametersPage: React.FC = () => {
       reduceByOpenStockLoans: { name: 'Reduce by Open Stock Loans', section: 'Reduction Methods' },
       reduceByOpenStockLoanRecall: { name: 'Reduce by Open Stock Loan Recall', section: 'Reduction Methods' },
       priorityOrder: { name: 'Priority Order', section: 'Reduction Methods' },
-      cutoffTime: { name: 'Cutoff Time', section: 'Reduction Methods' },
-      cutoffPeriod: { name: 'Cutoff Period', section: 'Reduction Methods' }
+      cutoffTime: { name: 'Cutoff Time', section: 'Reduction Methods' }
     }
     return componentMap[key] || { name: key, section: 'Unknown' }
   }
@@ -170,6 +180,22 @@ const ParametersPage: React.FC = () => {
 
   const handleInputChange = (key: string, value: any) => {
     setSettings(prev => {
+      // Validation for Customer Shorts sub-components - prevent unchecking last one
+      if (key === 'customerCashMargin' && !value && prev.customerShorts && !prev.customerShort) {
+        return prev // Don't allow unchecking if it's the last remaining sub-component
+      }
+      if (key === 'customerShort' && !value && prev.customerShorts && !prev.customerCashMargin) {
+        return prev // Don't allow unchecking if it's the last remaining sub-component
+      }
+      
+      // Validation for Non-Customer Shorts sub-components - prevent unchecking last one
+      if (key === 'nonCustomerCashMargin' && !value && prev.nonCustomerShorts && !prev.nonCustomerShort) {
+        return prev // Don't allow unchecking if it's the last remaining sub-component
+      }
+      if (key === 'nonCustomerShort' && !value && prev.nonCustomerShorts && !prev.nonCustomerCashMargin) {
+        return prev // Don't allow unchecking if it's the last remaining sub-component
+      }
+      
       const newSettings = { ...prev, [key]: value }
       
       // Handle dependencies
@@ -180,9 +206,11 @@ const ParametersPage: React.FC = () => {
         }
       }
       
-      if (key === 'regulatoryDeficits' && value && prev.borrowForDeficitWhenDeliveryExists) {
+      if (key === 'regulatoryDeficits' && !value) {
         newSettings.borrowForDeficitWhenDeliveryExists = false
-        addAuditEntry('borrowForDeficitWhenDeliveryExists', true, false)
+        if (prev.borrowForDeficitWhenDeliveryExists) {
+          addAuditEntry('borrowForDeficitWhenDeliveryExists', true, false)
+        }
       }
       
       if (key === 'customerShorts' && !value) {
@@ -209,22 +237,37 @@ const ParametersPage: React.FC = () => {
         }
       }
       
-      const uiStateKeys = ['customerShortsExpanded', 'nonCustomerShortsExpanded', 'anticipatedReceivesExpanded', 'showAllAuditEntries']
-      if (!uiStateKeys.includes(key)) {
-        addAuditEntry(key, prev[key as keyof typeof prev], value)
-      }
+      // Mark as having unsaved changes
+      setHasUnsavedChanges(true)
       
+      addAuditEntry(key, prev[key as keyof typeof prev], value)
       return newSettings
     })
   }
 
-  const handleSave = () => {
-    console.log('Saving settings:', settings)
-    addAuditEntry('systemSave', null, 'Configuration saved successfully')
+  const handleSave = async () => {
+    setIsLoading(true)
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      console.log('Saving settings:', settings)
+      setLastSaved(new Date())
+      setHasUnsavedChanges(false)
+      
+      // Add success audit entry
+      addAuditEntry('systemSave', null, 'Configuration saved successfully')
+    } catch (error) {
+      console.error('Failed to save settings:', error)
+      // In a real app, you'd show an error toast here
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleReset = () => {
     console.log('Resetting settings')
+    setHasUnsavedChanges(false)
     addAuditEntry('systemReset', null, 'All settings reset to defaults')
   }
 
@@ -237,7 +280,7 @@ const ParametersPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white p-4">
-      {/* Modern Header */}
+      {/* Header */}
       <div className="max-w-7xl mx-auto mb-6">
         <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="flex items-center space-x-4">
@@ -245,8 +288,26 @@ const ParametersPage: React.FC = () => {
               <Settings className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-gray-900">Needs Parameters</h1>
-              <p className="text-sm text-gray-600">Configure securities lending parameters</p>
+              <div className="flex items-center space-x-2">
+                <h1 className="text-xl font-semibold text-gray-900">Needs Parameters</h1>
+                {hasUnsavedChanges && (
+                  <Badge variant="outline" className="text-amber-600 border-amber-300 bg-amber-50">
+                    Unsaved Changes
+                  </Badge>
+                )}
+              </div>
+              <div className="flex items-center space-x-2 text-sm text-gray-600">
+                <span>Configure securities lending parameters</span>
+                {lastSaved && (
+                  <>
+                    <span>•</span>
+                    <div className="flex items-center space-x-1">
+                      <CheckCircle2 className="w-3 h-3 text-green-600" />
+                      <span>Last saved: {lastSaved.toLocaleTimeString()}</span>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
           <div className="flex items-center space-x-3">
@@ -254,13 +315,28 @@ const ParametersPage: React.FC = () => {
               <Check className="w-4 h-4 mr-1.5" />
               Deficit Limited Active
             </Badge>
-            <Button variant="outline" size="sm" onClick={handleReset} className="h-9 px-4">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleReset} 
+              className="h-9 px-4"
+              disabled={isLoading}
+            >
               <RotateCcw className="w-4 h-4 mr-2" />
               Reset
             </Button>
-            <Button size="sm" onClick={handleSave} className="h-9 px-4 bg-[#00a651] hover:bg-[#008A44] text-white border-[#00a651]">
-              <Save className="w-4 h-4 mr-2" />
-              Save Changes
+            <Button 
+              size="sm" 
+              onClick={handleSave} 
+              className="h-9 px-4 bg-[#00a651] hover:bg-[#008A44] text-white border-[#00a651]"
+              disabled={isLoading || !hasUnsavedChanges}
+            >
+              {isLoading ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Save className="w-4 h-4 mr-2" />
+              )}
+              {isLoading ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>
         </div>
@@ -278,7 +354,7 @@ const ParametersPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <div className="w-6 h-6 bg-[#015B7E]/10 rounded-md flex items-center justify-center">
-                    <AlertTriangle className="w-3 h-3 text-[#015B7E]" />
+                    <Shield className="w-3 h-3 text-[#015B7E]" />
                   </div>
                   <CardTitle className="text-xs font-semibold uppercase tracking-wide text-gray-800">
                     Regulatory Components
@@ -348,7 +424,7 @@ const ParametersPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <div className="w-6 h-6 bg-[#285BC5]/10 rounded-md flex items-center justify-center">
-                    <AlertTriangle className="w-3 h-3 text-[#285BC5]" />
+                    <Zap className="w-3 h-3 text-[#285BC5]" />
                   </div>
                   <CardTitle className="text-xs font-semibold uppercase tracking-wide text-gray-800">
                     Special Conditions
@@ -368,6 +444,7 @@ const ParametersPage: React.FC = () => {
                         checked={settings.borrowForDeficitWhenDeliveryExists}
                         disabled={settings.regulatoryDeficits}
                         onCheckedChange={(checked) => handleInputChange('borrowForDeficitWhenDeliveryExists', checked)}
+                        className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
                       />
                       <div className="flex items-center space-x-2">
                         <span className="text-sm font-medium">Borrow for deficit when delivery exists</span>
@@ -393,7 +470,7 @@ const ParametersPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <div className="w-6 h-6 bg-[#00a651]/10 rounded-md flex items-center justify-center">
-                    <Settings className="w-3 h-3 text-[#00a651]" />
+                    <Building2 className="w-3 h-3 text-[#00a651]" />
                   </div>
                   <CardTitle className="text-xs font-semibold uppercase tracking-wide text-gray-800">
                     Business Components
@@ -412,12 +489,18 @@ const ParametersPage: React.FC = () => {
                     <Checkbox 
                       checked={settings.regulatoryDeficits}
                       onCheckedChange={(checked) => handleInputChange('regulatoryDeficits', checked)}
+                      className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
                     />
                     <span className="text-sm font-medium">Regulatory Deficits</span>
                   </div>
-                                      <Badge variant="secondary" className="bg-[#00a651]/10 text-[#00a651] border-[#00a651]/20 text-xs px-2 py-0.5">
-                      Active
-                    </Badge>
+                  <Badge variant="secondary" className={cn(
+                    "text-xs px-2 py-0.5",
+                    settings.regulatoryDeficits 
+                      ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                      : "bg-gray-50 text-gray-500 border-gray-200"
+                  )}>
+                    {settings.regulatoryDeficits ? "Active" : "Inactive"}
+                  </Badge>
                   </div>
 
                 <Separator />
@@ -429,13 +512,9 @@ const ParametersPage: React.FC = () => {
                       <Checkbox 
                         checked={settings.customerShorts}
                         onCheckedChange={(checked) => handleInputChange('customerShorts', checked)}
+                        className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
                       />
                       <span className="text-sm font-medium">Customer Shorts</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs px-2 py-0.5">
-                        Active
-                      </Badge>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -445,35 +524,69 @@ const ParametersPage: React.FC = () => {
                         {settings.customerShortsExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                       </Button>
                     </div>
+                    <Badge variant="secondary" className={cn(
+                      "text-xs px-2 py-0.5",
+                      settings.customerShorts 
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                        : "bg-gray-50 text-gray-500 border-gray-200"
+                    )}>
+                      {settings.customerShorts ? "Active" : "Inactive"}
+                    </Badge>
                   </div>
                   
                   {settings.customerShortsExpanded && settings.customerShorts && (
-                    <div className="ml-6 space-y-1 border-l-2 border-gray-200 pl-3">
-                      <div className="flex items-center justify-between py-1 px-2 rounded-md hover:bg-gray-50 transition-colors">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox 
-                            checked={settings.customerCashMargin}
-                            disabled={!settings.customerShorts}
-                            onCheckedChange={(checked) => handleInputChange('customerCashMargin', checked)}
-                          />
-                          <span className="text-sm">Customer Cash/Margin</span>
+                    <div className="ml-6 mt-3">
+                      <div className="bg-gray-50 rounded-md p-3 border border-gray-200 space-y-2">
+                        <div className="flex items-center justify-between py-1 px-2 rounded-md hover:bg-gray-100 transition-colors">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox 
+                              checked={settings.customerCashMargin}
+                              disabled={!settings.customerShorts}
+                              onCheckedChange={(checked) => handleInputChange('customerCashMargin', checked)}
+                              className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
+                            />
+                            <span className="text-sm">Customer Cash/Margin</span>
+                          </div>
+                          <Badge variant="secondary" className={cn(
+                            "text-xs px-2 py-0.5",
+                            settings.customerCashMargin && settings.customerShorts
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                              : "bg-gray-50 text-gray-500 border-gray-200"
+                          )}>
+                            {settings.customerCashMargin && settings.customerShorts ? "Active" : "Inactive"}
+                          </Badge>
                         </div>
-                        <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs px-2 py-0.5">
-                          Active
-                        </Badge>
-                      </div>
-                      <div className="flex items-center justify-between py-1 px-2 rounded-md hover:bg-gray-50 transition-colors">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox 
-                            checked={settings.customerShort}
-                            disabled={!settings.customerShorts}
-                            onCheckedChange={(checked) => handleInputChange('customerShort', checked)}
-                          />
-                          <span className="text-sm">Customer Short</span>
+                        <div className="flex items-center justify-between py-1 px-2 rounded-md hover:bg-gray-100 transition-colors">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox 
+                              checked={settings.customerShort}
+                              disabled={!settings.customerShorts}
+                              onCheckedChange={(checked) => handleInputChange('customerShort', checked)}
+                              className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
+                            />
+                            <span className="text-sm">Customer Short</span>
+                          </div>
+                          <Badge variant="secondary" className={cn(
+                            "text-xs px-2 py-0.5",
+                            settings.customerShort && settings.customerShorts
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                              : "bg-gray-50 text-gray-500 border-gray-200"
+                          )}>
+                            {settings.customerShort && settings.customerShorts ? "Active" : "Inactive"}
+                          </Badge>
                         </div>
-                        <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs px-2 py-0.5">
-                          Active
-                        </Badge>
+                        
+                        {/* Warning when no sub-components are selected */}
+                        {settings.customerShorts && !settings.customerCashMargin && !settings.customerShort && (
+                          <div className="mt-2 p-2 bg-amber-50 rounded-md border border-amber-200">
+                            <div className="flex items-center space-x-2">
+                              <AlertTriangle className="w-3 h-3 text-amber-600" />
+                              <span className="text-amber-800 text-xs">
+                                At least one sub-component must be selected for Customer Shorts to function
+                              </span>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
@@ -488,13 +601,9 @@ const ParametersPage: React.FC = () => {
                       <Checkbox 
                         checked={settings.nonCustomerShorts}
                         onCheckedChange={(checked) => handleInputChange('nonCustomerShorts', checked)}
+                        className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
                       />
                       <span className="text-sm font-medium">Non-Customer Shorts</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs px-2 py-0.5">
-                        Active
-                      </Badge>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -504,35 +613,69 @@ const ParametersPage: React.FC = () => {
                         {settings.nonCustomerShortsExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                       </Button>
                     </div>
+                    <Badge variant="secondary" className={cn(
+                      "text-xs px-2 py-0.5",
+                      settings.nonCustomerShorts 
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                        : "bg-gray-50 text-gray-500 border-gray-200"
+                    )}>
+                      {settings.nonCustomerShorts ? "Active" : "Inactive"}
+                    </Badge>
                   </div>
                   
                   {settings.nonCustomerShortsExpanded && settings.nonCustomerShorts && (
-                    <div className="ml-6 space-y-1 border-l-2 border-gray-200 pl-3">
-                      <div className="flex items-center justify-between py-1 px-2 rounded-md hover:bg-gray-50 transition-colors">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox 
-                            checked={settings.nonCustomerCashMargin}
-                            disabled={!settings.nonCustomerShorts}
-                            onCheckedChange={(checked) => handleInputChange('nonCustomerCashMargin', checked)}
-                          />
-                          <span className="text-sm">Non-Customer Cash/Margin</span>
+                    <div className="ml-6 mt-3">
+                      <div className="bg-gray-50 rounded-md p-3 border border-gray-200 space-y-2">
+                        <div className="flex items-center justify-between py-1 px-2 rounded-md hover:bg-gray-100 transition-colors">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox 
+                              checked={settings.nonCustomerCashMargin}
+                              disabled={!settings.nonCustomerShorts}
+                              onCheckedChange={(checked) => handleInputChange('nonCustomerCashMargin', checked)}
+                              className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
+                            />
+                            <span className="text-sm">Non-Customer Cash/Margin</span>
+                          </div>
+                          <Badge variant="secondary" className={cn(
+                            "text-xs px-2 py-0.5",
+                            settings.nonCustomerCashMargin && settings.nonCustomerShorts
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                              : "bg-gray-50 text-gray-500 border-gray-200"
+                          )}>
+                            {settings.nonCustomerCashMargin && settings.nonCustomerShorts ? "Active" : "Inactive"}
+                          </Badge>
                         </div>
-                        <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs px-2 py-0.5">
-                          Active
-                        </Badge>
-                      </div>
-                      <div className="flex items-center justify-between py-1 px-2 rounded-md hover:bg-gray-50 transition-colors">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox 
-                            checked={settings.nonCustomerShort}
-                            disabled={!settings.nonCustomerShorts}
-                            onCheckedChange={(checked) => handleInputChange('nonCustomerShort', checked)}
-                          />
-                          <span className="text-sm">Non-Customer Short</span>
+                        <div className="flex items-center justify-between py-1 px-2 rounded-md hover:bg-gray-100 transition-colors">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox 
+                              checked={settings.nonCustomerShort}
+                              disabled={!settings.nonCustomerShorts}
+                              onCheckedChange={(checked) => handleInputChange('nonCustomerShort', checked)}
+                              className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
+                            />
+                            <span className="text-sm">Non-Customer Short</span>
+                          </div>
+                          <Badge variant="secondary" className={cn(
+                            "text-xs px-2 py-0.5",
+                            settings.nonCustomerShort && settings.nonCustomerShorts
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                              : "bg-gray-50 text-gray-500 border-gray-200"
+                          )}>
+                            {settings.nonCustomerShort && settings.nonCustomerShorts ? "Active" : "Inactive"}
+                          </Badge>
                         </div>
-                        <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs px-2 py-0.5">
-                          Active
-                        </Badge>
+                        
+                        {/* Warning when no sub-components are selected */}
+                        {settings.nonCustomerShorts && !settings.nonCustomerCashMargin && !settings.nonCustomerShort && (
+                          <div className="mt-2 p-2 bg-amber-50 rounded-md border border-amber-200">
+                            <div className="flex items-center space-x-2">
+                              <AlertTriangle className="w-3 h-3 text-amber-600" />
+                              <span className="text-amber-800 text-xs">
+                                At least one sub-component must be selected for Non-Customer Shorts to function
+                              </span>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
@@ -546,28 +689,71 @@ const ParametersPage: React.FC = () => {
                     <Checkbox 
                       checked={settings.firmShorts}
                       onCheckedChange={(checked) => handleInputChange('firmShorts', checked)}
+                      className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
                     />
                     <span className="text-sm font-medium">Firm Shorts</span>
                   </div>
-                  <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs px-2 py-0.5">
-                    Active
+                  <Badge variant="secondary" className={cn(
+                    "text-xs px-2 py-0.5",
+                    settings.firmShorts 
+                      ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                      : "bg-gray-50 text-gray-500 border-gray-200"
+                  )}>
+                    {settings.firmShorts ? "Active" : "Inactive"}
                   </Badge>
                 </div>
 
                 <Separator />
 
-                {/* Shorts Deficit Limited */}
-                <div className="flex items-center justify-between py-1 px-2 rounded-md hover:bg-gray-50 transition-colors">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      checked={settings.shortsDeficitLimited}
-                      onCheckedChange={(checked) => handleInputChange('shortsDeficitLimited', checked)}
-                    />
-                    <span className="text-sm font-medium">Shorts Deficit Limited</span>
+                {/* Shorts Deficit Limited - Enhanced Design */}
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-semibold text-gray-900">Shorts Deficit Limited:</span>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <div 
+                        onClick={() => handleInputChange('shortsDeficitLimited', true)}
+                        className="flex items-center space-x-2 cursor-pointer"
+                      >
+                        <div className={cn(
+                          "w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors",
+                          settings.shortsDeficitLimited
+                            ? "border-blue-600 bg-blue-600"
+                            : "border-gray-400 bg-white hover:border-blue-600"
+                        )}>
+                          {settings.shortsDeficitLimited && (
+                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                          )}
+                        </div>
+                        <span className="text-sm font-medium text-gray-700">Yes</span>
+                      </div>
+                      <div 
+                        onClick={() => handleInputChange('shortsDeficitLimited', false)}
+                        className="flex items-center space-x-2 cursor-pointer"
+                      >
+                        <div className={cn(
+                          "w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors",
+                          !settings.shortsDeficitLimited
+                            ? "border-blue-600 bg-blue-600"
+                            : "border-gray-400 bg-white hover:border-blue-600"
+                        )}>
+                          {!settings.shortsDeficitLimited && (
+                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                          )}
+                        </div>
+                        <span className="text-sm font-medium text-gray-700">No</span>
+                      </div>
+                    </div>
                   </div>
-                  <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs px-2 py-0.5">
-                    Active
-                  </Badge>
+                  <div className="flex items-center space-x-2">
+                    <p className="text-xs text-gray-600 italic">
+                      <span className="font-medium">Applies to:</span> Customer Shorts, Non-Customer Shorts, and Firm Shorts
+                    </p>
+                    <div className="w-4 h-4 bg-blue-100 rounded-full flex items-center justify-center">
+                      <Info className="w-3 h-3 text-blue-600" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -579,92 +765,112 @@ const ParametersPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <div className="w-6 h-6 bg-[#1B1B6F]/10 rounded-md flex items-center justify-center">
-                    <Settings2 className="w-3 h-3 text-[#1B1B6F]" />
+                    <TrendingDown className="w-3 h-3 text-[#1B1B6F]" />
                   </div>
                   <CardTitle className="text-xs font-semibold uppercase tracking-wide text-gray-800">
                     Reduction Methods
                   </CardTitle>
                 </div>
                 <Badge className="bg-[#1B1B6F] text-white text-xs font-medium px-2 py-0.5">
-                  Processing Rules
+                  Optimizations
                 </Badge>
               </div>
             </CardHeader>
             <CardContent className="p-3">
               <div className="space-y-3">
-                {/* Reduce by Anticipated Receives */}
+                {/* Reduce by Anticipated Receives - Exact Design Match */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between py-1 px-2 rounded-md hover:bg-gray-50 transition-colors">
                     <div className="flex items-center space-x-2">
                       <Checkbox 
                         checked={settings.reduceByAnticipatedReceives}
                         onCheckedChange={(checked) => handleInputChange('reduceByAnticipatedReceives', checked)}
+                        className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
                       />
-                      <span className="text-sm font-medium">Reduce by Anticipated Receives</span>
+                      <span className="text-sm font-medium text-gray-900">Reduce by Anticipated Receives</span>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleInputChange('anticipatedReceivesExpanded', !settings.anticipatedReceivesExpanded)}
+                        className="h-6 w-6 p-0"
+                      >
+                        {settings.anticipatedReceivesExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                      </Button>
+                      <Tooltip content="Automatically reduces borrowing needs based on expected incoming securities deliveries">
+                        <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-help" />
+                      </Tooltip>
+                      <span className="text-xs text-gray-600">Cutoff time:</span>
+                      <div className="flex items-center space-x-1">
+                        <Input
+                          type="time"
+                          value={settings.cutoffTime}
+                          onChange={(e) => handleInputChange('cutoffTime', e.target.value)}
+                          className="h-6 w-16 text-xs border-gray-300 focus:border-[#015B7E] focus:ring-[#015B7E] px-1"
+                        />
+                        <Tooltip content="Eastern Time">
+                          <Info className="w-3 h-3 text-gray-400 cursor-help" />
+                        </Tooltip>
+                        <span className="text-xs text-gray-600">ET</span>
+                      </div>
                     </div>
-                    <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs px-2 py-0.5">
-                      Active
+                    <Badge variant="secondary" className={cn(
+                      "text-xs px-2 py-0.5",
+                      settings.reduceByAnticipatedReceives 
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                        : "bg-gray-50 text-gray-500 border-gray-200"
+                    )}>
+                      {settings.reduceByAnticipatedReceives ? "Active" : "Inactive"}
                     </Badge>
                   </div>
                   
-                  {settings.reduceByAnticipatedReceives && (
-                    <div className="ml-6 p-2 bg-gray-50 rounded-md border border-gray-200">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <Clock className="w-3 h-3 text-gray-500" />
-                          <span className="text-xs font-medium text-gray-700">Cutoff Time</span>
+                  {settings.anticipatedReceivesExpanded && (
+                    <div className="ml-6 mt-3">
+                      <div className="bg-gray-50 rounded-md p-3 border border-gray-200">
+                        <div className="text-xs font-medium text-gray-700 uppercase tracking-wide mb-2">
+                          PRIORITY ORDER:
                         </div>
-                        <div className="flex items-center space-x-1">
-                          <Input
-                            type="time"
-                            value={settings.cutoffTime}
-                            onChange={(e) => handleInputChange('cutoffTime', e.target.value)}
-                            className="text-xs h-7 w-20 bg-background border-input focus:border-[#015B7E] focus:ring-[#015B7E]"
-                          />
-                          <Select value={settings.cutoffPeriod} onValueChange={(value) => handleInputChange('cutoffPeriod', value)}>
-                            <SelectTrigger className="w-16 h-7 text-xs bg-background border-input focus:border-[#015B7E] focus:ring-[#015B7E]">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="AM">AM</SelectItem>
-                              <SelectItem value="PM">PM</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <span className="text-xs text-gray-500">ET</span>
-                        </div>
-                      </div>
-                      
-                      <div className="mt-2 pt-2 border-t border-gray-200">
                         <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-2">
-                              <Button
-                                variant={settings.priorityOrder === 'normal' ? 'default' : 'outline'}
-                                size="sm"
-                                onClick={() => handleInputChange('priorityOrder', 'normal')}
-                                className="h-6 px-2 text-xs"
-                              >
-                                Normal Priority Order
-                              </Button>
+                          <div className="flex items-center space-x-2">
+                            <div
+                              onClick={() => handleInputChange('priorityOrder', 'normal')}
+                              className={cn(
+                                "w-4 h-4 rounded-full border-2 cursor-pointer flex items-center justify-center transition-colors",
+                                settings.priorityOrder === 'normal'
+                                  ? "border-[#00a651] bg-[#00a651]"
+                                  : "border-gray-300 bg-white hover:border-[#00a651]"
+                              )}
+                            >
+                              {settings.priorityOrder === 'normal' && (
+                                <div className="w-2 h-2 bg-white rounded-full"></div>
+                              )}
                             </div>
-                            <Badge variant="outline" className="text-xs px-2 py-0.5">
-                              CNS → DVP → FP → OA
-                            </Badge>
+                            <label 
+                              onClick={() => handleInputChange('priorityOrder', 'normal')}
+                              className="text-sm text-gray-900 cursor-pointer"
+                            >
+                              Apply reductions in order of priority (CNS, DVP, FP, OA)
+                            </label>
                           </div>
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-2">
-                              <Button
-                                variant={settings.priorityOrder === 'reverse' ? 'default' : 'outline'}
-                                size="sm"
-                                onClick={() => handleInputChange('priorityOrder', 'reverse')}
-                                className="h-6 px-2 text-xs"
-                              >
-                                Reverse Priority Order
-                              </Button>
+                          <div className="flex items-center space-x-2">
+                            <div
+                              onClick={() => handleInputChange('priorityOrder', 'reverse')}
+                              className={cn(
+                                "w-4 h-4 rounded-full border-2 cursor-pointer flex items-center justify-center transition-colors",
+                                settings.priorityOrder === 'reverse'
+                                  ? "border-[#00a651] bg-[#00a651]"
+                                  : "border-gray-300 bg-white hover:border-[#00a651]"
+                              )}
+                            >
+                              {settings.priorityOrder === 'reverse' && (
+                                <div className="w-2 h-2 bg-white rounded-full"></div>
+                              )}
                             </div>
-                            <Badge variant="outline" className="text-xs px-2 py-0.5">
-                              OA → FP → DVP → CNS
-                            </Badge>
+                            <label 
+                              onClick={() => handleInputChange('priorityOrder', 'reverse')}
+                              className="text-sm text-gray-900 cursor-pointer"
+                            >
+                              Apply reductions in reverse order (OA, FP, DVP, CNS)
+                            </label>
                           </div>
                         </div>
                       </div>
@@ -680,9 +886,18 @@ const ParametersPage: React.FC = () => {
                     <Checkbox 
                       checked={settings.reduceByOpenStockLoans}
                       onCheckedChange={(checked) => handleInputChange('reduceByOpenStockLoans', checked)}
+                      className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
                     />
                     <span className="text-sm font-medium">Reduce by Open Stock Loans</span>
                   </div>
+                  <Badge variant="secondary" className={cn(
+                    "text-xs px-2 py-0.5",
+                    settings.reduceByOpenStockLoans 
+                      ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                      : "bg-gray-50 text-gray-500 border-gray-200"
+                  )}>
+                    {settings.reduceByOpenStockLoans ? "Active" : "Inactive"}
+                  </Badge>
                 </div>
 
                 <Separator />
@@ -695,6 +910,7 @@ const ParametersPage: React.FC = () => {
                         checked={settings.reduceByOpenStockLoanRecall}
                         disabled={!settings.reduceByOpenStockLoans}
                         onCheckedChange={(checked) => handleInputChange('reduceByOpenStockLoanRecall', checked)}
+                        className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
                       />
                       <span className="text-sm font-medium">Reduce by Open Stock Loan Recall</span>
                     </div>
