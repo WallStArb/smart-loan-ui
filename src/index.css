@@ -329,17 +329,121 @@ body {
 
 /* Density Mode Classes for Space Optimization */
 .density-compact {
-  --card-padding: 8px;
-  --table-cell-padding: 2px 6px;
-  --text-size: 12px;
-  --line-height: 1.2;
-  --button-height: 28px;
-  --input-height: 28px;
-  --section-gap: 8px;
+  --card-padding: 6px;
+  --table-cell-padding: 1px 4px;
+  --text-size: 11px;
+  --line-height: 1.1;
+  --button-height: 24px;
+  --input-height: 24px;
+  --section-gap: 6px;
+  --card-gap: 8px;
+  --border-radius: 4px;
 }
 
+/* Aggressive card shrinking for compact mode */
+.density-compact .bg-card,
+.density-compact [class*="card"],
 .density-compact .card {
   padding: var(--card-padding) !important;
+  margin: 2px !important;
+  border-radius: var(--border-radius) !important;
+}
+
+.density-compact .p-4 {
+  padding: 6px !important;
+}
+
+.density-compact .p-6 {
+  padding: 8px !important;
+}
+
+.density-compact .p-8 {
+  padding: 10px !important;
+}
+
+.density-compact .space-y-4 > * + *,
+.density-compact .space-y-6 > * + *,
+.density-compact .space-y-8 > * + * {
+  margin-top: 0.25rem !important;
+}
+
+.density-compact .gap-4,
+.density-compact .gap-6,
+.density-compact .gap-8 {
+  gap: 0.25rem !important;
+}
+
+.density-compact .grid {
+  gap: var(--card-gap) !important;
+}
+
+/* Force ALL grids to show 4 columns for analytics dashboard in compact mode */
+.density-compact .space-y-4 > .grid:first-child,
+.density-compact [class*="space-y-"] > .grid:first-child,
+.density-compact .space-y-4 > div[class*="grid"]:first-child {
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 6px !important;
+  display: grid !important;
+}
+
+/* Other grid overrides for compact mode */
+.density-compact .grid-cols-1 {
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 6px !important;
+}
+
+.density-compact .grid-cols-2 {
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 6px !important;
+}
+
+.density-compact .grid-cols-3 {
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 6px !important;
+}
+
+.density-compact .grid-cols-5 {
+  grid-template-columns: repeat(6, 1fr) !important;
+  gap: 6px !important;
+}
+
+/* Override ALL grid classes to force 4 columns in analytics */
+.density-compact .grid {
+  gap: 6px !important;
+}
+
+.density-compact .grid-cols-1,
+.density-compact .lg\\:grid-cols-4,
+.density-compact [class*="grid-cols-1"],
+.density-compact [class*="lg:grid-cols-4"] {
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 6px !important;
+}
+
+@media (min-width: 768px) {
+  .density-compact .grid-cols-1 {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .density-compact .lg\\:grid-cols-4 {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+  
+  .density-compact .lg\\:grid-cols-2 {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  
+  .density-compact .lg\\:grid-cols-3 {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .density-compact .xl\\:grid-cols-5 {
+    grid-template-columns: repeat(6, 1fr) !important; /* Show more columns */
+  }
 }
 
 .density-compact table td,
@@ -349,12 +453,172 @@ body {
   line-height: var(--line-height) !important;
 }
 
-.density-compact .space-y-4 > * + * {
-  margin-top: 0.5rem !important;
+/* Text and heading size reductions */
+.density-compact h1 { font-size: 1.5rem !important; }
+.density-compact h2 { font-size: 1.25rem !important; }
+.density-compact h3 { font-size: 1.1rem !important; }
+.density-compact h4 { font-size: 1rem !important; }
+.density-compact h5 { font-size: 0.9rem !important; }
+.density-compact .text-sm { font-size: 10px !important; }
+.density-compact .text-xs { font-size: 9px !important; }
+
+/* Button and input size reductions */
+.density-compact button,
+.density-compact input,
+.density-compact select {
+  height: var(--button-height) !important;
+  padding: 2px 6px !important;
+  font-size: var(--text-size) !important;
 }
 
-.density-compact .gap-4 {
-  gap: 0.5rem !important;
+/* Header optimizations for compact mode */
+.density-compact header {
+  padding: 8px 0 !important;
+}
+
+.density-compact header .py-4 {
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+
+.density-compact header .space-x-4 > * + * {
+  margin-left: 8px !important;
+}
+
+.density-compact header .space-x-6 > * + * {
+  margin-left: 10px !important;
+}
+
+.density-compact header .space-x-3 > * + * {
+  margin-left: 6px !important;
+}
+
+/* Make header buttons more compact */
+.density-compact header button {
+  height: 28px !important;
+  padding: 4px 8px !important;
+  font-size: 11px !important;
+}
+
+.density-compact header .text-sm {
+  font-size: 10px !important;
+}
+
+/* Hide labels in compact mode, show only icons */
+.density-compact header .hidden-compact,
+.density-compact .hidden-in-compact {
+  display: none !important;
+}
+
+/* Make the header container more compact */
+.density-compact header .container {
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+/* Target specific CardContent components */
+.density-compact [data-radix-aspect-ratio-wrapper],
+.density-compact [role="tabpanel"],
+.density-compact .space-y-2 > * + *,
+.density-compact .space-y-3 > * + * {
+  margin-top: 0.125rem !important;
+}
+
+/* Override common Tailwind spacing classes in compact mode */
+.density-compact .p-3 { padding: 4px !important; }
+.density-compact .p-2 { padding: 3px !important; }
+.density-compact .py-3 { padding-top: 3px !important; padding-bottom: 3px !important; }
+.density-compact .px-3 { padding-left: 4px !important; padding-right: 4px !important; }
+.density-compact .py-2 { padding-top: 2px !important; padding-bottom: 2px !important; }
+.density-compact .px-2 { padding-left: 3px !important; padding-right: 3px !important; }
+.density-compact .m-4 { margin: 4px !important; }
+.density-compact .m-3 { margin: 3px !important; }
+.density-compact .m-2 { margin: 2px !important; }
+
+/* Make metric/summary cards super compact */
+.density-compact .bg-gradient-to-br,
+.density-compact .rounded-lg,
+.density-compact .rounded-xl {
+  border-radius: 3px !important;
+}
+
+/* Make dashboard cards significantly smaller */
+.density-compact .bg-card {
+  padding: 8px !important;
+}
+
+.density-compact .rounded-xl {
+  border-radius: 6px !important;
+}
+
+/* Reduce spacing within cards */
+.density-compact .space-x-2 > * + * {
+  margin-left: 4px !important;
+}
+
+.density-compact .mb-2 {
+  margin-bottom: 4px !important;
+}
+
+.density-compact .mt-2 {
+  margin-top: 4px !important;
+}
+
+/* Make card text smaller */
+.density-compact .text-2xl {
+  font-size: 1.25rem !important; /* Smaller main values */
+  line-height: 1.2 !important;
+}
+
+.density-compact .text-sm {
+  font-size: 10px !important;
+}
+
+/* Make card icons smaller */
+.density-compact .w-12 {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+.density-compact .h-12 {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+/* Make progress bars smaller */
+.density-compact .h-2 {
+  height: 4px !important;
+}
+
+/* Reduce flex spacing in cards */
+.density-compact .justify-between {
+  gap: 8px;
+}
+
+.density-compact .shadow-sm {
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
+}
+
+.density-compact .shadow-md {
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1) !important;
+}
+
+.density-compact .shadow-lg {
+  box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.1) !important;
+}
+
+/* Compact mode specific background and border adjustments */
+.density-compact .bg-white {
+  margin: 1px !important;
+}
+
+.density-compact .border {
+  border-width: 1px !important;
+}
+
+/* Make dashboard cards extremely compact */
+.density-compact .fis-page-gradient {
+  padding: 12px !important;
 }
 
 .density-normal {
@@ -365,10 +629,15 @@ body {
   --button-height: 36px;
   --input-height: 36px;
   --section-gap: 16px;
+  --card-gap: 16px;
+  --border-radius: 8px;
 }
 
+.density-normal .bg-card,
+.density-normal [class*="card"],
 .density-normal .card {
   padding: var(--card-padding) !important;
+  border-radius: var(--border-radius) !important;
 }
 
 .density-normal table td,
@@ -379,13 +648,41 @@ body {
 }
 
 .density-comfortable {
-  --card-padding: 24px;
-  --table-cell-padding: 12px 16px;
+  --card-padding: 32px;
+  --table-cell-padding: 16px 20px;
   --text-size: 16px;
-  --line-height: 1.5;
-  --button-height: 40px;
-  --input-height: 40px;
-  --section-gap: 24px;
+  --line-height: 1.6;
+  --button-height: 44px;
+  --input-height: 44px;
+  --section-gap: 32px;
+  --card-gap: 24px;
+  --border-radius: 12px;
+}
+
+.density-comfortable .bg-card,
+.density-comfortable [class*="card"],
+.density-comfortable .card {
+  padding: var(--card-padding) !important;
+  border-radius: var(--border-radius) !important;
+}
+
+.density-comfortable table td,
+.density-comfortable table th {
+  padding: var(--table-cell-padding) !important;
+  font-size: var(--text-size) !important;
+  line-height: var(--line-height) !important;
+}
+
+.density-comfortable .space-y-4 > * + *,
+.density-comfortable .space-y-6 > * + *,
+.density-comfortable .space-y-8 > * + * {
+  margin-top: 1.5rem !important;
+}
+
+.density-comfortable .gap-4,
+.density-comfortable .gap-6,
+.density-comfortable .gap-8 {
+  gap: 1.5rem !important;
 }
 
 /* Large Screen Optimizations */

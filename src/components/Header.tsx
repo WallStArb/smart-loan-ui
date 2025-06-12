@@ -56,7 +56,7 @@ const Header: React.FC = () => {
                 <Badge className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white border-0">
                   QA
                 </Badge>
-                <span className="text-slate-300 text-sm fis-body-regular">Loanet - Firm 9990</span>
+                <span className="text-slate-300 text-sm fis-body-regular hidden-compact">Loanet - Firm 9990</span>
               </div>
             </div>
           </div>
@@ -64,7 +64,7 @@ const Header: React.FC = () => {
           {/* Center: Density Control & Quick Tools */}
           <div className="hidden lg:flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <span className="text-xs text-white/70 font-medium">View:</span>
+              <span className="text-xs text-white/70 font-medium hidden-compact">View:</span>
               <DensityToggle 
                 density={density} 
                 onDensityChange={changeDensity}
@@ -77,7 +77,7 @@ const Header: React.FC = () => {
                 className="flex items-center space-x-2 text-slate-300 hover:text-white hover:bg-slate-800/60 border border-slate-700/30 hover:border-slate-600/50 transition-all duration-200"
               >
                 <Grid3X3 size={16} />
-                <span className="fis-body-semibold">Quick Tools</span>
+                <span className="fis-body-semibold hidden-compact">Quick Tools</span>
                 <ChevronDown size={14} />
               </Button>
               
@@ -187,7 +187,7 @@ const Header: React.FC = () => {
                   </div>
                   <div className="text-left hidden md:block">
                     <div className="text-sm fis-body-bold text-white">BGoyette</div>
-                    <div className="text-xs fis-body-regular text-white/80">Firm 9990</div>
+                    <div className="text-xs fis-body-regular text-white/80 hidden-compact">Firm 9990</div>
                   </div>
                 </div>
                 <ChevronDown size={14} className="text-[#50FF48]" />

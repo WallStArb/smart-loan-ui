@@ -39,7 +39,7 @@ export const DensityToggle: React.FC<DensityToggleProps> = ({
           title={`${label} density - Click to change view density`}
         >
           <Icon className="h-3 w-3 mr-1" />
-          <span className="hidden sm:inline">{label}</span>
+          <span className="hidden sm:inline hidden-in-compact">{label}</span>
           <span className="sm:hidden">{label.charAt(0)}</span>
         </Button>
       ))}
