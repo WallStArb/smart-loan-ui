@@ -22,6 +22,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 
 interface AuditEntry {
@@ -256,7 +258,7 @@ const ParametersPage: React.FC = () => {
               <RotateCcw className="w-4 h-4 mr-2" />
               Reset
             </Button>
-            <Button size="sm" onClick={handleSave} variant="success">
+            <Button size="sm" onClick={handleSave} className="h-9 px-4 bg-[#00a651] hover:bg-[#008A44] text-white border-[#00a651]">
               <Save className="w-4 h-4 mr-2" />
               Save Changes
             </Button>
@@ -613,54 +615,57 @@ const ParametersPage: React.FC = () => {
                           <span className="text-xs font-medium text-gray-700">Cutoff Time</span>
                         </div>
                         <div className="flex items-center space-x-1">
-                          <input
+                          <Input
                             type="time"
                             value={settings.cutoffTime}
                             onChange={(e) => handleInputChange('cutoffTime', e.target.value)}
-                            className="text-xs border border-gray-300 rounded px-2 py-1 w-20"
+                            className="text-xs h-7 w-20 bg-background border-input focus:border-[#015B7E] focus:ring-[#015B7E]"
                           />
-                          <select
-                            value={settings.cutoffPeriod}
-                            onChange={(e) => handleInputChange('cutoffPeriod', e.target.value)}
-                            className="text-xs border border-gray-300 rounded px-2 py-1"
-                          >
-                            <option value="AM">AM</option>
-                            <option value="PM">PM</option>
-                          </select>
+                          <Select value={settings.cutoffPeriod} onValueChange={(value) => handleInputChange('cutoffPeriod', value)}>
+                            <SelectTrigger className="w-16 h-7 text-xs bg-background border-input focus:border-[#015B7E] focus:ring-[#015B7E]">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="AM">AM</SelectItem>
+                              <SelectItem value="PM">PM</SelectItem>
+                            </SelectContent>
+                          </Select>
                           <span className="text-xs text-gray-500">ET</span>
                         </div>
                       </div>
                       
                       <div className="mt-2 pt-2 border-t border-gray-200">
-                        <div className="flex items-center justify-between">
-                          <label className="flex items-center space-x-2 text-xs">
-                            <input
-                              type="radio"
-                              name="priorityOrder"
-                              checked={settings.priorityOrder === 'normal'}
-                              onChange={() => handleInputChange('priorityOrder', 'normal')}
-                              className="w-3 h-3"
-                            />
-                            <span>Normal Priority Order</span>
-                          </label>
-                          <Badge variant="outline" className="text-xs px-2 py-0.5">
-                            CNS → DVP → FP → OA
-                          </Badge>
-                        </div>
-                        <div className="flex items-center justify-between mt-1">
-                          <label className="flex items-center space-x-2 text-xs">
-                            <input
-                              type="radio"
-                              name="priorityOrder"
-                              checked={settings.priorityOrder === 'reverse'}
-                              onChange={() => handleInputChange('priorityOrder', 'reverse')}
-                              className="w-3 h-3"
-                            />
-                            <span>Reverse Priority Order</span>
-                          </label>
-                          <Badge variant="outline" className="text-xs px-2 py-0.5">
-                            OA → FP → DVP → CNS
-                          </Badge>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                              <Button
+                                variant={settings.priorityOrder === 'normal' ? 'default' : 'outline'}
+                                size="sm"
+                                onClick={() => handleInputChange('priorityOrder', 'normal')}
+                                className="h-6 px-2 text-xs"
+                              >
+                                Normal Priority Order
+                              </Button>
+                            </div>
+                            <Badge variant="outline" className="text-xs px-2 py-0.5">
+                              CNS → DVP → FP → OA
+                            </Badge>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                              <Button
+                                variant={settings.priorityOrder === 'reverse' ? 'default' : 'outline'}
+                                size="sm"
+                                onClick={() => handleInputChange('priorityOrder', 'reverse')}
+                                className="h-6 px-2 text-xs"
+                              >
+                                Reverse Priority Order
+                              </Button>
+                            </div>
+                            <Badge variant="outline" className="text-xs px-2 py-0.5">
+                              OA → FP → DVP → CNS
+                            </Badge>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -736,11 +741,11 @@ const ParametersPage: React.FC = () => {
                 </Badge>
               </div>
               <div className="flex items-center space-x-3">
-                <Button size="sm" onClick={handleExport} className="h-8 px-3 bg-emerald-600 hover:bg-emerald-700">
+                <Button size="sm" onClick={handleExport} className="h-8 px-3 bg-[#00a651] hover:bg-[#008A44] text-white border-[#00a651]">
                   <Download className="w-4 h-4 mr-2" />
                   Export All
                 </Button>
-                <Button variant="outline" size="sm" className="h-8 px-3 border-purple-200 text-purple-700 hover:bg-purple-50">
+                <Button variant="outline" size="sm" className="h-8 px-3 border-[#015B7E] text-[#015B7E] hover:bg-[#015B7E]/10">
                   <FileText className="w-4 h-4 mr-2" />
                   Full History
                 </Button>
