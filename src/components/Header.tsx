@@ -62,50 +62,52 @@ const Header: React.FC = () => {
           </div>
 
           {/* Center: Density Control & Quick Tools */}
-          <div className={`hidden lg:flex items-center ${density === 'compact' ? 'space-x-2' : 'space-x-4'}`}>
-            <div className={`flex items-center ${density === 'compact' ? 'space-x-1' : 'space-x-2'}`}>
-              <span className="text-xs text-white/70 font-medium hidden-compact">View:</span>
-              <DensityToggle 
-                density={density} 
-                onDensityChange={changeDensity}
-              />
-            </div>
-            <div className="relative">
-              <Button
-                variant="ghost"
-                onClick={() => setShowToolsMenu(!showToolsMenu)}
-                className="flex items-center space-x-2 text-slate-300 hover:text-white hover:bg-slate-800/60 border border-slate-700/30 hover:border-slate-600/50 transition-all duration-200"
-              >
-                <Grid3X3 size={16} />
-                <span className="fis-body-semibold hidden-compact">Quick Tools</span>
-                <ChevronDown size={14} />
-              </Button>
-              
-              {showToolsMenu && (
-                <Card className="absolute top-full left-0 mt-2 w-64 bg-white/95 backdrop-blur-sm border border-slate-200 shadow-xl z-50">
-                  <CardContent className="p-2">
-                    <div className="space-y-1">
-                      <Button variant="ghost" className="w-full justify-start h-auto p-3 text-slate-700 hover:bg-slate-100">
-                        <BarChart2 size={16} className="text-[#015B7E] mr-3" />
-                        <span>Analytical Reports</span>
-                      </Button>
-                      <Button variant="ghost" className="w-full justify-start h-auto p-3 text-slate-700 hover:bg-slate-100">
-                        <Zap size={16} className="text-[#00a651] mr-3" />
-                        <span>Borrow/Loan</span>
-                      </Button>
-                      <Button variant="ghost" className="w-full justify-start h-auto p-3 text-slate-700 hover:bg-slate-100">
-                        <FileText size={16} className="text-[#285BC5] mr-3" />
-                        <span>Scratchpad</span>
-                      </Button>
-                      <Separator className="my-2" />
-                      <Button variant="ghost" className="w-full justify-start h-auto p-3 text-slate-700 hover:bg-slate-100">
-                        <HelpCircle size={16} className="text-[#1B1B6F] mr-3" />
-                        <span>Help & Support</span>
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
+          <div className="flex items-center justify-center">
+            <div className={`flex items-center ${density === 'compact' ? 'space-x-2' : 'space-x-4'}`}>
+              <div className={`flex items-center ${density === 'compact' ? 'space-x-1' : 'space-x-2'}`}>
+                <span className="text-xs text-white/70 font-medium hidden-compact">View:</span>
+                <DensityToggle 
+                  density={density} 
+                  onDensityChange={changeDensity}
+                />
+              </div>
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowToolsMenu(!showToolsMenu)}
+                  className="flex items-center space-x-2 text-slate-300 hover:text-white hover:bg-slate-800/60 border border-slate-700/30 hover:border-slate-600/50 transition-all duration-200"
+                >
+                  <Grid3X3 size={16} />
+                  <span className="fis-body-semibold hidden-compact">Quick Tools</span>
+                  <ChevronDown size={14} />
+                </Button>
+                
+                {showToolsMenu && (
+                  <Card className="absolute top-full left-0 mt-2 w-64 bg-white/95 backdrop-blur-sm border border-slate-200 shadow-xl z-50">
+                    <CardContent className="p-2">
+                      <div className="space-y-1">
+                        <Button variant="ghost" className="w-full justify-start h-auto p-3 text-slate-700 hover:bg-slate-100">
+                          <BarChart2 size={16} className="text-[#015B7E] mr-3" />
+                          <span>Analytical Reports</span>
+                        </Button>
+                        <Button variant="ghost" className="w-full justify-start h-auto p-3 text-slate-700 hover:bg-slate-100">
+                          <Zap size={16} className="text-[#00a651] mr-3" />
+                          <span>Borrow/Loan</span>
+                        </Button>
+                        <Button variant="ghost" className="w-full justify-start h-auto p-3 text-slate-700 hover:bg-slate-100">
+                          <FileText size={16} className="text-[#285BC5] mr-3" />
+                          <span>Scratchpad</span>
+                        </Button>
+                        <Separator className="my-2" />
+                        <Button variant="ghost" className="w-full justify-start h-auto p-3 text-slate-700 hover:bg-slate-100">
+                          <HelpCircle size={16} className="text-[#1B1B6F] mr-3" />
+                          <span>Help & Support</span>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
             </div>
           </div>
 

@@ -31,15 +31,15 @@ export const DensityToggle: React.FC<DensityToggleProps> = ({
           size="sm"
           onClick={() => onDensityChange(mode)}
           className={cn(
-            "h-7 px-2.5 text-xs font-medium transition-all border",
+            "h-7 px-2 text-xs font-medium transition-all border",
             density === mode 
               ? "bg-white text-gray-900 border-white shadow-sm hover:bg-white" 
               : "text-white border-transparent hover:bg-white/20 hover:border-white/40"
           )}
           title={`${label} density - Click to change view density`}
         >
-          <Icon className="h-3 w-3 mr-1" />
-          <span className="hidden sm:inline hidden-in-compact">{label}</span>
+          <Icon className="h-3.5 w-3.5 mr-1" />
+          <span className="hidden sm:inline">{label}</span>
           <span className="sm:hidden">{label.charAt(0)}</span>
         </Button>
       ))}
