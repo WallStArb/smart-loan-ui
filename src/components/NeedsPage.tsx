@@ -36,6 +36,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Tooltip } from '@/components/ui/tooltip'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import FISLogo from '@/components/ui/fis-logo'
 
@@ -1390,17 +1392,24 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
               <div className="px-3 py-1.5 border-b border-gray-200 bg-gray-50 rounded-t-md">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-semibold text-gray-900">Advanced Analytics</h3>
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => toggleSectionCollapse('analytics')}
-                    className="p-1 hover:bg-gray-100 rounded transition-colors"
-                    title={collapsedSections.has('analytics') ? 'Expand section' : 'Collapse section'}
+                    className="h-6 px-1 text-gray-500 hover:text-gray-700"
                   >
                     {collapsedSections.has('analytics') ? (
-                      <ChevronDown className="w-4 h-4 text-gray-500" />
+                      <>
+                        <ChevronDown size={16} className="mr-1" />
+                        <span className="text-xs">Show Analytics</span>
+                      </>
                     ) : (
-                      <ChevronDown className="w-4 h-4 text-gray-500" />
+                      <>
+                        <ChevronUp size={16} className="mr-1" />
+                        <span className="text-xs">Hide Analytics</span>
+                      </>
                     )}
-                  </button>
+                  </Button>
                 </div>
               </div>
               {!collapsedSections.has('analytics') && (
@@ -1546,17 +1555,24 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                           <span>Live Grid - Ranked by efficiency</span>
                           <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
                         </div>
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => toggleSectionCollapse('counterparty')}
-                          className="p-1 hover:bg-gray-100 rounded transition-colors"
-                          title={collapsedSections.has('counterparty') ? 'Expand section' : 'Collapse section'}
+                          className="h-6 px-1 text-gray-500 hover:text-gray-700"
                         >
                           {collapsedSections.has('counterparty') ? (
-                            <ChevronDown className="w-4 h-4 text-gray-500" />
+                            <>
+                              <ChevronDown size={16} className="mr-1" />
+                              <span className="text-xs">Show</span>
+                            </>
                           ) : (
-                            <ChevronDown className="w-4 h-4 text-gray-500" />
+                            <>
+                              <ChevronUp size={16} className="mr-1" />
+                              <span className="text-xs">Hide</span>
+                            </>
                           )}
-                        </button>
+                        </Button>
                       </div>
                     </div>
                 </div>
@@ -1695,25 +1711,22 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                   {/* View Mode Controls */}
                   <div className="flex items-center space-x-2">
                     <span className="text-sm font-medium text-gray-700">View:</span>
-                    <div className="flex bg-gray-100 rounded-lg p-1">
+                    <div className="flex bg-gray-100 rounded p-1">
                       {[
                         { key: 'critical-only', label: 'Critical Only', icon: AlertTriangle },
                         { key: 'overview', label: 'Overview', icon: BarChart3 },
                         { key: 'detailed', label: 'Detailed', icon: Activity }
                       ].map(({ key, label, icon: Icon }) => (
-                        <button
+                        <Button
                           key={key}
+                          variant={viewMode === key ? 'default' : 'ghost'}
+                          size="sm"
                           onClick={() => setViewMode(key as any)}
-                          className={cn(
-                            "flex items-center space-x-1 px-3 py-1.5 rounded-md text-sm font-medium transition-all",
-                            viewMode === key
-                              ? "bg-white text-blue-600 shadow-sm"
-                              : "text-gray-600 hover:text-gray-900"
-                          )}
+                          className="h-8 px-3 text-sm"
                         >
-                          <Icon className="w-4 h-4" />
-                          <span>{label}</span>
-                        </button>
+                          <Icon className="w-4 h-4 mr-2" />
+                          {label}
+                        </Button>
                       ))}
                     </div>
                   </div>
@@ -1721,13 +1734,13 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                 
                 <div className="flex items-center space-x-3">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                    <input
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
+                    <Input
                       type="text"
                       placeholder="Search securities..."
-                      className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 w-64 h-9 bg-background border-input focus:border-[#015B7E] focus:ring-[#015B7E]"
                     />
                   </div>
                   
@@ -1739,39 +1752,45 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                         <span className="text-sm text-gray-600 font-medium">
                           {selectedSecurities.size} selected
                         </span>
-                        <button 
-                          className="fis-button-primary flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-lg"
+                        <Button 
+                          size="sm"
+                          className="h-8 bg-[#00a651] hover:bg-[#008A44] text-white border-[#00a651]"
                           onClick={() => {
                             const selectedNeeds = filteredAndSortedNeeds.filter(need => selectedSecurities.has(need.id))
                             handleBulkAction('borrow', selectedNeeds)
                           }}
                         >
-                          <span>🔄</span>
-                          <span>Borrow ({selectedSecurities.size})</span>
-                        </button>
-                        <button 
-                          className="fis-button-secondary flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-lg"
+                          <RefreshCw className="w-4 h-4 mr-2" />
+                          Borrow ({selectedSecurities.size})
+                        </Button>
+                        <Button 
+                          size="sm"
+                          className="h-8 bg-[#015B7E] hover:bg-[#014A68] text-white border-[#015B7E]"
                           onClick={() => {
                             const selectedNeeds = filteredAndSortedNeeds.filter(need => selectedSecurities.has(need.id))
                             handleBulkAction('recall', selectedNeeds)
                           }}
                         >
-                          <span>📞</span>
-                          <span>Recall ({selectedSecurities.size})</span>
-                        </button>
+                          <ArrowUp className="w-4 h-4 mr-2" />
+                          Recall ({selectedSecurities.size})
+                        </Button>
                       </div>
                     </>
                   )}
                   
-                  <button 
-                    className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    className="h-8"
                     onClick={() => console.log('Filter functionality coming soon')}
                   >
-                    <Filter className="w-4 h-4" />
-                    <span>Filter</span>
-                  </button>
-                  <button 
-                    className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                    <Filter className="w-4 h-4 mr-2" />
+                    Filter
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    className="h-8"
                     onClick={() => {
                       // console.log('Exporting securities data...')
                       setTimeout(() => {
@@ -1779,9 +1798,9 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                       }, 1000)
                     }}
                   >
-                    <Download className="w-4 h-4" />
-                    <span>Export</span>
-                  </button>
+                    <Download className="w-4 h-4 mr-2" />
+                    Export
+                  </Button>
                 </div>
               </div>
               
@@ -1791,19 +1810,21 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                   <span className="text-xs font-medium text-gray-600">Quick Filters:</span>
                   <div className="flex space-x-2">
                     {filterPresets.map(preset => (
-                      <button
+                      <Button
                         key={preset.id}
-                        className="inline-flex items-center px-2 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs"
                         onClick={() => {
                           const filtered = securityNeeds.filter(preset.filter)
                           setSelectedSecurities(new Set(filtered.map(n => n.id)))
                         }}
                       >
                         {preset.label}
-                        <span className="ml-1 px-1.5 py-0.5 text-xs bg-gray-100 text-gray-600 rounded-full">
+                        <Badge variant="secondary" className="ml-1 px-1.5 py-0.5 text-xs bg-gray-100 text-gray-600">
                           {preset.count}
-                        </span>
-                      </button>
+                        </Badge>
+                      </Button>
                     ))}
                   </div>
                 </div>
