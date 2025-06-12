@@ -792,4 +792,169 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: var(--section-gap, 16px);
+}
+
+/* Global header size reduction for all modes */
+header .py-4 {
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+}
+
+header .container {
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+
+header button {
+  height: auto !important;
+}
+
+/* Make header buttons more compact */
+.density-compact header button {
+  padding: 4px 8px !important;
+  height: auto !important;
+  min-height: 28px !important;
+  font-size: 12px !important;
+}
+
+/* Additional space reductions */
+.density-compact .space-x-2 > * + * {
+  margin-left: 4px !important;
+}
+
+.density-compact .mb-2 {
+  margin-bottom: 4px !important;
+}
+
+.density-compact .mt-2 {
+  margin-top: 4px !important;
+}
+
+.density-normal {
+  --card-padding: 16px;
+  --table-cell-padding: 8px 12px;
+  --text-size: 14px;
+  --line-height: 1.4;
+  --button-height: 36px;
+  --input-height: 36px;
+  --section-gap: 16px;
+  --card-gap: 16px;
+  --border-radius: 8px;
+}
+
+.density-normal .bg-card,
+.density-normal [class*="card"],
+.density-normal .card {
+  padding: var(--card-padding) !important;
+  border-radius: var(--border-radius) !important;
+}
+
+.density-normal table td,
+.density-normal table th {
+  padding: var(--table-cell-padding) !important;
+  font-size: var(--text-size) !important;
+  line-height: var(--line-height) !important;
+}
+
+.density-comfortable {
+  --card-padding: 32px;
+  --table-cell-padding: 16px 20px;
+  --text-size: 16px;
+  --line-height: 1.6;
+  --button-height: 44px;
+  --input-height: 44px;
+  --section-gap: 32px;
+  --card-gap: 24px;
+  --border-radius: 12px;
+}
+
+.density-comfortable .bg-card,
+.density-comfortable [class*="card"],
+.density-comfortable .card {
+  padding: var(--card-padding) !important;
+  border-radius: var(--border-radius) !important;
+}
+
+.density-comfortable table td,
+.density-comfortable table th {
+  padding: var(--table-cell-padding) !important;
+  font-size: var(--text-size) !important;
+  line-height: var(--line-height) !important;
+}
+
+.density-comfortable .space-y-4 > * + *,
+.density-comfortable .space-y-6 > * + *,
+.density-comfortable .space-y-8 > * + * {
+  margin-top: 1.5rem !important;
+}
+
+.density-comfortable .gap-4,
+.density-comfortable .gap-6,
+.density-comfortable .gap-8 {
+  gap: 1.5rem !important;
+}
+
+/* Large Screen Optimizations */
+@media (min-width: 1680px) {
+  .large-screen-layout {
+    --sidebar-width: 280px;
+    --content-max-width: none;
+    --grid-columns-lg: repeat(4, 1fr);
+    --grid-columns-xl: repeat(6, 1fr);
+  }
+  
+  .multi-column-cards {
+    display: grid;
+    grid-template-columns: var(--grid-columns-lg);
+    gap: var(--section-gap);
+  }
+  
+  .wide-table {
+    min-width: 100%;
+    table-layout: fixed;
+  }
+  
+  .wide-table th,
+  .wide-table td {
+    padding: var(--table-cell-padding);
+    font-size: var(--text-size);
+    line-height: var(--line-height);
+  }
+}
+
+/* Compact spacing utilities */
+.space-y-compact > * + * {
+  margin-top: 8px;
+}
+
+.gap-compact {
+  gap: 8px;
+}
+
+.p-compact {
+  padding: var(--card-padding, 12px);
+}
+
+.text-compact {
+  font-size: var(--text-size, 13px);
+  line-height: var(--line-height, 1.3);
+}
+
+/* Enhanced grid layouts for large screens */
+.grid-auto-fit-250 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--section-gap, 16px);
+}
+
+.grid-auto-fit-300 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--section-gap, 16px);
+}
+
+.grid-auto-fit-400 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: var(--section-gap, 16px);
 } 

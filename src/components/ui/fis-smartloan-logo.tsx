@@ -14,9 +14,9 @@ const FISSmartLoanLogo: React.FC<FISSmartLoanLogoProps> = ({
   className = ''
 }) => {
   const sizeClasses = {
-    sm: { title: 'text-lg', subtitle: 'text-xs', spacing: 'space-x-3' },
-    md: { title: 'text-xl', subtitle: 'text-sm', spacing: 'space-x-4' },
-    lg: { title: 'text-2xl', subtitle: 'text-base', spacing: 'space-x-5' }
+    sm: { title: 'text-lg', subtitle: 'text-xs', spacing: 'space-x-2' },
+    md: { title: 'text-lg', subtitle: 'text-xs', spacing: 'space-x-3' },
+    lg: { title: 'text-xl', subtitle: 'text-sm', spacing: 'space-x-4' }
   };
 
   const currentSize = sizeClasses[size];
@@ -61,7 +61,7 @@ const FISSmartLoanLogo: React.FC<FISSmartLoanLogoProps> = ({
       <div className="flex flex-col">
         <div className={`fis-headline leading-tight ${currentSize.title} flex items-center`}>
           <span className={textClasses.fis}>FIS</span>
-          <span className={`mx-2 ${textClasses.separator}`}>|</span>
+          <span className={`mx-1.5 ${textClasses.separator}`}>|</span>
           <span className={`${textClasses.smartloan}`}>SMARTLOAN</span>
         </div>
         
