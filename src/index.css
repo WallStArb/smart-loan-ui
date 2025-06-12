@@ -473,12 +473,12 @@ body {
 
 /* Header optimizations for compact mode */
 .density-compact header {
-  padding: 8px 0 !important;
+  min-height: 48px !important;
 }
 
 .density-compact header .py-4 {
-  padding-top: 6px !important;
-  padding-bottom: 6px !important;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
 }
 
 .density-compact header .space-x-4 > * + * {
@@ -486,7 +486,7 @@ body {
 }
 
 .density-compact header .space-x-6 > * + * {
-  margin-left: 10px !important;
+  margin-left: 12px !important;
 }
 
 .density-compact header .space-x-3 > * + * {
@@ -495,16 +495,16 @@ body {
 
 /* Make header buttons more compact */
 .density-compact header button {
-  height: 28px !important;
   padding: 4px 8px !important;
-  font-size: 11px !important;
+  height: auto !important;
+  min-height: 28px !important;
 }
 
 .density-compact header .text-sm {
   font-size: 10px !important;
 }
 
-/* Hide labels in compact mode, show only icons */
+/* Hide certain elements in compact mode */
 .density-compact header .hidden-compact,
 .density-compact .hidden-in-compact {
   display: none !important;
@@ -512,46 +512,132 @@ body {
 
 /* Make the header container more compact */
 .density-compact header .container {
-  padding-left: 12px !important;
-  padding-right: 12px !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
 }
 
-/* Target specific CardContent components */
-.density-compact [data-radix-aspect-ratio-wrapper],
-.density-compact [role="tabpanel"],
-.density-compact .space-y-2 > * + *,
-.density-compact .space-y-3 > * + * {
-  margin-top: 0.125rem !important;
+/* Sidebar optimizations for compact mode */
+.density-compact aside,
+.density-compact [role="complementary"] {
+  width: 60px !important;
 }
 
-/* Override common Tailwind spacing classes in compact mode */
-.density-compact .p-3 { padding: 4px !important; }
-.density-compact .p-2 { padding: 3px !important; }
-.density-compact .py-3 { padding-top: 3px !important; padding-bottom: 3px !important; }
-.density-compact .px-3 { padding-left: 4px !important; padding-right: 4px !important; }
-.density-compact .py-2 { padding-top: 2px !important; padding-bottom: 2px !important; }
-.density-compact .px-2 { padding-left: 3px !important; padding-right: 3px !important; }
-.density-compact .m-4 { margin: 4px !important; }
-.density-compact .m-3 { margin: 3px !important; }
-.density-compact .m-2 { margin: 2px !important; }
-
-/* Make metric/summary cards super compact */
-.density-compact .bg-gradient-to-br,
-.density-compact .rounded-lg,
-.density-compact .rounded-xl {
-  border-radius: 3px !important;
+/* Sidebar navigation optimizations */
+.density-compact nav {
+  padding: 6px !important;
 }
 
-/* Make dashboard cards significantly smaller */
-.density-compact .bg-card {
-  padding: 8px !important;
+.density-compact nav .space-y-2 > * + * {
+  margin-top: 4px !important;
 }
 
-.density-compact .rounded-xl {
-  border-radius: 6px !important;
+/* Sidebar buttons in compact mode */
+.density-compact nav button {
+  padding: 6px !important;
+  min-height: 32px !important;
 }
 
-/* Reduce spacing within cards */
+/* Sidebar icons and text */
+.density-compact nav .text-sm {
+  font-size: 9px !important;
+}
+
+.density-compact nav .text-xs {
+  font-size: 8px !important;
+}
+
+/* Sidebar header area */
+.density-compact nav .h-16 {
+  height: 40px !important;
+}
+
+.density-compact nav .px-4 {
+  padding-left: 6px !important;
+  padding-right: 6px !important;
+}
+
+/* Badge optimizations */
+.density-compact .badge,
+.density-compact [class*="badge"] {
+  padding: 1px 4px !important;
+  font-size: 8px !important;
+  height: 16px !important;
+}
+
+/* Card optimizations in header */
+.density-compact header .bg-white\/20 {
+  padding: 4px 6px !important;
+}
+
+.density-compact header .p-3 {
+  padding: 3px !important;
+}
+
+/* Notification badge optimizations */
+.density-compact .w-5.h-5 {
+  width: 14px !important;
+  height: 14px !important;
+  font-size: 8px !important;
+}
+
+/* User avatar optimizations */
+.density-compact .w-8.h-8 {
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.density-compact .w-12.h-12 {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+/* Dropdown menu optimizations */
+.density-compact .absolute.top-full {
+  width: auto !important;
+  min-width: 200px !important;
+}
+
+/* Logo and branding optimizations */
+.density-compact .fis-headline {
+  font-size: 12px !important;
+}
+
+/* Separator optimizations */
+.density-compact .h-8 {
+  height: 20px !important;
+}
+
+/* Time display optimizations */
+.density-compact header .text-sm.fis-body-semibold {
+  font-size: 9px !important;
+}
+
+/* Quick tools menu optimizations - be more specific to avoid sidebar */
+.density-compact header .w-64,
+.density-compact .absolute.top-full.w-64 {
+  width: 180px !important;
+}
+
+.density-compact header .w-80,
+.density-compact .absolute.top-full.w-80 {
+  width: 220px !important;
+}
+
+.density-compact header .w-72,
+.density-compact .absolute.top-full.w-72 {
+  width: 200px !important;
+}
+
+/* Notification and menu item optimizations */
+.density-compact .px-4.py-3 {
+  padding: 4px 8px !important;
+}
+
+.density-compact .p-3 {
+  padding: 4px !important;
+}
+
+/* Additional space reductions */
 .density-compact .space-x-2 > * + * {
   margin-left: 4px !important;
 }
@@ -562,63 +648,6 @@ body {
 
 .density-compact .mt-2 {
   margin-top: 4px !important;
-}
-
-/* Make card text smaller */
-.density-compact .text-2xl {
-  font-size: 1.25rem !important; /* Smaller main values */
-  line-height: 1.2 !important;
-}
-
-.density-compact .text-sm {
-  font-size: 10px !important;
-}
-
-/* Make card icons smaller */
-.density-compact .w-12 {
-  width: 32px !important;
-  height: 32px !important;
-}
-
-.density-compact .h-12 {
-  width: 32px !important;
-  height: 32px !important;
-}
-
-/* Make progress bars smaller */
-.density-compact .h-2 {
-  height: 4px !important;
-}
-
-/* Reduce flex spacing in cards */
-.density-compact .justify-between {
-  gap: 8px;
-}
-
-.density-compact .shadow-sm {
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
-}
-
-.density-compact .shadow-md {
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1) !important;
-}
-
-.density-compact .shadow-lg {
-  box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.1) !important;
-}
-
-/* Compact mode specific background and border adjustments */
-.density-compact .bg-white {
-  margin: 1px !important;
-}
-
-.density-compact .border {
-  border-width: 1px !important;
-}
-
-/* Make dashboard cards extremely compact */
-.density-compact .fis-page-gradient {
-  padding: 12px !important;
 }
 
 .density-normal {

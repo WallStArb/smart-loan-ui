@@ -43,17 +43,17 @@ const Header: React.FC = () => {
   });
 
   return (
-    <header className="bg-[#012834] text-white shadow-2xl border-b border-slate-700/50 z-20">
+    <header className={`bg-[#012834] text-white shadow-2xl border-b border-slate-700/50 z-20 density-${density}`}>
       <div className="container mx-auto px-6">
-        <div className="flex justify-between items-center py-4">
+        <div className={`flex justify-between items-center ${density === 'compact' ? 'py-2' : 'py-4'}`}>
           
           {/* Left: Branding & Environment */}
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-4">
-              <FISSmartLoanLogo variant="gradient" size="md" />
-              <Separator orientation="vertical" className="h-8 bg-slate-600" />
-              <div className="flex items-center space-x-3">
-                <Badge className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white border-0">
+          <div className={`flex items-center ${density === 'compact' ? 'space-x-3' : 'space-x-6'}`}>
+            <div className={`flex items-center ${density === 'compact' ? 'space-x-2' : 'space-x-4'}`}>
+              <FISSmartLoanLogo variant="gradient" size={density === 'compact' ? 'sm' : 'md'} />
+              <Separator orientation="vertical" className={`bg-slate-600 ${density === 'compact' ? 'h-6' : 'h-8'}`} />
+              <div className={`flex items-center ${density === 'compact' ? 'space-x-2' : 'space-x-3'}`}>
+                <Badge className={`bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white border-0 ${density === 'compact' ? 'text-xs px-2 py-0.5' : ''}`}>
                   QA
                 </Badge>
                 <span className="text-slate-300 text-sm fis-body-regular hidden-compact">Loanet - Firm 9990</span>
@@ -62,8 +62,8 @@ const Header: React.FC = () => {
           </div>
 
           {/* Center: Density Control & Quick Tools */}
-          <div className="hidden lg:flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
+          <div className={`hidden lg:flex items-center ${density === 'compact' ? 'space-x-2' : 'space-x-4'}`}>
+            <div className={`flex items-center ${density === 'compact' ? 'space-x-1' : 'space-x-2'}`}>
               <span className="text-xs text-white/70 font-medium hidden-compact">View:</span>
               <DensityToggle 
                 density={density} 
@@ -110,14 +110,14 @@ const Header: React.FC = () => {
           </div>
 
           {/* Right: Status, Notifications & User */}
-          <div className="flex items-center space-x-4">
+          <div className={`flex items-center ${density === 'compact' ? 'space-x-2' : 'space-x-4'}`}>
             
             {/* Current Time */}
-            <Card className="hidden md:block bg-white/20 border-white/30 backdrop-blur-sm">
-              <CardContent className="p-3">
-                <div className="flex items-center space-x-2 text-white">
-                  <Clock size={14} className="text-white" />
-                  <span className="text-sm fis-body-semibold">{currentTime}</span>
+            <Card className={`hidden md:block bg-white/20 border-white/30 backdrop-blur-sm ${density === 'compact' ? 'hidden-compact' : ''}`}>
+              <CardContent className={density === 'compact' ? 'p-2' : 'p-3'}>
+                <div className={`flex items-center text-white ${density === 'compact' ? 'space-x-1' : 'space-x-2'}`}>
+                  <Clock size={density === 'compact' ? 12 : 14} className="text-white" />
+                  <span className={`fis-body-semibold ${density === 'compact' ? 'text-xs' : 'text-sm'}`}>{currentTime}</span>
                 </div>
               </CardContent>
             </Card>
@@ -127,10 +127,10 @@ const Header: React.FC = () => {
               <Button
                 variant="ghost"
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="relative p-3 text-white hover:text-white hover:bg-white/20 border border-white/30 hover:border-white/50 transition-all duration-200 bg-white/10 backdrop-blur-sm"
+                className={`relative text-white hover:text-white hover:bg-white/20 border border-white/30 hover:border-white/50 transition-all duration-200 bg-white/10 backdrop-blur-sm ${density === 'compact' ? 'p-2' : 'p-3'}`}
               >
-                <AlertTriangle size={18} />
-                <Badge className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-[#50FF48] to-[#00a651] text-[#012834] text-xs p-0 flex items-center justify-center rounded-full border-2 border-white font-bold shadow-lg">
+                <AlertTriangle size={density === 'compact' ? 16 : 18} />
+                <Badge className={`absolute -top-1 -right-1 bg-gradient-to-r from-[#50FF48] to-[#00a651] text-[#012834] text-xs p-0 flex items-center justify-center rounded-full border-2 border-white font-bold shadow-lg ${density === 'compact' ? 'w-4 h-4' : 'w-5 h-5'}`}>
                   3
                 </Badge>
               </Button>
@@ -179,18 +179,18 @@ const Header: React.FC = () => {
               <Button
                 variant="ghost"
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center space-x-3 p-3 text-white hover:text-white hover:bg-white/20 border border-white/30 hover:border-white/50 transition-all duration-200 bg-white/10 backdrop-blur-sm"
+                className={`flex items-center text-white hover:text-white hover:bg-white/20 border border-white/30 hover:border-white/50 transition-all duration-200 bg-white/10 backdrop-blur-sm ${density === 'compact' ? 'space-x-2 p-2' : 'space-x-3 p-3'}`}
               >
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-br from-[#00a651] to-[#008A44] rounded-full flex items-center justify-center shadow-lg">
-                    <span className="text-sm font-bold text-white">BG</span>
+                <div className={`flex items-center ${density === 'compact' ? 'space-x-2' : 'space-x-3'}`}>
+                  <div className={`bg-gradient-to-br from-[#00a651] to-[#008A44] rounded-full flex items-center justify-center shadow-lg ${density === 'compact' ? 'w-6 h-6' : 'w-8 h-8'}`}>
+                    <span className={`font-bold text-white ${density === 'compact' ? 'text-xs' : 'text-sm'}`}>BG</span>
                   </div>
                   <div className="text-left hidden md:block">
-                    <div className="text-sm fis-body-bold text-white">BGoyette</div>
+                    <div className={`fis-body-bold text-white ${density === 'compact' ? 'text-xs' : 'text-sm'}`}>BGoyette</div>
                     <div className="text-xs fis-body-regular text-white/80 hidden-compact">Firm 9990</div>
                   </div>
                 </div>
-                <ChevronDown size={14} className="text-[#50FF48]" />
+                <ChevronDown size={density === 'compact' ? 12 : 14} className="text-[#50FF48]" />
               </Button>
               
               {showUserMenu && (
