@@ -1416,12 +1416,12 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                 <div className="p-2">
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
                 {/* Need Support Borrowing */}
-                <div className="bg-white rounded-md shadow border border-gray-200 p-2">
+                <div className="bg-white rounded-md shadow border border-gray-200 p-2 hover:shadow-md transition-all duration-200">
                   <div className="flex items-center space-x-2 mb-1">
-                    <DollarSign className="w-3 h-3 text-purple-600" />
+                    <DollarSign className="w-3 h-3 text-[#1B1B6F]" />
                     <div className="flex-1 min-w-0">
                       <div className="text-xs font-semibold text-gray-900">Need Support Borrowing</div>
-                      <div className="text-lg font-bold text-purple-600 leading-none">
+                      <div className="text-lg font-bold text-[#1B1B6F] leading-none">
                         {advancedMetrics.borrowingCosts.counterpartyBreakdown.reduce((sum, cp) => sum + cp.borrowCount, 0)}
                       </div>
                     </div>
@@ -1437,13 +1437,13 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                         {formatCurrency(advancedMetrics.borrowingCosts.counterpartyBreakdown.reduce((sum, cp) => sum + cp.totalBorrowAmount, 0) / 1000000).replace('$', '')}M
                       </span>
                     </div>
-                    <div className="flex justify-between bg-purple-50 px-1.5 py-0.5 rounded">
+                    <div className="flex justify-between bg-[#1B1B6F]/10 px-1.5 py-0.5 rounded">
                       <span>WAR Rate</span>
-                      <span className="font-semibold text-purple-600">{advancedMetrics.borrowingCosts.averageRate.toFixed(2)}%</span>
+                      <span className="font-semibold text-[#1B1B6F]">{advancedMetrics.borrowingCosts.averageRate.toFixed(2)}%</span>
                     </div>
-                    <div className="flex justify-between bg-green-50 px-1.5 py-0.5 rounded">
+                    <div className="flex justify-between bg-[#00a651]/10 px-1.5 py-0.5 rounded">
                       <span>Daily Cost</span>
-                      <span className="font-semibold text-green-600">
+                      <span className="font-semibold text-[#00a651]">
                         {formatCurrency(advancedMetrics.borrowingCosts.counterpartyBreakdown.reduce((sum, cp) => sum + cp.dailyCost, 0) / 1000).replace('$', '')}K
                       </span>
                     </div>
@@ -1451,12 +1451,12 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                 </div>
 
                 {/* Auto-Borrow Statistics */}
-                <div className="bg-white rounded-md shadow border border-gray-200 p-2">
+                <div className="bg-white rounded-md shadow border border-gray-200 p-2 hover:shadow-md transition-all duration-200">
                   <div className="flex items-center space-x-2 mb-1">
-                    <Activity className="w-3 h-3 text-green-600" />
+                    <Activity className="w-3 h-3 text-[#00a651]" />
                     <div className="flex-1 min-w-0">
                       <div className="text-xs font-semibold text-gray-900">Auto-Borrow Statistics</div>
-                      <div className="text-lg font-bold text-green-600 leading-none">
+                      <div className="text-lg font-bold text-[#00a651] leading-none">
                         {Math.floor(advancedMetrics.operationalEfficiency.automationRate * 2.5)}
                       </div>
                     </div>
@@ -1466,9 +1466,9 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                     </div>
                   </div>
                   <div className="space-y-0.5 text-xs">
-                    <div className="flex justify-between bg-green-50 px-1.5 py-0.5 rounded">
+                    <div className="flex justify-between bg-[#00a651]/10 px-1.5 py-0.5 rounded">
                       <span>Successful</span>
-                      <span className="font-semibold text-green-600">{Math.floor(advancedMetrics.operationalEfficiency.automationRate * 2.5 * 0.92)}</span>
+                      <span className="font-semibold text-[#00a651]">{Math.floor(advancedMetrics.operationalEfficiency.automationRate * 2.5 * 0.92)}</span>
                     </div>
                     <div className="flex justify-between bg-red-50 px-1.5 py-0.5 rounded">
                       <span>Not Filled</span>
@@ -1482,12 +1482,12 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                 </div>
 
                 {/* Securities */}
-                <div className="bg-white rounded-md shadow border border-gray-200 p-2">
+                <div className="bg-white rounded-md shadow border border-gray-200 p-2 hover:shadow-md transition-all duration-200">
                   <div className="flex items-center space-x-2 mb-1">
-                    <BarChart3 className="w-3 h-3 text-blue-600" />
+                    <BarChart3 className="w-3 h-3 text-[#015B7E]" />
                     <div className="flex-1 min-w-0">
                       <div className="text-xs font-semibold text-gray-900">Securities</div>
-                      <div className="text-lg font-bold text-blue-600 leading-none">
+                      <div className="text-lg font-bold text-[#015B7E] leading-none">
                         {securityNeeds.filter(need => need.remainingQuantity > 0).length}
                       </div>
                     </div>
@@ -1499,7 +1499,7 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                   <div className="grid grid-cols-2 gap-1 text-xs">
                     <div className="bg-gray-50 px-1.5 py-1 rounded text-center">
                       <div className="text-gray-500">Cured</div>
-                      <div className="font-semibold text-green-600">{securityNeeds.filter(need => need.remainingQuantity === 0).length}</div>
+                      <div className="font-semibold text-[#00a651]">{securityNeeds.filter(need => need.remainingQuantity === 0).length}</div>
                     </div>
                     <div className="bg-gray-50 px-1.5 py-1 rounded text-center">
                       <div className="text-gray-500">Remain</div>
@@ -1509,12 +1509,12 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                 </div>
 
                 {/* Regulatory Needs */}
-                <div className="bg-white rounded-md shadow border border-gray-200 p-2">
+                <div className="bg-white rounded-md shadow border border-gray-200 p-2 hover:shadow-md transition-all duration-200">
                   <div className="flex items-center space-x-2 mb-1">
-                    <AlertTriangle className="w-3 h-3 text-orange-600" />
+                    <AlertTriangle className="w-3 h-3 text-[#285BC5]" />
                     <div className="flex-1 min-w-0">
                       <div className="text-xs font-semibold text-gray-900">Regulatory Needs</div>
-                      <div className="text-lg font-bold text-orange-600 leading-none">
+                      <div className="text-lg font-bold text-[#285BC5] leading-none">
                         {formatNumber(
                           securityNeeds
                             .filter(need => need.agingDays > 3 && need.needReasons.deficit)

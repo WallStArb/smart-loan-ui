@@ -273,18 +273,18 @@ const ParametersPage: React.FC = () => {
         <div className="space-y-4">
           
           {/* Regulatory Components */}
-          <Card className="border-0 shadow-sm bg-white">
-            <CardHeader className="pb-3 border-b bg-critical-muted/50">
+          <Card className="border-0 shadow-sm bg-white hover:shadow-md transition-all duration-200">
+            <CardHeader className="pb-3 border-b bg-[#015B7E]/5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <div className="w-6 h-6 bg-critical-muted rounded-md flex items-center justify-center">
-                    <AlertTriangle className="w-3 h-3 text-critical" />
+                  <div className="w-6 h-6 bg-[#015B7E]/10 rounded-md flex items-center justify-center">
+                    <AlertTriangle className="w-3 h-3 text-[#015B7E]" />
                   </div>
                   <CardTitle className="text-xs font-semibold uppercase tracking-wide text-gray-800">
                     Regulatory Components
                   </CardTitle>
                 </div>
-                <Badge variant="destructive" className="text-xs font-medium px-2 py-0.5">
+                <Badge className="bg-[#015B7E] text-white text-xs font-medium px-2 py-0.5">
                   Mandatory
                 </Badge>
               </div>
@@ -321,8 +321,8 @@ const ParametersPage: React.FC = () => {
                   index !== 3 && "border-b border-gray-100"
                 )}>
                   <div className="flex items-center space-x-2 text-left">
-                    <div className="w-4 h-4 bg-success-muted border border-success rounded-sm flex items-center justify-center">
-                      <Check className="w-2.5 h-2.5 text-success" />
+                    <div className="w-4 h-4 bg-[#00a651]/10 border border-[#00a651] rounded-sm flex items-center justify-center">
+                      <Check className="w-2.5 h-2.5 text-[#00a651]" />
                     </div>
                     <span className="text-sm font-medium text-gray-900 text-left">{item.label}</span>
                   </div>
@@ -333,7 +333,7 @@ const ParametersPage: React.FC = () => {
                         {item.priority}
                       </Badge>
                     </div>
-                    <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs px-2 py-0.5">
+                    <Badge variant="secondary" className="bg-[#00a651]/10 text-[#00a651] border-[#00a651]/20 text-xs px-2 py-0.5">
                       Active
                     </Badge>
                   </div>
@@ -343,18 +343,18 @@ const ParametersPage: React.FC = () => {
           </Card>
 
           {/* Special Conditions */}
-          <Card className="border-0 shadow-sm bg-white">
-            <CardHeader className="pb-3 border-b bg-amber-50/50">
+          <Card className="border-0 shadow-sm bg-white hover:shadow-md transition-all duration-200">
+            <CardHeader className="pb-3 border-b bg-[#285BC5]/5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <div className="w-6 h-6 bg-amber-100 rounded-md flex items-center justify-center">
-                    <AlertTriangle className="w-3 h-3 text-amber-600" />
+                  <div className="w-6 h-6 bg-[#285BC5]/10 rounded-md flex items-center justify-center">
+                    <AlertTriangle className="w-3 h-3 text-[#285BC5]" />
                   </div>
                   <CardTitle className="text-xs font-semibold uppercase tracking-wide text-gray-800">
                     Special Conditions
                   </CardTitle>
                 </div>
-                <Badge className="bg-amber-600 text-white text-xs font-medium px-2 py-0.5">
+                <Badge className="bg-[#285BC5] text-white text-xs font-medium px-2 py-0.5">
                   Override Rules
                 </Badge>
               </div>
@@ -388,18 +388,18 @@ const ParametersPage: React.FC = () => {
 
         {/* Right Column - Business Components */}
         <div className="space-y-4">
-          <Card className="border-0 shadow-sm bg-white">
-            <CardHeader className="pb-3 border-b bg-blue-50/50">
+          <Card className="border-0 shadow-sm bg-white hover:shadow-md transition-all duration-200">
+            <CardHeader className="pb-3 border-b bg-[#00a651]/5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <div className="w-6 h-6 bg-blue-100 rounded-md flex items-center justify-center">
-                    <Settings className="w-3 h-3 text-blue-600" />
+                  <div className="w-6 h-6 bg-[#00a651]/10 rounded-md flex items-center justify-center">
+                    <Settings className="w-3 h-3 text-[#00a651]" />
                   </div>
                   <CardTitle className="text-xs font-semibold uppercase tracking-wide text-gray-800">
                     Business Components
                   </CardTitle>
                 </div>
-                <Badge className="bg-blue-600 text-white text-xs font-medium px-2 py-0.5">
+                <Badge className="bg-[#00a651] text-white text-xs font-medium px-2 py-0.5">
                   Configurable
                 </Badge>
               </div>
@@ -415,10 +415,10 @@ const ParametersPage: React.FC = () => {
                     />
                     <span className="text-sm font-medium">Regulatory Deficits</span>
                   </div>
-                  <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs px-2 py-0.5">
-                    Active
-                  </Badge>
-                </div>
+                                      <Badge variant="secondary" className="bg-[#00a651]/10 text-[#00a651] border-[#00a651]/20 text-xs px-2 py-0.5">
+                      Active
+                    </Badge>
+                  </div>
 
                 <Separator />
 
@@ -574,18 +574,18 @@ const ParametersPage: React.FC = () => {
           </Card>
 
           {/* Reduction Methods */}
-          <Card className="border-0 shadow-sm bg-white">
-            <CardHeader className="pb-3 border-b bg-purple-50/50">
+          <Card className="border-0 shadow-sm bg-white hover:shadow-md transition-all duration-200">
+            <CardHeader className="pb-3 border-b bg-[#1B1B6F]/5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <div className="w-6 h-6 bg-purple-100 rounded-md flex items-center justify-center">
-                    <Settings2 className="w-3 h-3 text-purple-600" />
+                  <div className="w-6 h-6 bg-[#1B1B6F]/10 rounded-md flex items-center justify-center">
+                    <Settings2 className="w-3 h-3 text-[#1B1B6F]" />
                   </div>
                   <CardTitle className="text-xs font-semibold uppercase tracking-wide text-gray-800">
                     Reduction Methods
                   </CardTitle>
                 </div>
-                <Badge className="bg-purple-600 text-white text-xs font-medium px-2 py-0.5">
+                <Badge className="bg-[#1B1B6F] text-white text-xs font-medium px-2 py-0.5">
                   Processing Rules
                 </Badge>
               </div>
@@ -726,12 +726,12 @@ const ParametersPage: React.FC = () => {
 
       {/* Change Audit */}
       <div className="max-w-7xl mx-auto mt-8">
-        <Card className="border-0 shadow-sm bg-white">
+        <Card className="border-0 shadow-sm bg-white hover:shadow-md transition-all duration-200">
           <CardHeader className="pb-4 border-b bg-gray-50/50">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <History className="w-4 h-4 text-blue-600" />
+                <div className="w-8 h-8 bg-[#015B7E]/10 rounded-lg flex items-center justify-center">
+                  <History className="w-4 h-4 text-[#015B7E]" />
                 </div>
                 <CardTitle className="text-sm font-semibold uppercase tracking-wide text-gray-800">
                   Component Change Audit
