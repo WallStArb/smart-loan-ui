@@ -70,13 +70,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activePage, setAct
 
   return (
     <div className={cn(
-      "bg-[#012834] text-white flex flex-col border-r border-slate-800/50 shadow-2xl",
+      "bg-gradient-to-b from-[#015B7E] via-[#015B7E] to-[#50FF48] text-white flex flex-col border-r border-slate-800/50 shadow-2xl",
       "transition-all duration-300 ease-in-out z-30",
       isOpen ? "w-64" : "w-20"
     )}>
       {/* Header */}
       <div className={cn(
-        "flex items-center h-16 px-4 border-b border-white/20 bg-black/20 backdrop-blur-sm",
+        "flex items-center h-16 px-4 border-b border-white/20 bg-black/10 backdrop-blur-sm",
         isOpen ? "justify-between" : "justify-center"
       )}>
         {isOpen ? (

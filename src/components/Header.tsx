@@ -4,14 +4,15 @@ import {
   BarChart2, 
   Briefcase, 
   FileText, 
-  Bell, 
+  AlertTriangle, 
   ChevronDown,
   Clock,
-  Grid,
+  Grid3X3,
   User,
   Settings,
   Shield,
-  LogOut
+  LogOut,
+  Zap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -40,7 +41,7 @@ const Header: React.FC = () => {
   });
 
   return (
-    <header className="bg-gradient-to-r from-[#015B7E] via-[#015B7E] to-[#50FF48] text-white shadow-2xl border-b border-slate-700/50 z-20">
+    <header className="bg-[#012834] text-white shadow-2xl border-b border-slate-700/50 z-20">
       <div className="container mx-auto px-6">
         <div className="flex justify-between items-center py-4">
           
@@ -66,7 +67,7 @@ const Header: React.FC = () => {
                 onClick={() => setShowToolsMenu(!showToolsMenu)}
                 className="flex items-center space-x-2 text-slate-300 hover:text-white hover:bg-slate-800/60 border border-slate-700/30 hover:border-slate-600/50 transition-all duration-200"
               >
-                <Grid size={16} />
+                <Grid3X3 size={16} />
                 <span className="fis-body-semibold">Quick Tools</span>
                 <ChevronDown size={14} />
               </Button>
@@ -76,20 +77,20 @@ const Header: React.FC = () => {
                   <CardContent className="p-2">
                     <div className="space-y-1">
                       <Button variant="ghost" className="w-full justify-start h-auto p-3 text-slate-700 hover:bg-slate-100">
-                        <BarChart2 size={16} className="text-blue-500 mr-3" />
+                        <BarChart2 size={16} className="text-[#015B7E] mr-3" />
                         <span>Analytical Reports</span>
                       </Button>
                       <Button variant="ghost" className="w-full justify-start h-auto p-3 text-slate-700 hover:bg-slate-100">
-                        <Briefcase size={16} className="text-emerald-500 mr-3" />
+                        <Zap size={16} className="text-[#00a651] mr-3" />
                         <span>Borrow/Loan</span>
                       </Button>
                       <Button variant="ghost" className="w-full justify-start h-auto p-3 text-slate-700 hover:bg-slate-100">
-                        <FileText size={16} className="text-purple-500 mr-3" />
+                        <FileText size={16} className="text-[#285BC5] mr-3" />
                         <span>Scratchpad</span>
                       </Button>
                       <Separator className="my-2" />
                       <Button variant="ghost" className="w-full justify-start h-auto p-3 text-slate-700 hover:bg-slate-100">
-                        <HelpCircle size={16} className="text-orange-500 mr-3" />
+                        <HelpCircle size={16} className="text-[#1B1B6F] mr-3" />
                         <span>Help & Support</span>
                       </Button>
                     </div>
@@ -103,10 +104,10 @@ const Header: React.FC = () => {
           <div className="flex items-center space-x-4">
             
             {/* Current Time */}
-            <Card className="hidden md:block bg-white/20 border-[#012834]/30 backdrop-blur-sm">
+            <Card className="hidden md:block bg-white/20 border-white/30 backdrop-blur-sm">
               <CardContent className="p-3">
-                <div className="flex items-center space-x-2 text-[#012834]">
-                  <Clock size={14} className="text-[#012834]" />
+                <div className="flex items-center space-x-2 text-white">
+                  <Clock size={14} className="text-white" />
                   <span className="text-sm fis-body-semibold">{currentTime}</span>
                 </div>
               </CardContent>
@@ -117,10 +118,10 @@ const Header: React.FC = () => {
               <Button
                 variant="ghost"
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="relative p-3 text-[#012834] hover:text-[#012834] hover:bg-white/20 border border-[#012834]/30 hover:border-[#012834]/50 transition-all duration-200 bg-white/10 backdrop-blur-sm"
+                className="relative p-3 text-white hover:text-white hover:bg-white/20 border border-white/30 hover:border-white/50 transition-all duration-200 bg-white/10 backdrop-blur-sm"
               >
-                <Bell size={18} />
-                <Badge className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs p-0 flex items-center justify-center rounded-full border-2 border-white">
+                <AlertTriangle size={18} />
+                <Badge className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-[#50FF48] to-[#00a651] text-[#012834] text-xs p-0 flex items-center justify-center rounded-full border-2 border-white font-bold shadow-lg">
                   3
                 </Badge>
               </Button>
@@ -169,18 +170,18 @@ const Header: React.FC = () => {
               <Button
                 variant="ghost"
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center space-x-3 p-3 text-[#012834] hover:text-[#012834] hover:bg-white/20 border border-[#012834]/30 hover:border-[#012834]/50 transition-all duration-200 bg-white/10 backdrop-blur-sm"
+                className="flex items-center space-x-3 p-3 text-white hover:text-white hover:bg-white/20 border border-white/30 hover:border-white/50 transition-all duration-200 bg-white/10 backdrop-blur-sm"
               >
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-br from-[#012834] to-[#012834]/80 rounded-full flex items-center justify-center shadow-lg">
+                  <div className="w-8 h-8 bg-gradient-to-br from-[#00a651] to-[#008A44] rounded-full flex items-center justify-center shadow-lg">
                     <span className="text-sm font-bold text-white">BG</span>
                   </div>
                   <div className="text-left hidden md:block">
-                    <div className="text-sm fis-body-bold text-[#012834]">BGoyette</div>
-                    <div className="text-xs fis-body-regular text-[#012834]/70">Firm 9990</div>
+                    <div className="text-sm fis-body-bold text-white">BGoyette</div>
+                    <div className="text-xs fis-body-regular text-white/80">Firm 9990</div>
                   </div>
                 </div>
-                <ChevronDown size={14} className="text-[#015B7E]" />
+                <ChevronDown size={14} className="text-[#50FF48]" />
               </Button>
               
               {showUserMenu && (
@@ -219,7 +220,7 @@ const Header: React.FC = () => {
                     
                     <Separator />
                     <div className="py-2">
-                      <Button variant="ghost" className="w-full justify-start h-auto p-3 text-red-600 hover:bg-red-50 hover:text-red-700">
+                      <Button variant="ghost" className="w-full justify-start h-auto p-3 text-[#012834] hover:bg-[#012834]/10 hover:text-[#011E28]">
                         <LogOut size={16} className="mr-3" />
                         <span>Log Out</span>
                       </Button>
