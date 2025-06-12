@@ -103,10 +103,10 @@ const Header: React.FC = () => {
           <div className="flex items-center space-x-4">
             
             {/* Current Time */}
-            <Card className="hidden md:block bg-white/20 border-[#015B7E]/30 backdrop-blur-sm">
+            <Card className="hidden md:block bg-white/20 border-[#012834]/30 backdrop-blur-sm">
               <CardContent className="p-3">
-                <div className="flex items-center space-x-2 text-[#015B7E]">
-                  <Clock size={14} className="text-[#015B7E]" />
+                <div className="flex items-center space-x-2 text-[#012834]">
+                  <Clock size={14} className="text-[#012834]" />
                   <span className="text-sm fis-body-semibold">{currentTime}</span>
                 </div>
               </CardContent>
@@ -117,7 +117,7 @@ const Header: React.FC = () => {
               <Button
                 variant="ghost"
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="relative p-3 text-[#015B7E] hover:text-[#015B7E] hover:bg-white/20 border border-[#015B7E]/30 hover:border-[#015B7E]/50 transition-all duration-200 bg-white/10 backdrop-blur-sm"
+                className="relative p-3 text-[#012834] hover:text-[#012834] hover:bg-white/20 border border-[#012834]/30 hover:border-[#012834]/50 transition-all duration-200 bg-white/10 backdrop-blur-sm"
               >
                 <Bell size={18} />
                 <Badge className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs p-0 flex items-center justify-center rounded-full border-2 border-white">
@@ -169,15 +169,15 @@ const Header: React.FC = () => {
               <Button
                 variant="ghost"
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center space-x-3 p-3 text-[#015B7E] hover:text-[#015B7E] hover:bg-white/20 border border-[#015B7E]/30 hover:border-[#015B7E]/50 transition-all duration-200 bg-white/10 backdrop-blur-sm"
+                className="flex items-center space-x-3 p-3 text-[#012834] hover:text-[#012834] hover:bg-white/20 border border-[#012834]/30 hover:border-[#012834]/50 transition-all duration-200 bg-white/10 backdrop-blur-sm"
               >
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-br from-[#015B7E] to-blue-800 rounded-full flex items-center justify-center shadow-lg">
+                  <div className="w-8 h-8 bg-gradient-to-br from-[#012834] to-[#012834]/80 rounded-full flex items-center justify-center shadow-lg">
                     <span className="text-sm font-bold text-white">BG</span>
                   </div>
                   <div className="text-left hidden md:block">
-                    <div className="text-sm fis-body-bold text-[#015B7E]">BGoyette</div>
-                    <div className="text-xs fis-body-regular text-[#015B7E]/70">Firm 9990</div>
+                    <div className="text-sm fis-body-bold text-[#012834]">BGoyette</div>
+                    <div className="text-xs fis-body-regular text-[#012834]/70">Firm 9990</div>
                   </div>
                 </div>
                 <ChevronDown size={14} className="text-[#015B7E]" />

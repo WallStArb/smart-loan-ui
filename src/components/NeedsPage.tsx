@@ -752,18 +752,16 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
 
   return (
     <div className="fis-page-gradient p-6">
-        {/* Modern Header with Gradient */}
+        {/* Modern Header */}
         <div className="max-w-7xl mx-auto mb-6">
-          <div className="fis-header-gradient p-4 rounded-lg shadow-lg">
+          <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center space-x-4">
-              <FISLogo variant="icon" size="sm" />
+              <div className="w-10 h-10 bg-gradient-to-br from-[#012834] to-[#012834]/80 rounded-lg flex items-center justify-center shadow-sm">
+                <TrendingUp className="w-5 h-5 text-white" />
+              </div>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">Needs Management <span className="text-sm font-normal text-gray-600">- Monitor and manage securities borrowing needs</span></h1>
-                {/* FIS Balance Line Indicator */}
-                <div className="flex items-center space-x-2 mt-1">
-                  <div className="fis-balance-line w-8"></div>
-                  <span className="text-xs text-gray-500">FIS Securities Lending Platform</span>
-                </div>
+                <h1 className="text-lg font-semibold text-gray-900">Needs Management</h1>
+                <p className="text-sm text-gray-600">Monitor and manage securities borrowing needs</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
@@ -776,7 +774,7 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                 variant="outline" 
                 size="sm" 
                 onClick={() => onNavigateToParameters?.()}
-                className="fis-button-primary h-9 px-4 border-0"
+                className="h-9 px-4"
               >
                 <Settings className="w-4 h-4 mr-2" />
                 Parameters

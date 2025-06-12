@@ -356,11 +356,11 @@ const CollateralManager = () => {
         <div className="max-w-7xl mx-auto mb-6">
           <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-sm">
+              <div className="w-10 h-10 bg-gradient-to-br from-[#012834] to-[#012834]/80 rounded-lg flex items-center justify-center shadow-sm">
                 <Shield className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">Collateral Management</h1>
+                <h1 className="text-lg font-semibold text-gray-900">Collateral Management</h1>
                 <p className="text-sm text-gray-600">Manage and monitor collateral positions across all accounts</p>
               </div>
             </div>
