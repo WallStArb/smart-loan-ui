@@ -1,21 +1,34 @@
 import React, { useState, useEffect } from 'react'
 import { 
+  ChevronDown, 
+  ChevronUp, 
   Search, 
+  Filter, 
+  AlertTriangle, 
   TrendingUp, 
   TrendingDown, 
-  AlertTriangle, 
-  Clock, 
-  Settings, 
-  ChevronDown,
-  RefreshCw,
-  DollarSign,
-  Activity,
-  Shield,
+  DollarSign, 
+  Calendar,
+  Clock,
+  Target,
   BarChart3,
+  Activity,
+  RefreshCw,
+  CheckCircle2,
+  XCircle,
+  Minus,
+  Plus,
+  Eye,
+  EyeOff,
+  Download,
+  Upload,
+  ArrowUp,
+  ArrowDown,
+  AlertCircle,
+  Settings,
+  Shield,
   Building,
   Users,
-  Filter,
-  Download,
   FileText
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -24,6 +37,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Tooltip } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
+import FISLogo from '@/components/ui/fis-logo'
 
 // Mock data types
 interface SecurityNeed {
@@ -648,11 +662,16 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'Critical': return 'bg-critical-muted text-critical'
-      case 'High': return 'bg-status-high-muted text-status-high'
-      case 'Medium': return 'bg-status-medium-muted text-status-medium'
-      case 'Low': return 'bg-status-low-muted text-status-low'
-      default: return 'bg-muted text-muted-foreground'
+      case 'Critical':
+        return 'fis-critical-gradient text-red-800 border-red-200'
+      case 'High':
+        return 'fis-high-gradient text-orange-800 border-orange-200'
+      case 'Medium':
+        return 'bg-yellow-50 text-yellow-800 border-yellow-200'
+      case 'Low':
+        return 'bg-blue-50 text-blue-800 border-blue-200'
+      default:
+        return 'bg-gray-50 text-gray-800 border-gray-200'
     }
   }
 
@@ -732,37 +751,38 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
   if (!metrics) return <div>Loading...</div>
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white p-6">
-        {/* Modern Header */}
+    <div className="fis-page-gradient p-6">
+        {/* Modern Header with Gradient */}
         <div className="max-w-7xl mx-auto mb-6">
-          <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="fis-header-gradient p-4 rounded-lg shadow-lg">
             <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-fis-green to-fis-green-dark rounded-lg flex items-center justify-center shadow-sm">
-                <TrendingUp className="w-5 h-5 text-white" />
-              </div>
+              <FISLogo variant="icon" size="sm" />
               <div>
                 <h1 className="text-xl font-semibold text-gray-900">Needs Management <span className="text-sm font-normal text-gray-600">- Monitor and manage securities borrowing needs</span></h1>
+                {/* FIS Balance Line Indicator */}
+                <div className="flex items-center space-x-2 mt-1">
+                  <div className="fis-balance-line w-8"></div>
+                  <span className="text-xs text-gray-500">FIS Securities Lending Platform</span>
+                </div>
               </div>
             </div>
             <div className="flex items-center space-x-3">
-              <Badge variant="secondary" className="bg-success-muted text-success border-success px-3 py-1">
+              <Badge variant="secondary" className="bg-fis-green-50 text-fis-green border-fis-green px-3 py-1">
                 <Clock className="w-4 h-4 mr-1.5" />
                 Updated: {lastUpdate.toLocaleTimeString()}
               </Badge>
-              <div className="w-2 h-2 bg-success rounded-full animate-pulse"></div>
+              <div className="w-2 h-2 bg-fis-green rounded-full animate-pulse"></div>
               <Button 
                 variant="outline" 
                 size="sm" 
                 onClick={() => onNavigateToParameters?.()}
-                className="h-9 px-4"
+                className="fis-button-primary h-9 px-4 border-0"
               >
                 <Settings className="w-4 h-4 mr-2" />
                 Parameters
               </Button>
             </div>
           </div>
-
-
         </div>
 
         <div className="max-w-7xl mx-auto">{/* Main Dashboard */}
@@ -772,8 +792,8 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
 
 
           {/* Need Types Breakdown - Compact with Progress */}
-          <div className="bg-white rounded-md shadow border border-gray-200 mb-3">
-            <div className="px-3 py-1.5 border-b border-gray-200 bg-gray-50 rounded-t-md">
+          <div className="fis-dashboard-section rounded-md shadow-lg mb-3">
+            <div className="px-3 py-1.5 border-b border-gray-200 fis-table-header rounded-t-md">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-semibold text-gray-900">Securities by Need Type</h3>
                 <button
@@ -1231,54 +1251,59 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
 
           {/* Ultra-Compact Progress and Priority */}
           <div className="bg-white rounded-md shadow border border-gray-200 mb-3">
-            <div className="px-3 py-1.5 border-b border-gray-200 bg-gray-50 rounded-t-md">
+            <div className="px-3 py-1 border-b border-gray-200 bg-gray-50 rounded-t-md">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-semibold text-gray-900">Progress & Priority Overview</h3>
-                <button
-                  onClick={() => toggleSectionCollapse('progressPriority')}
-                  className="p-1 hover:bg-gray-100 rounded transition-colors"
-                  title={collapsedSections.has('progressPriority') ? 'Expand section' : 'Collapse section'}
-                >
-                  {collapsedSections.has('progressPriority') ? (
-                    <ChevronDown className="w-4 h-4 text-gray-500" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4 text-gray-500" />
-                  )}
-                </button>
+                <h3 className="text-xs font-semibold text-gray-900">Daily Progress & Priority Distribution</h3>
+                <div className="flex items-center space-x-2">
+                  {/* FIS Balance Line Indicator */}
+                  <div className="flex items-center space-x-1">
+                    <div className="w-4 h-0.5 bg-gradient-to-r from-fis-green to-gray-300"></div>
+                    <span className="text-xs text-gray-500">Live</span>
+                    <div className="w-1.5 h-1.5 bg-fis-green rounded-full animate-pulse"></div>
+                  </div>
+                  <button
+                    onClick={() => toggleSectionCollapse('progress')}
+                    className="p-1 hover:bg-gray-100 rounded transition-colors"
+                    title={collapsedSections.has('progress') ? 'Expand section' : 'Collapse section'}
+                  >
+                    {collapsedSections.has('progress') ? (
+                      <ChevronDown className="w-4 h-4 text-gray-500" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-gray-500" />
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
-            {!collapsedSections.has('progressPriority') && (
+            {!collapsedSections.has('progress') && (
               <div className="p-2">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
             {/* Daily Progress */}
-            <div className="bg-white rounded-md shadow border border-gray-200 p-2">
-              <div className="flex items-center space-x-2 mb-1">
-                <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
+            <div className="fis-metric-gradient rounded-md shadow-sm border border-gray-100 p-2">
+              <div className="flex items-center space-x-2 mb-1">      
+                <div className="w-3 h-3 bg-fis-green rounded-full shadow-sm"></div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-xs font-semibold text-gray-900">Progress</div>
-                  <div className="text-lg font-bold text-blue-600 leading-none">
+                  <div className="text-xs font-semibold text-gray-900">Daily Progress</div>
+                  <div className="text-lg font-bold text-fis-green leading-none">
                     {Math.round((metrics.dailyProgress.completed / metrics.dailyProgress.target) * 100)}%
                   </div>
                 </div>
                 <div className="text-right text-xs">
                   <div className="text-gray-500">Target</div>
-                  <div className="font-semibold">{formatNumber(metrics.dailyProgress.target / 1000)}K</div>
+                  <div className="font-semibold">{metrics.dailyProgress.target}</div>
                 </div>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-1.5 mb-1">
-                <div 
-                  className="bg-blue-600 h-1.5 rounded-full transition-all duration-500"
-                  style={{ width: `${(metrics.dailyProgress.completed / metrics.dailyProgress.target) * 100}%` }}
-                ></div>
-              </div>
-              <div className="grid grid-cols-2 gap-1 text-xs">
-                <div className="bg-gray-50 px-1.5 py-1 rounded text-center">
-                  <div className="text-gray-500">Done</div>
-                  <div className="font-semibold text-green-600">{formatNumber(metrics.dailyProgress.completed / 1000)}K</div>
+              {/* FIS Balance Line Progress Bar */}
+              <div className="relative">
+                <div className="w-full bg-gray-200 rounded-full h-1.5 mb-1">
+                  <div 
+                    className="fis-progress-gradient h-1.5 rounded-full transition-all duration-300"
+                    style={{ width: `${Math.min((metrics.dailyProgress.completed / metrics.dailyProgress.target) * 100, 100)}%` }}
+                  ></div>
                 </div>
-                <div className="bg-gray-50 px-1.5 py-1 rounded text-center">
-                  <div className="text-gray-500">Left</div>
-                  <div className="font-semibold text-orange-600">{formatNumber(metrics.dailyProgress.remaining / 1000)}K</div>
+                <div className="flex justify-between text-xs text-gray-600">
+                  <span>{metrics.dailyProgress.completed} completed</span>
+                  <span>{metrics.dailyProgress.remaining} remaining</span>
                 </div>
               </div>
             </div>
@@ -1356,10 +1381,10 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                 </div>
               </div>
             </div>
-                </div>
-              </div>
-            )}
           </div>
+        </div>
+      )}
+    </div>
 
           {/* Ultra-Compact Advanced Analytics - Collapsible */}
           {advancedMetrics && (
@@ -1717,7 +1742,7 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                           {selectedSecurities.size} selected
                         </span>
                         <button 
-                          className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-white bg-fis-blue rounded-lg hover:bg-blue-700 transition-colors"
+                          className="fis-button-primary flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-lg"
                           onClick={() => {
                             const selectedNeeds = filteredAndSortedNeeds.filter(need => selectedSecurities.has(need.id))
                             handleBulkAction('borrow', selectedNeeds)
@@ -1727,7 +1752,7 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                           <span>Borrow ({selectedSecurities.size})</span>
                         </button>
                         <button 
-                          className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-white bg-fis-orange rounded-lg hover:bg-orange-600 transition-colors"
+                          className="fis-button-secondary flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-lg"
                           onClick={() => {
                             const selectedNeeds = filteredAndSortedNeeds.filter(need => selectedSecurities.has(need.id))
                             handleBulkAction('recall', selectedNeeds)
@@ -1790,7 +1815,7 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
             {/* Enhanced Table */}
             <div className="overflow-x-auto">
               <table className="min-w-full">
-                <thead className="bg-gray-50">
+                <thead className="fis-table-header">
                   <tr>
                     <th className="px-2 py-0.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-8">
                       <input
@@ -1803,7 +1828,7 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                             clearSelection()
                           }
                         }}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className="rounded border-gray-300 text-fis-green focus:ring-fis-green"
                       />
                     </th>
                     <th className="px-2 py-0.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-8">
@@ -1924,9 +1949,12 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                               <span className="font-semibold text-gray-900 text-sm">{need.ticker}</span>
                               <span className="text-xs text-gray-500">{need.cusip}</span>
                               {need.is204CNS && (
-                                <Badge className="bg-red-600 text-white text-xs px-2 py-0.5 font-bold animate-pulse">
-                                  🚨 204
-                                </Badge>
+                                <div className="relative">
+                                  <span className="badge-204 animate-bounce-alert">
+                                    204
+                                  </span>
+                                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                                </div>
                               )}
                               {need.isRegulatory && (
                                 <Badge className="bg-red-100 text-red-800 text-xs px-1.5 py-0">REG</Badge>

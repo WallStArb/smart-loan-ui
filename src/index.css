@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,97 +15,307 @@ body,
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: 'Source Sans Pro', Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* FIS Typography Classes */
+.fis-headline {
+  font-family: 'Clan Ultra', 'Arial Black', Arial, sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.fis-subhead {
+  font-family: 'Clan Ultra', 'Arial Black', Arial, sans-serif;
+  font-weight: 900;
+  text-transform: none;
+  letter-spacing: 0.015em;
+}
+
+.fis-body {
+  font-family: 'Source Sans Pro', Arial, sans-serif;
+}
+
+.fis-body-light {
+  font-family: 'Source Sans Pro', Arial, sans-serif;
+  font-weight: 300;
+}
+
+.fis-body-regular {
+  font-family: 'Source Sans Pro', Arial, sans-serif;
+  font-weight: 400;
+}
+
+.fis-body-semibold {
+  font-family: 'Source Sans Pro', Arial, sans-serif;
+  font-weight: 600;
+}
+
+.fis-body-bold {
+  font-family: 'Source Sans Pro', Arial, sans-serif;
+  font-weight: 700;
+}
+
 @layer base {
   :root {
+    /* FIS Brand Colors - Updated to use FIS Green */
+    --fis-green: 0 70% 32%; /* FIS Green #00a651 */
+    --fis-green-dark: 0 70% 25%;
+    --fis-green-light: 120 70% 40%;
+    --fis-green-muted: 120 25% 50%;
+    
+    /* Primary brand color now uses FIS Green */
+    --primary: 0 70% 32%;
+    --primary-foreground: 0 0% 100%;
+    
+    /* Enhanced critical colors for 204 CNS */
+    --critical-204: 0 84% 44%; /* Red for 204 CNS failures */
+    --critical-204-bg: 0 93% 97%;
+    
+    /* Existing color variables */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
-
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-
-    /* FIS Brand Colors */
-    --primary: 102 75% 52%; /* FIS Green #4BCD3E */
-    --primary-foreground: 0 0% 100%;
+    --muted: 210 40% 98%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 98%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 0 70% 32%; /* FIS Green for focus rings */
+    --radius: 0.5rem;
+    
+    /* Success/positive actions use FIS Green */
+    --success: 0 70% 32%;
+    --success-foreground: 0 0% 100%;
 
     --secondary: 210 40% 96%;
     --secondary-foreground: 222.2 84% 4.9%;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 102 75% 52%; /* FIS Green for focus rings */
-
-    --radius: 0.5rem;
-
-    /* FIS Brand Color System */
-    --fis-green: 102 75% 52%; /* #4BCD3E - Primary FIS Green */
-    --fis-green-dark: 102 75% 42%; /* Darker variant */
-    --fis-green-light: 102 75% 92%; /* Light background variant */
-    --fis-green-muted: 102 75% 92%; /* Muted background variant */
-    
     --fis-blue: 201 91% 52%; /* #0D97F7 - FIS Blue accent */
-    --fis-blue-dark: 201 91% 42%;
-    --fis-blue-light: 201 91% 95%;
+    --fis-blue-dark: 201 91% 42%; /* Darker variant */
+    --fis-blue-light: 201 91% 92%; /* Light background variant */
     
-    --fis-orange: 25 100% 58%; /* #FF8D00 - FIS Orange accent */
-    --fis-orange-light: 25 100% 95%;
+    --fis-orange: 24 100% 50%; /* #FF6600 - FIS Orange accent */
+    --fis-orange-light: 24 100% 92%; /* Light background variant */
     
-    --fis-purple: 258 100% 67%; /* #6B46FF - FIS Purple accent */
-    --fis-purple-light: 258 100% 95%;
+    --fis-purple: 271 91% 65%; /* #8B5CF6 - FIS Purple accent */
+    --fis-purple-light: 271 91% 92%; /* Light background variant */
 
     /* Semantic colors using FIS palette */
-    --success: 102 75% 52%; /* FIS Green */
-    --success-foreground: 0 0% 100%;
     --success-muted: 102 75% 92%;
     
-    --warning: 25 100% 58%; /* FIS Orange */
+    --warning: 24 100% 50%; /* FIS Orange */
     --warning-foreground: 0 0% 100%;
-    --warning-muted: 25 100% 95%;
+    --warning-muted: 24 100% 92%;
+    
+    --critical: 0 84% 60%; /* Red for critical alerts */
+    --critical-foreground: 0 0% 100%;
+    --critical-muted: 0 84% 92%;
     
     --info: 201 91% 52%; /* FIS Blue */
     --info-foreground: 0 0% 100%;
-    --info-muted: 201 91% 95%;
+    --info-muted: 201 91% 92%;
     
-    --critical: 0 84% 60%; /* Red for critical states */
-    --critical-foreground: 0 0% 100%;
-    --critical-muted: 0 100% 95%;
-    
-    /* Status colors using FIS palette */
-    --status-high: 0 84% 60%; /* Red for high priority */
-    --status-high-foreground: 0 0% 100%;
-    --status-high-muted: 0 100% 95%;
-    
-    --status-medium: 25 100% 58%; /* FIS Orange for medium */
-    --status-medium-foreground: 0 0% 100%;
-    --status-medium-muted: 25 100% 95%;
-    
-    --status-low: 201 91% 52%; /* FIS Blue for low priority */
-    --status-low-foreground: 0 0% 100%;
-    --status-low-muted: 201 91% 95%;
-    
-    /* Progress colors */
+    /* Progress bar colors */
     --progress-complete: 102 75% 52%; /* FIS Green */
-    --progress-partial: 25 100% 58%; /* FIS Orange */
+    --progress-partial: 24 100% 50%; /* FIS Orange */
+    --progress-critical: 0 84% 60%; /* Red */
     --progress-none: 215 20% 65%; /* Neutral gray */
   }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 0 70% 32%;
+    --primary-foreground: 0 0% 100%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 0 70% 32%;
+  }
+}
+
+/* FIS Brand Enhancement Classes with Cool Gradients */
+.fis-balance-line {
+  background: linear-gradient(90deg, 
+    var(--fis-green) 0%, 
+    var(--fis-green) 50%, 
+    #e5e7eb 50%, 
+    #e5e7eb 100%
+  );
+  height: 2px;
+}
+
+.fis-hero-gradient {
+  background: linear-gradient(135deg, 
+    hsl(var(--fis-green)) 0%, 
+    hsl(var(--fis-green-light)) 100%
+  );
+}
+
+/* Cool Page Background Gradient */
+.fis-page-gradient {
+  background: linear-gradient(135deg, 
+    #f8fafc 0%, 
+    #f1f5f9 25%,
+    #e2e8f0 50%,
+    #f8fafc 75%,
+    #ffffff 100%
+  );
+  min-height: 100vh;
+}
+
+/* Card Gradients */
+.fis-card-gradient {
+  background: linear-gradient(145deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(248, 250, 252, 0.9) 100%
+  );
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.fis-metric-gradient {
+  background: linear-gradient(145deg, 
+    rgba(0, 166, 81, 0.05) 0%, 
+    rgba(255, 255, 255, 0.95) 50%,
+    rgba(13, 151, 247, 0.05) 100%
+  );
+}
+
+/* Button Gradients */
+.fis-button-primary {
+  background: linear-gradient(135deg, 
+    hsl(var(--fis-green)) 0%, 
+    hsl(var(--fis-green-dark)) 100%
+  );
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.fis-button-primary:hover {
+  background: linear-gradient(135deg, 
+    hsl(var(--fis-green-dark)) 0%, 
+    hsl(var(--fis-green)) 100%
+  );
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px -5px rgba(0, 166, 81, 0.4);
+}
+
+.fis-button-secondary {
+  background: linear-gradient(135deg, 
+    hsl(var(--fis-blue)) 0%, 
+    hsl(var(--fis-blue-dark)) 100%
+  );
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.fis-button-secondary:hover {
+  background: linear-gradient(135deg, 
+    hsl(var(--fis-blue-dark)) 0%, 
+    hsl(var(--fis-blue)) 100%
+  );
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px -5px rgba(13, 151, 247, 0.4);
+}
+
+/* Progress Bar Gradients */
+.fis-progress-gradient {
+  background: linear-gradient(90deg, 
+    hsl(var(--fis-green)) 0%, 
+    hsl(var(--fis-green-light)) 50%,
+    hsl(var(--fis-blue)) 100%
+  );
+}
+
+/* Header Gradient */
+.fis-header-gradient {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(248, 250, 252, 0.9) 50%,
+    rgba(0, 166, 81, 0.05) 100%
+  );
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Dashboard Section Gradients */
+.fis-dashboard-section {
+  background: linear-gradient(145deg, 
+    rgba(255, 255, 255, 0.9) 0%, 
+    rgba(248, 250, 252, 0.95) 100%
+  );
+  border: 1px solid rgba(226, 232, 240, 0.5);
+}
+
+/* Table Header Gradient */
+.fis-table-header {
+  background: linear-gradient(135deg, 
+    rgba(248, 250, 252, 0.95) 0%, 
+    rgba(241, 245, 249, 0.9) 100%
+  );
+}
+
+/* Enhanced 204 CNS Critical Alerts */
+.alert-204-critical {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+}
+
+.badge-204 {
+  background: linear-gradient(45deg, #dc2626, #ef4444);
+  color: white;
+  font-weight: 700;
+  font-size: 0.625rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
+}
+
+/* Critical Priority Gradient */
+.fis-critical-gradient {
+  background: linear-gradient(135deg, 
+    rgba(220, 38, 38, 0.1) 0%, 
+    rgba(248, 113, 113, 0.05) 100%
+  );
+}
+
+/* High Priority Gradient */
+.fis-high-gradient {
+  background: linear-gradient(135deg, 
+    rgba(255, 102, 0, 0.1) 0%, 
+    rgba(255, 154, 0, 0.05) 100%
+  );
+}
+
+/* Success Actions Gradient */
+.fis-success-gradient {
+  background: linear-gradient(135deg, 
+    rgba(0, 166, 81, 0.1) 0%, 
+    rgba(74, 222, 128, 0.05) 100%
+  );
 }
 
 @layer base {

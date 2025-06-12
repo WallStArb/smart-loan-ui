@@ -42,25 +42,13 @@ export default {
         },
         /* FIS Brand Colors */
         fis: {
-          green: {
-            DEFAULT: "hsl(var(--fis-green))",
-            dark: "hsl(var(--fis-green-dark))",
-            light: "hsl(var(--fis-green-light))",
-            muted: "hsl(var(--fis-green-muted))",
-          },
-          blue: {
-            DEFAULT: "hsl(var(--fis-blue))",
-            dark: "hsl(var(--fis-blue-dark))",
-            light: "hsl(var(--fis-blue-light))",
-          },
-          orange: {
-            DEFAULT: "hsl(var(--fis-orange))",
-            light: "hsl(var(--fis-orange-light))",
-          },
-          purple: {
-            DEFAULT: "hsl(var(--fis-purple))",
-            light: "hsl(var(--fis-purple-light))",
-          },
+          green: '#00a651',
+          'green-light': '#4ade80',
+          'green-dark': '#16a34a',
+          'green-50': '#f0fdf4',
+          'green-100': '#dcfce7',
+          'green-600': '#00a651',
+          'green-700': '#059669',
         },
         success: {
           DEFAULT: "hsl(var(--success))",
@@ -81,6 +69,9 @@ export default {
           DEFAULT: "hsl(var(--critical))",
           foreground: "hsl(var(--critical-foreground))",
           muted: "hsl(var(--critical-muted))",
+          '204': '#dc2626',
+          'red-bg': '#fef2f2',
+          'orange-bg': '#fff7ed',
         },
         status: {
           high: {
@@ -110,6 +101,10 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      animation: {
+        'pulse-critical': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'bounce-alert': 'bounce 1s infinite',
+      }
     },
   },
   plugins: [],

@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import FISSmartLoanLogo from '@/components/ui/fis-smartloan-logo';
 
 const Header: React.FC = () => {
   const [time, setTime] = useState(new Date());
@@ -39,25 +40,20 @@ const Header: React.FC = () => {
   });
 
   return (
-    <header className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white shadow-2xl border-b border-slate-700/50 z-20">
+    <header className="bg-gradient-to-r from-[#015B7E] via-[#015B7E] to-[#50FF48] text-white shadow-2xl border-b border-slate-700/50 z-20">
       <div className="container mx-auto px-6">
         <div className="flex justify-between items-center py-4">
           
           {/* Left: Branding & Environment */}
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-4">
-              <div className="text-2xl font-bold">
-                <span className="text-fis-green">FIS</span>{' '}
-                <span className="bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
-                  SMARTLOAN
-                </span>
-              </div>
+              <FISSmartLoanLogo variant="gradient" size="md" />
               <Separator orientation="vertical" className="h-8 bg-slate-600" />
               <div className="flex items-center space-x-3">
                 <Badge className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white border-0">
                   QA
                 </Badge>
-                <span className="text-slate-300 text-sm font-medium">Loanet - Firm 9990</span>
+                <span className="text-slate-300 text-sm fis-body-regular">Loanet - Firm 9990</span>
               </div>
             </div>
           </div>
@@ -71,7 +67,7 @@ const Header: React.FC = () => {
                 className="flex items-center space-x-2 text-slate-300 hover:text-white hover:bg-slate-800/60 border border-slate-700/30 hover:border-slate-600/50 transition-all duration-200"
               >
                 <Grid size={16} />
-                <span>Quick Tools</span>
+                <span className="fis-body-semibold">Quick Tools</span>
                 <ChevronDown size={14} />
               </Button>
               
@@ -107,11 +103,11 @@ const Header: React.FC = () => {
           <div className="flex items-center space-x-4">
             
             {/* Current Time */}
-            <Card className="hidden md:block bg-slate-800/50 border-slate-700/50">
+            <Card className="hidden md:block bg-white/20 border-[#015B7E]/30 backdrop-blur-sm">
               <CardContent className="p-3">
-                <div className="flex items-center space-x-2 text-slate-300">
-                  <Clock size={14} className="text-emerald-400" />
-                  <span className="text-sm font-medium">{currentTime}</span>
+                <div className="flex items-center space-x-2 text-[#015B7E]">
+                  <Clock size={14} className="text-[#015B7E]" />
+                  <span className="text-sm fis-body-semibold">{currentTime}</span>
                 </div>
               </CardContent>
             </Card>
@@ -121,10 +117,10 @@ const Header: React.FC = () => {
               <Button
                 variant="ghost"
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="relative p-3 text-slate-300 hover:text-white hover:bg-slate-800/60 border border-slate-700/30 hover:border-slate-600/50 transition-all duration-200"
+                className="relative p-3 text-[#015B7E] hover:text-[#015B7E] hover:bg-white/20 border border-[#015B7E]/30 hover:border-[#015B7E]/50 transition-all duration-200 bg-white/10 backdrop-blur-sm"
               >
                 <Bell size={18} />
-                <Badge className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs p-0 flex items-center justify-center rounded-full border-2 border-slate-900">
+                <Badge className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs p-0 flex items-center justify-center rounded-full border-2 border-white">
                   3
                 </Badge>
               </Button>
@@ -173,18 +169,18 @@ const Header: React.FC = () => {
               <Button
                 variant="ghost"
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center space-x-3 p-3 text-slate-300 hover:text-white hover:bg-slate-800/60 border border-slate-700/30 hover:border-slate-600/50 transition-all duration-200"
+                className="flex items-center space-x-3 p-3 text-[#015B7E] hover:text-[#015B7E] hover:bg-white/20 border border-[#015B7E]/30 hover:border-[#015B7E]/50 transition-all duration-200 bg-white/10 backdrop-blur-sm"
               >
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center shadow-lg">
+                  <div className="w-8 h-8 bg-gradient-to-br from-[#015B7E] to-blue-800 rounded-full flex items-center justify-center shadow-lg">
                     <span className="text-sm font-bold text-white">BG</span>
                   </div>
                   <div className="text-left hidden md:block">
-                    <div className="text-sm font-semibold">BGoyette</div>
-                    <div className="text-xs text-slate-400">Firm 9990</div>
+                    <div className="text-sm fis-body-bold text-[#015B7E]">BGoyette</div>
+                    <div className="text-xs fis-body-regular text-[#015B7E]/70">Firm 9990</div>
                   </div>
                 </div>
-                <ChevronDown size={14} />
+                <ChevronDown size={14} className="text-[#015B7E]" />
               </Button>
               
               {showUserMenu && (
