@@ -325,4 +325,130 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Density Mode Classes for Space Optimization */
+.density-compact {
+  --card-padding: 8px;
+  --table-cell-padding: 2px 6px;
+  --text-size: 12px;
+  --line-height: 1.2;
+  --button-height: 28px;
+  --input-height: 28px;
+  --section-gap: 8px;
+}
+
+.density-compact .card {
+  padding: var(--card-padding) !important;
+}
+
+.density-compact table td,
+.density-compact table th {
+  padding: var(--table-cell-padding) !important;
+  font-size: var(--text-size) !important;
+  line-height: var(--line-height) !important;
+}
+
+.density-compact .space-y-4 > * + * {
+  margin-top: 0.5rem !important;
+}
+
+.density-compact .gap-4 {
+  gap: 0.5rem !important;
+}
+
+.density-normal {
+  --card-padding: 16px;
+  --table-cell-padding: 8px 12px;
+  --text-size: 14px;
+  --line-height: 1.4;
+  --button-height: 36px;
+  --input-height: 36px;
+  --section-gap: 16px;
+}
+
+.density-normal .card {
+  padding: var(--card-padding) !important;
+}
+
+.density-normal table td,
+.density-normal table th {
+  padding: var(--table-cell-padding) !important;
+  font-size: var(--text-size) !important;
+  line-height: var(--line-height) !important;
+}
+
+.density-comfortable {
+  --card-padding: 24px;
+  --table-cell-padding: 12px 16px;
+  --text-size: 16px;
+  --line-height: 1.5;
+  --button-height: 40px;
+  --input-height: 40px;
+  --section-gap: 24px;
+}
+
+/* Large Screen Optimizations */
+@media (min-width: 1680px) {
+  .large-screen-layout {
+    --sidebar-width: 280px;
+    --content-max-width: none;
+    --grid-columns-lg: repeat(4, 1fr);
+    --grid-columns-xl: repeat(6, 1fr);
+  }
+  
+  .multi-column-cards {
+    display: grid;
+    grid-template-columns: var(--grid-columns-lg);
+    gap: var(--section-gap);
+  }
+  
+  .wide-table {
+    min-width: 100%;
+    table-layout: fixed;
+  }
+  
+  .wide-table th,
+  .wide-table td {
+    padding: var(--table-cell-padding);
+    font-size: var(--text-size);
+    line-height: var(--line-height);
+  }
+}
+
+/* Compact spacing utilities */
+.space-y-compact > * + * {
+  margin-top: 8px;
+}
+
+.gap-compact {
+  gap: 8px;
+}
+
+.p-compact {
+  padding: var(--card-padding, 12px);
+}
+
+.text-compact {
+  font-size: var(--text-size, 13px);
+  line-height: var(--line-height, 1.3);
+}
+
+/* Enhanced grid layouts for large screens */
+.grid-auto-fit-250 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--section-gap, 16px);
+}
+
+.grid-auto-fit-300 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--section-gap, 16px);
+}
+
+.grid-auto-fit-400 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: var(--section-gap, 16px);
 } 

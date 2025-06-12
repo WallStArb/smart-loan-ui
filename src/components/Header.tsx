@@ -19,12 +19,14 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import FISSmartLoanLogo from '@/components/ui/fis-smartloan-logo';
+import { DensityToggle, useDensityMode } from '@/components/ui/density-toggle';
 
 const Header: React.FC = () => {
   const [time, setTime] = useState(new Date());
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showToolsMenu, setShowToolsMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const { density, changeDensity } = useDensityMode();
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -59,8 +61,15 @@ const Header: React.FC = () => {
             </div>
           </div>
 
-          {/* Center: Quick Tools */}
+          {/* Center: Density Control & Quick Tools */}
           <div className="hidden lg:flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <span className="text-xs text-white/70 font-medium">View:</span>
+              <DensityToggle 
+                density={density} 
+                onDensityChange={changeDensity}
+              />
+            </div>
             <div className="relative">
               <Button
                 variant="ghost"

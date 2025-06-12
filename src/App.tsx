@@ -6,6 +6,7 @@ import Sidebar from './components/Sidebar'
 import CollateralManager from './components/CollateralManager'
 import NeedsPage from './components/NeedsPage'
 import ParametersPage from './components/ParametersPage'
+import { DensityDemo } from './components/ui/density-demo'
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
@@ -55,6 +56,7 @@ function App() {
           </div>
         </main>
         <Toaster richColors position="top-right" />
+        <DensityDemo />
       </div>
     </div>
   )
