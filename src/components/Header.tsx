@@ -6,7 +6,6 @@ import {
   FileText, 
   AlertTriangle, 
   ChevronDown,
-  Clock,
   Grid3X3,
   User,
   Settings,
@@ -20,27 +19,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import FISSmartLoanLogo from '@/components/ui/fis-smartloan-logo';
 import { DensityToggle, useDensityMode } from '@/components/ui/density-toggle';
+import { DateTimeDisplay } from '@/components/ui/date-time-display';
 
 const Header: React.FC = () => {
-  const [time, setTime] = useState(new Date());
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showToolsMenu, setShowToolsMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const { density, changeDensity } = useDensityMode();
-
-  useEffect(() => {
-    const timer = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const currentTime = time.toLocaleString('en-US', {
-    month: '2-digit',
-    day: '2-digit', 
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
-  });
 
   return (
     <header className={`bg-[#012834] text-white shadow-2xl border-b border-slate-700/50 z-20 density-${density}`}>
@@ -114,15 +99,14 @@ const Header: React.FC = () => {
           {/* Right: Status, Notifications & User */}
           <div className={`flex items-center ${density === 'compact' ? 'space-x-2' : 'space-x-3'}`}>
             
-            {/* Current Time */}
-            <Card className={`hidden md:block bg-white/20 border-white/30 backdrop-blur-sm ${density === 'compact' ? 'hidden-compact' : ''}`}>
-              <CardContent className={density === 'compact' ? 'p-2' : 'p-2.5'}>
-                <div className={`flex items-center text-white ${density === 'compact' ? 'space-x-1' : 'space-x-1.5'}`}>
-                  <Clock size={density === 'compact' ? 12 : 14} className="text-white" />
-                  <span className={`fis-body-semibold ${density === 'compact' ? 'text-xs' : 'text-sm'}`}>{currentTime}</span>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Current Time - Using new DateTimeDisplay component */}
+            <div className={`hidden md:block ${density === 'compact' ? 'hidden-compact' : ''}`}>
+              <DateTimeDisplay 
+                variant={density === 'compact' ? 'minimal' : 'inline'} 
+                size={density === 'compact' ? 'xs' : 'sm'} 
+                showDate={!density || density !== 'compact'}
+              />
+            </div>
 
             {/* Notifications */}
             <div className="relative">
@@ -147,21 +131,21 @@ const Header: React.FC = () => {
                       <div className="px-4 py-2.5 hover:bg-slate-50 border-b border-slate-100 transition-colors">
                         <p className="text-sm text-slate-900 font-medium">Margin call alert for Account #0801</p>
                         <p className="text-xs text-slate-500 mt-1 flex items-center">
-                          <Clock size={12} className="mr-1" />
+                          <User size={12} className="mr-1" />
                           2 minutes ago
                         </p>
                       </div>
                       <div className="px-4 py-2.5 hover:bg-slate-50 border-b border-slate-100 transition-colors">
                         <p className="text-sm text-slate-900 font-medium">New collateral pledge pending approval</p>
                         <p className="text-xs text-slate-500 mt-1 flex items-center">
-                          <Clock size={12} className="mr-1" />
+                          <User size={12} className="mr-1" />
                           15 minutes ago
                         </p>
                       </div>
                       <div className="px-4 py-2.5 hover:bg-slate-50 transition-colors">
                         <p className="text-sm text-slate-900 font-medium">Daily reconciliation completed</p>
                         <p className="text-xs text-slate-500 mt-1 flex items-center">
-                          <Clock size={12} className="mr-1" />
+                          <User size={12} className="mr-1" />
                           1 hour ago
                         </p>
                       </div>
@@ -207,7 +191,7 @@ const Header: React.FC = () => {
                           <p className="font-semibold text-slate-900">BGoyette</p>
                           <p className="text-sm text-slate-600">Firm No. 9990</p>
                           <p className="text-xs text-slate-500 flex items-center mt-1">
-                            <Clock size={12} className="mr-1" />
+                            <User size={12} className="mr-1" />
                             Last login: 06/10/2025 12:46 PM
                           </p>
                         </div>
