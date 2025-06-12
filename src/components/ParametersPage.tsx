@@ -245,7 +245,7 @@ const ParametersPage: React.FC = () => {
               <Settings className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-gray-900">Smart Loan Parameters</h1>
+              <h1 className="text-xl font-semibold text-gray-900">Needs Parameters</h1>
               <p className="text-sm text-gray-600">Configure securities lending parameters</p>
             </div>
           </div>
