@@ -40,17 +40,69 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        /* FIS Brand Colors */
+        fis: {
+          green: {
+            DEFAULT: "hsl(var(--fis-green))",
+            dark: "hsl(var(--fis-green-dark))",
+            light: "hsl(var(--fis-green-light))",
+            muted: "hsl(var(--fis-green-muted))",
+          },
+          blue: {
+            DEFAULT: "hsl(var(--fis-blue))",
+            dark: "hsl(var(--fis-blue-dark))",
+            light: "hsl(var(--fis-blue-light))",
+          },
+          orange: {
+            DEFAULT: "hsl(var(--fis-orange))",
+            light: "hsl(var(--fis-orange-light))",
+          },
+          purple: {
+            DEFAULT: "hsl(var(--fis-purple))",
+            light: "hsl(var(--fis-purple-light))",
+          },
+        },
         success: {
           DEFAULT: "hsl(var(--success))",
           foreground: "hsl(var(--success-foreground))",
+          muted: "hsl(var(--success-muted))",
         },
         warning: {
           DEFAULT: "hsl(var(--warning))",
           foreground: "hsl(var(--warning-foreground))",
+          muted: "hsl(var(--warning-muted))",
         },
         info: {
           DEFAULT: "hsl(var(--info))",
           foreground: "hsl(var(--info-foreground))",
+          muted: "hsl(var(--info-muted))",
+        },
+        critical: {
+          DEFAULT: "hsl(var(--critical))",
+          foreground: "hsl(var(--critical-foreground))",
+          muted: "hsl(var(--critical-muted))",
+        },
+        status: {
+          high: {
+            DEFAULT: "hsl(var(--status-high))",
+            foreground: "hsl(var(--status-high-foreground))",
+            muted: "hsl(var(--status-high-muted))",
+          },
+          medium: {
+            DEFAULT: "hsl(var(--status-medium))",
+            foreground: "hsl(var(--status-medium-foreground))",
+            muted: "hsl(var(--status-medium-muted))",
+          },
+          low: {
+            DEFAULT: "hsl(var(--status-low))",
+            foreground: "hsl(var(--status-low-foreground))",
+            muted: "hsl(var(--status-low-muted))",
+          },
+        },
+        progress: {
+          complete: "hsl(var(--progress-complete))",
+          partial: "hsl(var(--progress-partial))",
+          none: "hsl(var(--progress-none))",
         },
       },
       borderRadius: {

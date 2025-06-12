@@ -47,7 +47,7 @@ const Header: React.FC = () => {
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-4">
               <div className="text-2xl font-bold">
-                <span className="text-emerald-400">FIS</span>{' '}
+                <span className="text-fis-green">FIS</span>{' '}
                 <span className="bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
                   SMARTLOAN
                 </span>

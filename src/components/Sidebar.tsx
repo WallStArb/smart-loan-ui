@@ -19,9 +19,9 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activePage, setActivePage }) => {
   const menuItems = [
-    { id: 'collateral', label: 'Collateral', icon: ShieldCheck, color: 'text-emerald-400' },
-    { id: 'needs', label: 'Needs', icon: TrendingUp, color: 'text-blue-400' },
-    { id: 'parameters', label: 'Parameters', icon: Settings, color: 'text-amber-400' },
+    { id: 'collateral', label: 'Collateral', icon: ShieldCheck, color: 'text-fis-green' },
+    { id: 'needs', label: 'Needs', icon: TrendingUp, color: 'text-fis-blue' },
+    { id: 'parameters', label: 'Parameters', icon: Settings, color: 'text-fis-orange' },
   ];
 
   const NavLink: React.FC<{ item: any; isActive: boolean }> = ({ item, isActive }) => (
@@ -39,7 +39,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activePage, setAct
       <div className="flex items-center w-full">
         <div className={cn(
           "p-2 rounded-lg transition-colors",
-          isActive ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg" : "text-slate-400 group-hover:text-white"
+          isActive ? "bg-gradient-to-br from-fis-green to-fis-green-dark text-white shadow-lg" : "text-slate-400 group-hover:text-white"
         )}>
           <item.icon size={20} className="flex-shrink-0" />
         </div>
@@ -50,7 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activePage, setAct
               {item.label}
             </span>
             {isActive && (
-              <Badge variant="secondary" className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5">
+              <Badge variant="secondary" className="bg-fis-green-light text-fis-green text-xs px-2 py-0.5">
                 Active
               </Badge>
             )}
@@ -58,12 +58,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activePage, setAct
         )}
         
         {!isOpen && isActive && (
-          <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-blue-400 to-blue-600 rounded-r-full"></div>
+          <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-fis-green to-fis-green-dark rounded-r-full"></div>
         )}
       </div>
       
       {isActive && isOpen && (
-        <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-blue-400 to-blue-600 rounded-r-full"></div>
+        <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-fis-green to-fis-green-dark rounded-r-full"></div>
       )}
     </Button>
   );
@@ -81,7 +81,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activePage, setAct
       )}>
         {isOpen && (
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-lg">
+            <div className="w-8 h-8 bg-gradient-to-br from-fis-green to-fis-green-dark rounded-lg flex items-center justify-center shadow-lg">
               <ShieldCheck className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -119,7 +119,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activePage, setAct
               <p className="text-xs text-slate-600">Enterprise Edition</p>
             </div>
           ) : (
-            <div className="w-2 h-2 bg-emerald-400 rounded-full mx-auto animate-pulse"></div>
+            <div className="w-2 h-2 bg-fis-green rounded-full mx-auto animate-pulse"></div>
           )}
         </div>
       </nav>

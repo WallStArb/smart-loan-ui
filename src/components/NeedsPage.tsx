@@ -15,13 +15,14 @@ import {
   Building,
   Users,
   Filter,
-  Download
+  Download,
+  FileText
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Tooltip } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 
 // Mock data types
@@ -36,11 +37,13 @@ interface SecurityNeed {
   needReasons: {
     cnsDelivery?: number
     dvpDelivery?: number
-    regulatoryDeficit?: number
+    deficit?: number
     customerShorts?: number
     nonCustomerShorts?: number
     firmShorts?: number
   }
+  // Critical 204 CNS delivery failure from prior day
+  is204CNS?: boolean
   borrowRate: number
   sodQuantity: number
   curedQuantity: number
@@ -53,6 +56,9 @@ interface SecurityNeed {
   borrowCost?: number
   cureMethod?: 'Borrow' | 'Recall' | 'Pledge' | 'Auto' | null
   failedAttempts?: number
+  // Outstanding positions that can be recalled/released
+  outstandingLoan?: number  // Quantity currently on loan that can be recalled
+  outstandingPledge?: number  // Quantity currently pledged that can be released
 }
 
 interface DashboardMetrics {
@@ -199,13 +205,21 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
 
   // Generate realistic mock data
   const generateMockData = (): { needs: SecurityNeed[], metrics: DashboardMetrics, advancedMetrics: AdvancedMetrics } => {
-    const tickers = ['AAPL', 'TSLA', 'GOOGL', 'MSFT', 'META', 'NFLX', 'ADBE', 'NVDA', 'CRM', 'AMZN']
+    const tickers = ['AAPL', 'MSFT', 'UNH', 'GS', 'HD', 'CAT', 'CRM', 'V', 'BA', 'MCD', 'AXP', 'AMGN', 'IBM', 'TRV', 'JPM', 'HON', 'NKE', 'JNJ', 'WMT', 'PG', 'CVX', 'KO', 'MRK', 'CSCO', 'DIS', 'DOW', 'INTC', 'MMM', 'VZ', 'WBA']
     const descriptions = [
-      'APPLE INC', 'TESLA INC', 'ALPHABET INC-CL A', 'MICROSOFT CORP', 'META PLATFORMS INC',
-      'NETFLIX INC', 'ADOBE INC', 'NVIDIA CORP', 'SALESFORCE INC', 'AMAZON.COM INC'
+      'APPLE INC', 'MICROSOFT CORP', 'UNITEDHEALTH GROUP INC', 'GOLDMAN SACHS GROUP INC', 'HOME DEPOT INC',
+      'CATERPILLAR INC', 'SALESFORCE INC', 'VISA INC-CLASS A', 'BOEING CO', 'MCDONALDS CORP',
+      'AMERICAN EXPRESS CO', 'AMGEN INC', 'INTL BUSINESS MACHINES CORP', 'TRAVELERS COS INC', 'JPMORGAN CHASE & CO',
+      'HONEYWELL INTERNATIONAL INC', 'NIKE INC-CLASS B', 'JOHNSON & JOHNSON', 'WALMART INC', 'PROCTER & GAMBLE CO',
+      'CHEVRON CORP', 'COCA-COLA CO', 'MERCK & CO INC', 'CISCO SYSTEMS INC', 'WALT DISNEY CO',
+      'DOW INC', 'INTEL CORP', '3M CO', 'VERIZON COMMUNICATIONS INC', 'WALGREENS BOOTS ALLIANCE INC'
     ]
-    const sectors = ['Technology', 'Technology', 'Technology', 'Technology', 'Technology', 
-                    'Media', 'Technology', 'Technology', 'Technology', 'Consumer']
+    const sectors = ['Technology', 'Technology', 'Healthcare', 'Financial Services', 'Consumer Discretionary', 
+                    'Industrials', 'Technology', 'Financial Services', 'Industrials', 'Consumer Discretionary',
+                    'Financial Services', 'Healthcare', 'Technology', 'Financial Services', 'Financial Services',
+                    'Industrials', 'Consumer Discretionary', 'Healthcare', 'Consumer Staples', 'Consumer Staples',
+                    'Energy', 'Consumer Staples', 'Healthcare', 'Technology', 'Communication Services',
+                    'Materials', 'Technology', 'Industrials', 'Communication Services', 'Consumer Staples']
     const cureMethods: Array<'Borrow' | 'Recall' | 'Pledge' | 'Auto'> = ['Borrow', 'Recall', 'Pledge', 'Auto']
     
     const needs: SecurityNeed[] = []
@@ -226,17 +240,21 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
       
       // Generate need reasons
       const needReasons: any = {}
-      const needTypes = ['cnsDelivery', 'dvpDelivery', 'regulatoryDeficit', 'customerShorts', 'nonCustomerShorts', 'firmShorts']
+      const needTypes = ['cnsDelivery', 'dvpDelivery', 'deficit', 'customerShorts', 'nonCustomerShorts', 'firmShorts']
       const activeNeeds = needTypes.filter(() => Math.random() > 0.6)
       
       activeNeeds.forEach(type => {
         needReasons[type] = Math.floor(Math.random() * quantity * 0.5) + 50
       })
 
+      // Critical 204 CNS delivery failure (prior day CNS delivery not met)
+      const is204CNS = needReasons.cnsDelivery && Math.random() < 0.15 // 15% of CNS deliveries are 204s
+      
       // Determine priority based on need types and regulatory status
       let priority: 'Critical' | 'High' | 'Medium' | 'Low' = 'Low'
-      if (needReasons.cnsDelivery || needReasons.dvpDelivery) priority = 'Critical'
-      else if (needReasons.regulatoryDeficit || isRegulatory) priority = 'High'
+      if (is204CNS) priority = 'Critical' // 204 CNS always gets highest priority
+      else if (needReasons.cnsDelivery || needReasons.dvpDelivery) priority = 'Critical'
+      else if (needReasons.deficit || isRegulatory) priority = 'High'
       else if (needReasons.customerShorts) priority = 'Medium'
 
       const sodQuantity = quantity + Math.floor(Math.random() * 1000)
@@ -248,15 +266,22 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
       const cureMethod = curedQuantity > 0 ? cureMethods[Math.floor(Math.random() * cureMethods.length)] : null
       const borrowCost = (curedQuantity * price * borrowRate) / 365 // Daily cost
       
+      // Generate realistic outstanding positions
+      const hasOutstandingLoan = Math.random() > 0.6 // 40% chance of having an outstanding loan
+      const hasOutstandingPledge = Math.random() > 0.7 // 30% chance of having an outstanding pledge
+      const outstandingLoan = hasOutstandingLoan ? Math.floor(quantity * (0.1 + Math.random() * 0.4)) : 0
+      const outstandingPledge = hasOutstandingPledge ? Math.floor(quantity * (0.05 + Math.random() * 0.3)) : 0
+
       const need: SecurityNeed = {
         id: `NEED${(i + 1).toString().padStart(3, '0')}`,
-        ticker: `${ticker}${i > 9 ? (i + 1) : ''}`,
+        ticker: ticker,
         cusip: `${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-        description: `${description}${i > 9 ? ` ${i + 1}` : ''}`,
+        description: description,
         quantity,
         marketValue,
         priority,
         needReasons,
+        is204CNS,
         borrowRate,
         sodQuantity,
         curedQuantity,
@@ -268,7 +293,9 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
         sector,
         borrowCost,
         cureMethod,
-        failedAttempts: Math.floor(Math.random() * 3)
+        failedAttempts: Math.floor(Math.random() * 3),
+        outstandingLoan: outstandingLoan > 0 ? outstandingLoan : undefined,
+        outstandingPledge: outstandingPledge > 0 ? outstandingPledge : undefined
       }
 
       needs.push(need)
@@ -288,7 +315,7 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
       agingNeedsChange: Math.floor(Math.random() * 6) - 3,
       regShoSecurities: regShoCount,
       regShoChange: 0,
-      rule204Securities: Math.floor(Math.random() * 8) + 2,
+      rule204Securities: needs.filter(need => need.is204CNS).length,
       dailyProgress: {
         target: Math.floor(totalNeeds * 1.4),
         completed: Math.floor(totalNeeds * 0.4),
@@ -457,13 +484,6 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
       description: 'Securities with market value over $1M',
       filter: (need: SecurityNeed) => need.marketValue > 1000000,
       count: securityNeeds.filter(need => need.marketValue > 1000000).length
-    },
-    {
-      id: 'aging-needs',
-      label: 'Aging Needs (>3 days)',
-      description: 'Items aging more than 3 days',
-      filter: (need: SecurityNeed) => need.agingDays > 3,
-      count: securityNeeds.filter(need => need.agingDays > 3).length
     }
   ]
 
@@ -628,18 +648,18 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'Critical': return 'bg-red-100 text-red-800'
-      case 'High': return 'bg-orange-100 text-orange-800'
-      case 'Medium': return 'bg-yellow-100 text-yellow-800'
-      case 'Low': return 'bg-blue-100 text-blue-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'Critical': return 'bg-critical-muted text-critical'
+      case 'High': return 'bg-status-high-muted text-status-high'
+      case 'Medium': return 'bg-status-medium-muted text-status-medium'
+      case 'Low': return 'bg-status-low-muted text-status-low'
+      default: return 'bg-muted text-muted-foreground'
     }
   }
 
   const formatNeedReason = (reason: string) => {
     if (reason === 'cnsDelivery') return 'CNS Delivery';
     if (reason === 'dvpDelivery') return 'DVP Delivery';
-    if (reason === 'regulatoryDeficit') return 'Deficit';
+    if (reason === 'deficit') return 'Deficit';
     
     const spaced = reason.replace(/([A-Z])/g, ' $1');
     return spaced.charAt(0).toUpperCase() + spaced.slice(1);
@@ -687,17 +707,17 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
             {formatNumber(need.quantity - need.remainingQuantity)} / {formatNumber(need.quantity)}
           </span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-muted rounded-full h-2">
           <div 
             className={cn(
               "h-2 rounded-full transition-all duration-300",
               isComplete 
-                ? "bg-gradient-to-r from-green-500 to-green-600" 
+                ? "bg-progress-complete" 
                 : progressPercentage > 75 
-                  ? "bg-gradient-to-r from-blue-500 to-blue-600"
+                  ? "bg-info"
                   : progressPercentage > 50
-                    ? "bg-gradient-to-r from-yellow-500 to-yellow-600"
-                    : "bg-gradient-to-r from-red-500 to-red-600"
+                    ? "bg-progress-partial"
+                    : "bg-critical"
             )}
             style={{ width: `${Math.max(progressPercentage, 2)}%` }}
           />
@@ -712,13 +732,12 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
   if (!metrics) return <div>Loading...</div>
 
   return (
-    <TooltipProvider>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white p-6">
         {/* Modern Header */}
         <div className="max-w-7xl mx-auto mb-6">
           <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-sm">
+              <div className="w-10 h-10 bg-gradient-to-br from-fis-green to-fis-green-dark rounded-lg flex items-center justify-center shadow-sm">
                 <TrendingUp className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -726,11 +745,11 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
               </div>
             </div>
             <div className="flex items-center space-x-3">
-              <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200 px-3 py-1">
+              <Badge variant="secondary" className="bg-success-muted text-success border-success px-3 py-1">
                 <Clock className="w-4 h-4 mr-1.5" />
                 Updated: {lastUpdate.toLocaleTimeString()}
               </Badge>
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <div className="w-2 h-2 bg-success rounded-full animate-pulse"></div>
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -743,123 +762,7 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
             </div>
           </div>
 
-          {/* Enhanced Controls Bar */}
-          <div className="mt-4 p-4 bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              
-              {/* View Mode Controls */}
-              <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-gray-700">View:</span>
-                <div className="flex bg-gray-100 rounded-lg p-1">
-                  {[
-                    { key: 'critical-only', label: 'Critical Only', icon: AlertTriangle },
-                    { key: 'overview', label: 'Overview', icon: BarChart3 },
-                    { key: 'detailed', label: 'Detailed', icon: Activity }
-                  ].map(({ key, label, icon: Icon }) => (
-                    <button
-                      key={key}
-                      onClick={() => setViewMode(key as any)}
-                      className={cn(
-                        "flex items-center space-x-1 px-3 py-1.5 rounded-md text-sm font-medium transition-all",
-                        viewMode === key
-                          ? "bg-white text-blue-600 shadow-sm"
-                          : "text-gray-600 hover:text-gray-900"
-                      )}
-                    >
-                      <Icon className="w-4 h-4" />
-                      <span>{label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
 
-              {/* Smart Filter Presets */}
-              <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-gray-700">Quick Filters:</span>
-                <div className="flex space-x-2">
-                  {filterPresets.map(preset => (
-                    <Button
-                      key={preset.id}
-                      variant="outline"
-                      size="sm"
-                      className="h-8 px-3 text-xs"
-                      onClick={() => {
-                        const filtered = securityNeeds.filter(preset.filter)
-                        setSelectedSecurities(new Set(filtered.map(n => n.id)))
-                      }}
-                    >
-                      {preset.label}
-                      <Badge variant="secondary" className="ml-2 px-1.5 py-0 text-xs">
-                        {preset.count}
-                      </Badge>
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Search */}
-              <div className="flex items-center space-x-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <input
-                    type="text"
-                    placeholder="Search securities..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm w-64"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Bulk Operations Bar */}
-            {selectedSecurities.size > 0 && (
-              <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <Badge className="bg-blue-600 text-white px-2 py-1">
-                      {selectedSecurities.size} selected
-                    </Badge>
-                    <div className="flex space-x-2">
-                      <Button
-                        size="sm"
-                        onClick={() => handleBulkAction('borrow', securityNeeds.filter(n => selectedSecurities.has(n.id)))}
-                        disabled={isLoading}
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
-                      >
-                        {isLoading ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <DollarSign className="w-4 h-4 mr-2" />}
-                        Bulk Borrow
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleBulkAction('recall', securityNeeds.filter(n => selectedSecurities.has(n.id)))}
-                        disabled={isLoading}
-                      >
-                        📞 Bulk Recall
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleBulkAction('release', securityNeeds.filter(n => selectedSecurities.has(n.id)))}
-                        disabled={isLoading}
-                      >
-                        🔓 Bulk Release
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Button size="sm" variant="ghost" onClick={selectAllVisible}>
-                      Select All Visible
-                    </Button>
-                    <Button size="sm" variant="ghost" onClick={clearSelection}>
-                      Clear Selection
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
         </div>
 
         <div className="max-w-7xl mx-auto">{/* Main Dashboard */}
@@ -869,33 +772,24 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
 
 
           {/* Need Types Breakdown - Compact with Progress */}
-          <Card className="border-0 shadow-sm bg-white mb-4">
-            <CardHeader className="pb-3 border-b bg-gray-50/50">
+          <div className="bg-white rounded-md shadow border border-gray-200 mb-3">
+            <div className="px-3 py-1.5 border-b border-gray-200 bg-gray-50 rounded-t-md">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-semibold text-gray-900">Securities by Need Type</CardTitle>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => toggleSectionCollapse('needTypes')}
-                      className="h-8 w-8 p-0"
-                    >
-                      {collapsedSections.has('needTypes') ? (
-                        <ChevronDown className="w-4 h-4 text-gray-500" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 text-gray-500" />
-                      )}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{collapsedSections.has('needTypes') ? 'Expand section' : 'Collapse section'}</p>
-                  </TooltipContent>
-                </Tooltip>
+                <h3 className="text-xs font-semibold text-gray-900">Securities by Need Type</h3>
+                <button
+                  onClick={() => toggleSectionCollapse('needTypes')}
+                  className="p-1 hover:bg-gray-100 rounded transition-colors"
+                  title={collapsedSections.has('needTypes') ? 'Expand section' : 'Collapse section'}
+                >
+                  <ChevronDown className={cn(
+                    "w-4 h-4 text-gray-500 transition-transform duration-200",
+                    collapsedSections.has('needTypes') ? "transform rotate-180" : ""
+                  )} />
+                </button>
               </div>
-            </CardHeader>
+            </div>
             {!collapsedSections.has('needTypes') && (
-              <div className="p-3">
+              <div className="p-2">
               <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                 {/* CNS Delivery */}
                 <div className="flex items-center space-x-3">
@@ -1011,12 +905,12 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                       <span className="text-xs font-medium text-gray-600">Deficit</span>
                     </div>
                     <p className="text-lg font-bold text-gray-900">
-                      {securityNeeds.filter(need => need.needReasons.regulatoryDeficit).length}
+                                              {securityNeeds.filter(need => need.needReasons.deficit).length}
                     </p>
                     <p className="text-xs text-gray-500">
                       {formatCurrency(
                         securityNeeds
-                          .filter(need => need.needReasons.regulatoryDeficit)
+                          .filter(need => need.needReasons.deficit)
                           .reduce((sum, need) => sum + need.marketValue, 0)
                       )}
                     </p>
@@ -1028,25 +922,25 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                         <span className="font-medium">
                           {formatNumber(
                             securityNeeds
-                              .filter(need => need.needReasons.regulatoryDeficit)
-                              .reduce((sum, need) => sum + (need.needReasons.regulatoryDeficit || 0), 0)
+                              .filter(need => need.needReasons.deficit)
+                              .reduce((sum, need) => sum + (need.needReasons.deficit || 0), 0)
                           )}
                         </span>
                         <span className="text-gray-500">Cured:</span>
                         <span className="font-medium text-green-600">
                           {formatNumber(
                             Math.floor(securityNeeds
-                              .filter(need => need.needReasons.regulatoryDeficit)
-                              .reduce((sum, need) => sum + (need.needReasons.regulatoryDeficit || 0), 0) * 0.45)
+                              .filter(need => need.needReasons.deficit)
+                              .reduce((sum, need) => sum + (need.needReasons.deficit || 0), 0) * 0.45)
                           )}
                         </span>
                         <span className="text-gray-600 col-span-2">
                           Recall {formatNumber(Math.floor(securityNeeds
-                            .filter(need => need.needReasons.regulatoryDeficit)
-                            .reduce((sum, need) => sum + (need.needReasons.regulatoryDeficit || 0), 0) * 0.45 * 0.7))}, 
+                            .filter(need => need.needReasons.deficit)
+                            .reduce((sum, need) => sum + (need.needReasons.deficit || 0), 0) * 0.45 * 0.7))}, 
                           Borrow {formatNumber(Math.floor(securityNeeds
-                            .filter(need => need.needReasons.regulatoryDeficit)
-                            .reduce((sum, need) => sum + (need.needReasons.regulatoryDeficit || 0), 0) * 0.45 * 0.3))}
+                            .filter(need => need.needReasons.deficit)
+                            .reduce((sum, need) => sum + (need.needReasons.deficit || 0), 0) * 0.45 * 0.3))}
                         </span>
                       </div>
                     </div>
@@ -1333,7 +1227,7 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
               </div>
             </div>
             )}
-          </Card>
+          </div>
 
           {/* Ultra-Compact Progress and Priority */}
           <div className="bg-white rounded-md shadow border border-gray-200 mb-3">
@@ -1591,8 +1485,8 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                       <div className="text-lg font-bold text-orange-600 leading-none">
                         {formatNumber(
                           securityNeeds
-                            .filter(need => need.agingDays > 3 && need.needReasons.regulatoryDeficit)
-                            .reduce((sum, need) => sum + (need.needReasons.regulatoryDeficit || 0), 0)
+                            .filter(need => need.agingDays > 3 && need.needReasons.deficit)
+                            .reduce((sum, need) => sum + (need.needReasons.deficit || 0), 0)
                         )}
                       </div>
                     </div>
@@ -1626,7 +1520,7 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                       <h3 className="text-xs font-semibold text-gray-900">Top Counterparty Borrowing</h3>
                       <div className="flex items-center space-x-2">
                         <div className="flex items-center space-x-2 text-xs text-gray-500">
-                          <span>Live G�� Ranked by efficiency</span>
+                          <span>Live Grid - Ranked by efficiency</span>
                           <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
                         </div>
                         <button
@@ -1772,7 +1666,36 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
             {/* Table Header */}
             <div className="border-b border-gray-200 px-4 py-3">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">Securities Needs</h2>
+                <div className="flex items-center space-x-4">
+                  <h2 className="text-lg font-semibold text-gray-900">Securities Needs</h2>
+                  
+                  {/* View Mode Controls */}
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm font-medium text-gray-700">View:</span>
+                    <div className="flex bg-gray-100 rounded-lg p-1">
+                      {[
+                        { key: 'critical-only', label: 'Critical Only', icon: AlertTriangle },
+                        { key: 'overview', label: 'Overview', icon: BarChart3 },
+                        { key: 'detailed', label: 'Detailed', icon: Activity }
+                      ].map(({ key, label, icon: Icon }) => (
+                        <button
+                          key={key}
+                          onClick={() => setViewMode(key as any)}
+                          className={cn(
+                            "flex items-center space-x-1 px-3 py-1.5 rounded-md text-sm font-medium transition-all",
+                            viewMode === key
+                              ? "bg-white text-blue-600 shadow-sm"
+                              : "text-gray-600 hover:text-gray-900"
+                          )}
+                        >
+                          <Icon className="w-4 h-4" />
+                          <span>{label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                
                 <div className="flex items-center space-x-3">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -1784,6 +1707,39 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
                   </div>
+                  
+                  {/* Bulk Action Buttons - Show when items are selected */}
+                  {selectedSecurities.size > 0 && (
+                    <>
+                      <div className="h-6 w-px bg-gray-300"></div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-gray-600 font-medium">
+                          {selectedSecurities.size} selected
+                        </span>
+                        <button 
+                          className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-white bg-fis-blue rounded-lg hover:bg-blue-700 transition-colors"
+                          onClick={() => {
+                            const selectedNeeds = filteredAndSortedNeeds.filter(need => selectedSecurities.has(need.id))
+                            handleBulkAction('borrow', selectedNeeds)
+                          }}
+                        >
+                          <span>🔄</span>
+                          <span>Borrow ({selectedSecurities.size})</span>
+                        </button>
+                        <button 
+                          className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-white bg-fis-orange rounded-lg hover:bg-orange-600 transition-colors"
+                          onClick={() => {
+                            const selectedNeeds = filteredAndSortedNeeds.filter(need => selectedSecurities.has(need.id))
+                            handleBulkAction('recall', selectedNeeds)
+                          }}
+                        >
+                          <span>📞</span>
+                          <span>Recall ({selectedSecurities.size})</span>
+                        </button>
+                      </div>
+                    </>
+                  )}
+                  
                   <button 
                     className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                     onClick={() => console.log('Filter functionality coming soon')}
@@ -1805,14 +1761,38 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                   </button>
                 </div>
               </div>
+              
+              {/* Quick Filters Row */}
+              <div className="px-4 py-2 bg-gray-50 border-t border-gray-200">
+                <div className="flex items-center space-x-2">
+                  <span className="text-xs font-medium text-gray-600">Quick Filters:</span>
+                  <div className="flex space-x-2">
+                    {filterPresets.map(preset => (
+                      <button
+                        key={preset.id}
+                        className="inline-flex items-center px-2 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                        onClick={() => {
+                          const filtered = securityNeeds.filter(preset.filter)
+                          setSelectedSecurities(new Set(filtered.map(n => n.id)))
+                        }}
+                      >
+                        {preset.label}
+                        <span className="ml-1 px-1.5 py-0.5 text-xs bg-gray-100 text-gray-600 rounded-full">
+                          {preset.count}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Compact Table */}
+            {/* Enhanced Table */}
             <div className="overflow-x-auto">
               <table className="min-w-full">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-2 py-0.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-8">
                       <input
                         type="checkbox"
                         checked={selectedSecurities.size === filteredAndSortedNeeds.length && filteredAndSortedNeeds.length > 0}
@@ -1826,216 +1806,370 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
                     </th>
+                    <th className="px-2 py-0.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-8">
+                      
+                    </th>
                     <th 
-                      className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                      className="px-2 py-0.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                       onClick={() => handleSort('ticker')}
                     >
                       <div className="flex items-center space-x-1">
-                        <span>Security</span>
+                        <span>TICKER</span>
                         {sortColumn === 'ticker' && (
                           sortDirection === 'asc' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />
                         )}
                       </div>
                     </th>
-                    <th 
-                      className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-                      onClick={() => handleSort('priority')}
-                    >
-                      <div className="flex items-center justify-center space-x-1">
-                        <span>Priority</span>
-                        {sortColumn === 'priority' && (
-                          sortDirection === 'asc' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />
-                        )}
-                      </div>
+                    <th className="px-2 py-0.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      DESC
                     </th>
                     <th 
-                      className="px-2 py-1 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-                      onClick={() => handleSort('remainingQuantity')}
+                      className="px-2 py-0.5 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                      onClick={() => handleSort('quantity')}
                     >
                       <div className="flex items-center justify-end space-x-1">
-                        <span>Remaining</span>
-                        {sortColumn === 'remainingQuantity' && (
+                        <span>QUANTITY</span>
+                        {sortColumn === 'quantity' && (
                           sortDirection === 'asc' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />
                         )}
                       </div>
                     </th>
                     <th 
-                      className="px-2 py-1 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                      className="px-2 py-0.5 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                       onClick={() => handleSort('marketValue')}
                     >
                       <div className="flex items-center justify-end space-x-1">
-                        <span>Market Value</span>
+                        <span>AMOUNT</span>
                         {sortColumn === 'marketValue' && (
                           sortDirection === 'asc' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />
                         )}
                       </div>
                     </th>
-                    <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Progress</th>
-                    <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th className="px-2 py-0.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      NEED REASONS
+                    </th>
+                    <th 
+                      className="px-2 py-0.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                      onClick={() => handleSort('priority')}
+                    >
+                      <div className="flex items-center justify-center space-x-1">
+                        <span>PRIORITY</span>
+                        {sortColumn === 'priority' && (
+                          sortDirection === 'asc' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />
+                        )}
+                      </div>
+                    </th>
+                    <th className="px-2 py-0.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      BORROW RATE
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredAndSortedNeeds.map((need) => (
-                    <React.Fragment key={need.id}>
-                      <tr className={cn(
-                        "hover:bg-gray-50 transition-colors border-b border-gray-100",
-                        selectedSecurities.has(need.id) && "bg-blue-50"
-                      )}>
-                        <td className="px-2 py-2">
-                          <input
-                            type="checkbox"
-                            checked={selectedSecurities.has(need.id)}
-                            onChange={() => toggleSecuritySelection(need.id)}
-                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                          />
-                        </td>
-                        <td className="px-2 py-2">
-                          <div className="flex items-center space-x-2">
-                            <div>
-                              <div className="flex items-center space-x-2">
-                                <span className="font-semibold text-gray-900 text-sm">{need.ticker}</span>
-                                {need.isRegulatory && (
-                                  <Badge className="bg-red-100 text-red-800 text-xs px-1.5 py-0">REG</Badge>
-                                )}
-                                {need.agingDays > 3 && (
-                                  <Badge className="bg-orange-100 text-orange-800 text-xs px-1.5 py-0">
-                                    {need.agingDays}d
-                                  </Badge>
-                                )}
-                              </div>
-                              <div className="text-xs text-gray-500 truncate max-w-32">
-                                {need.description}
-                              </div>
+                  {filteredAndSortedNeeds.map((need) => {
+                    // Helper function to render compact need reasons
+                    const renderNeedReasons = () => {
+                      const reasons = []
+                      if (need.needReasons.cnsDelivery) reasons.push({ type: 'CNS', value: need.needReasons.cnsDelivery, color: 'bg-red-100 text-red-700' })
+                      if (need.needReasons.dvpDelivery) reasons.push({ type: 'DVP', value: need.needReasons.dvpDelivery, color: 'bg-orange-100 text-orange-700' })
+                      if (need.needReasons.deficit) reasons.push({ type: 'REG', value: need.needReasons.deficit, color: 'bg-red-100 text-red-800' })
+                      if (need.needReasons.customerShorts) reasons.push({ type: 'CUST', value: need.needReasons.customerShorts, color: 'bg-blue-100 text-blue-700' })
+                      if (need.needReasons.nonCustomerShorts) reasons.push({ type: 'NON-CUST', value: need.needReasons.nonCustomerShorts, color: 'bg-purple-100 text-purple-700' })
+                      if (need.needReasons.firmShorts) reasons.push({ type: 'FIRM', value: need.needReasons.firmShorts, color: 'bg-gray-100 text-gray-700' })
+                      
+                      return (
+                        <div className="flex flex-wrap gap-1">
+                          {reasons.slice(0, 3).map((reason, idx) => (
+                            <div key={idx} className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${reason.color}`}>
+                              <span className="font-semibold">{reason.type}</span>
+                              <span className="ml-1">{formatNumber(reason.value || 0)}</span>
                             </div>
-                          </div>
-                        </td>
-                        <td className="px-2 py-2 text-center">
-                          <Badge className={cn("text-xs font-medium px-2 py-1", getPriorityColor(need.priority))}>
-                            {need.priority}
-                          </Badge>
-                        </td>
-                        <td className="px-2 py-2 text-right">
-                          <div className="text-sm font-medium text-gray-900">
-                            {formatNumber(need.remainingQuantity)}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            of {formatNumber(need.quantity)}
-                          </div>
-                        </td>
-                        <td className="px-2 py-2 text-right">
-                          <div className="text-sm font-medium text-gray-900">
-                            {formatCurrency(need.marketValue)}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            @ {need.borrowRate.toFixed(2)}%
-                          </div>
-                        </td>
-                        <td className="px-2 py-2">
-                          <div className="w-24">
-                            <CureProgressBar need={need} />
-                          </div>
-                        </td>
-                        <td className="px-2 py-2">
-                          {need.remainingQuantity === 0 ? (
-                            <Badge className="bg-green-100 text-green-800 text-xs px-2 py-1">
-                              ✅ Complete
-                            </Badge>
-                          ) : (
-                            <div className="flex space-x-1">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleQuickBorrow(need)}
-                                className="h-7 px-2 text-xs text-blue-600 border-blue-200 hover:bg-blue-50"
-                              >
-                                🔄 Borrow
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleQuickRecall(need)}
-                                className="h-7 px-2 text-xs text-orange-600 border-orange-200 hover:bg-orange-50"
-                              >
-                                📞 Recall
-                              </Button>
+                          ))}
+                          {reasons.length > 3 && (
+                            <div className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                              +{reasons.length - 3}
                             </div>
                           )}
-                        </td>
-                      </tr>
-                      
-                      {/* Expanded Row Details */}
-                      {expandedRows.has(need.id) && (
-                        <tr className="bg-gray-50">
-                          <td colSpan={9} className="px-3 py-3">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                              <div>
-                                <h4 className="font-medium text-gray-900 mb-2">Need Details</h4>
-                                <div className="space-y-1">
-                                  <p><span className="text-gray-600">CUSIP:</span> {need.cusip}</p>
-                                  <p><span className="text-gray-600">Market Value:</span> {formatCurrency(need.marketValue)}</p>
-                                  <p><span className="text-gray-600">Aging:</span> {need.agingDays} days</p>
-                                  <p><span className="text-gray-600">Last Update:</span> {need.lastUpdate}</p>
-                                </div>
-                              </div>
-                              <div>
-                                <h4 className="font-medium text-gray-900 mb-2">Progress Tracking</h4>
-                                <div className="space-y-1">
-                                  <p><span className="text-gray-600">SOD Quantity:</span> {formatNumber(need.sodQuantity)}</p>
-                                  <p><span className="text-gray-600">Cured:</span> {formatNumber(need.curedQuantity)}</p>
-                                  <p><span className="text-gray-600">Remaining:</span> {formatNumber(need.remainingQuantity)}</p>
-                                  <div className="mt-2">
-                                    <CureProgressBar need={need} />
-                                  </div>
-                                </div>
-                              </div>
-                              <div>
-                                <h4 className="font-medium text-gray-900 mb-2">Available Actions</h4>
-                                <div className="space-y-2">
-                                  <button 
-                                    className="w-full text-left px-3 py-2 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 transition-colors"
-                                    onClick={() => {
-                                      // console.log(`Initiating borrow for ${need.ticker}...`)
-                                      setTimeout(() => {
-                                        // console.log(`Borrow request submitted for ${formatNumber(need.remainingQuantity)} shares of ${need.ticker}`)
-                                      }, 2000)
-                                    }}
-                                  >
-                                    🔄 Borrow {formatNumber(need.remainingQuantity)} shares
-                                  </button>
-                                  <button 
-                                    className="w-full text-left px-3 py-2 bg-orange-100 text-orange-800 rounded-lg hover:bg-orange-200 transition-colors"
-                                    onClick={() => {
-                                      // console.log(`Processing recall for ${need.ticker}...`)
-                                      setTimeout(() => {
-                                        // console.log(`Recall initiated for existing ${need.ticker} loans`)
-                                      }, 1500)
-                                    }}
-                                  >
-                                    📞 Recall existing loans
-                                  </button>
-                                  <button 
-                                    className="w-full text-left px-3 py-2 bg-green-100 text-green-800 rounded-lg hover:bg-green-200 transition-colors"
-                                    onClick={() => {
-                                      // console.log(`Checking pledge inventory for ${need.ticker}...`)
-                                      setTimeout(() => {
-                                        if (Math.random() > 0.7) {    
-                                          // console.log(`Released ${Math.floor(need.remainingQuantity * 0.3)} pledged shares of ${need.ticker}`)
-                                        } else {
-                                          // console.log(`No pledged ${need.ticker} shares available for release`)
-                                        }
-                                      }, 1000)
-                                    }}
-                                  >
-                                    Release pledged securities
-                                  </button>
-                                </div>
-                              </div>
+                        </div>
+                      )
+                    }
+
+                    return (
+                      <React.Fragment key={need.id}>
+                        <tr className={cn(
+                          "hover:bg-gray-50 transition-colors border-b border-gray-100",
+                          selectedSecurities.has(need.id) && "bg-blue-50"
+                        )}>
+                          <td className="px-2 py-1">
+                            <input
+                              type="checkbox"
+                              checked={selectedSecurities.has(need.id)}
+                              onChange={() => toggleSecuritySelection(need.id)}
+                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            />
+                          </td>
+                          <td className="px-2 py-1 text-center">
+                            <button
+                              onClick={() => toggleRowExpansion(need.id)}
+                              className="p-1 hover:bg-gray-100 rounded transition-colors"
+                            >
+                              {expandedRows.has(need.id) ? (
+                                <ChevronDown className="w-4 h-4 text-gray-500" />
+                              ) : (
+                                <ChevronDown className="w-4 h-4 text-gray-500 transform -rotate-90" />
+                              )}
+                            </button>
+                          </td>
+                          <td className="px-2 py-1">
+                            <div className="flex items-center space-x-2">
+                              <span className="font-semibold text-gray-900 text-sm">{need.ticker}</span>
+                              <span className="text-xs text-gray-500">{need.cusip}</span>
+                              {need.is204CNS && (
+                                <Badge className="bg-red-600 text-white text-xs px-2 py-0.5 font-bold animate-pulse">
+                                  🚨 204
+                                </Badge>
+                              )}
+                              {need.isRegulatory && (
+                                <Badge className="bg-red-100 text-red-800 text-xs px-1.5 py-0">REG</Badge>
+                              )}
+                              {need.agingDays > 3 && (
+                                <Badge className="bg-orange-100 text-orange-800 text-xs px-1.5 py-0">
+                                  {need.agingDays}d
+                                </Badge>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-2 py-1">
+                            <div className="text-sm text-gray-900 truncate max-w-48">
+                              {need.description}
+                            </div>
+                          </td>
+                          <td className="px-2 py-1 text-right">
+                            <div className="text-sm font-medium text-gray-900">
+                              {formatNumber(need.quantity)} / {formatNumber(need.remainingQuantity)}
+                            </div>
+                          </td>
+                          <td className="px-2 py-1 text-right">
+                            <div className="text-sm font-medium text-gray-900">
+                              {formatCurrency(need.marketValue)}
+                            </div>
+                          </td>
+                          <td className="px-2 py-1">
+                            {renderNeedReasons()}
+                          </td>
+                          <td className="px-2 py-1 text-center">
+                            <Badge className={cn("text-xs font-medium px-2 py-1", getPriorityColor(need.priority))}>
+                              {need.priority}
+                            </Badge>
+                          </td>
+                          <td className="px-2 py-1 text-center">
+                            <div className="text-sm font-medium text-gray-900">
+                              {need.borrowRate.toFixed(2)}%
                             </div>
                           </td>
                         </tr>
+                      
+                      {/* Expandable Details Row */}
+                                              {expandedRows.has(need.id) && (
+                          <tr className="bg-gray-50">
+                                                        <td colSpan={9} className="px-4 py-3">
+                              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                                {/* Need Breakdown & Progress */}
+                                <div className="lg:col-span-1">
+                                  <div className="bg-white rounded-lg border p-3">
+                                    <h4 className="text-sm font-semibold text-gray-900 mb-2 flex items-center">
+                                      <FileText className="w-4 h-4 mr-1" />
+                                      Need Breakdown
+                                    </h4>
+                                    <div className="space-y-1 text-sm">
+                                      {(need.needReasons.cnsDelivery || 0) > 0 && (
+                                        <div className="flex justify-between">
+                                          <span className="text-gray-600">CNS Delivery:</span>
+                                          <span className="font-medium text-red-600">{formatNumber(need.needReasons.cnsDelivery || 0)}</span>
+                                        </div>
+                                      )}
+                                      {(need.needReasons.dvpDelivery || 0) > 0 && (
+                                        <div className="flex justify-between">
+                                          <span className="text-gray-600">DVP Delivery:</span>
+                                          <span className="font-medium text-orange-600">{formatNumber(need.needReasons.dvpDelivery || 0)}</span>
+                                        </div>
+                                      )}
+                                      {(need.needReasons.deficit || 0) > 0 && (
+                                        <div className="flex justify-between">
+                                          <span className="text-gray-600">Deficit:</span>
+                                          <span className="font-medium text-red-700">{formatNumber(need.needReasons.deficit || 0)}</span>
+                                        </div>
+                                      )}
+                                      {(need.needReasons.customerShorts || 0) > 0 && (
+                                        <div className="flex justify-between">
+                                          <span className="text-gray-600">Customer:</span>
+                                          <span className="font-medium text-blue-600">{formatNumber(need.needReasons.customerShorts || 0)}</span>
+                                        </div>
+                                      )}
+                                      {(need.needReasons.nonCustomerShorts || 0) > 0 && (
+                                        <div className="flex justify-between">
+                                          <span className="text-gray-600">Non-Customer:</span>
+                                          <span className="font-medium text-purple-600">{formatNumber(need.needReasons.nonCustomerShorts || 0)}</span>
+                                        </div>
+                                      )}
+                                      {(need.needReasons.firmShorts || 0) > 0 && (
+                                        <div className="flex justify-between">
+                                          <span className="text-gray-600">Firm:</span>
+                                          <span className="font-medium text-gray-600">{formatNumber(need.needReasons.firmShorts || 0)}</span>
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="mt-3 pt-2 border-t">
+                                      <div className="flex justify-between text-xs mb-1">
+                                        <span className="text-gray-600">Progress</span>
+                                        <span className="font-medium">{((need.quantity - need.remainingQuantity) / need.quantity * 100).toFixed(1)}%</span>
+                                      </div>
+                                      <CureProgressBar need={need} />
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Actions & Status */}
+                                <div className="lg:col-span-1">
+                                  <div className="bg-white rounded-lg border p-3">
+                                    <h4 className="text-sm font-semibold text-gray-900 mb-2 flex items-center">
+                                      <Settings className="w-4 h-4 mr-1" />
+                                      Quick Actions
+                                    </h4>
+                                    <div className="space-y-2">
+                                      {/* Always show Borrow option */}
+                                      <Button
+                                        size="sm"
+                                        onClick={() => handleQuickBorrow(need)}
+                                        className="w-full justify-start text-blue-600 border-blue-200 hover:bg-blue-50 h-8"
+                                        variant="outline"
+                                      >
+                                        🔄 Borrow {formatNumber(need.remainingQuantity)}
+                                      </Button>
+                                      
+                                      {/* Only show Recall if there's an outstanding loan */}
+                                      {need.outstandingLoan && need.outstandingLoan > 0 && (
+                                        <Button
+                                          size="sm"
+                                          onClick={() => handleQuickRecall(need)}
+                                          className="w-full justify-start text-orange-600 border-orange-200 hover:bg-orange-50 h-8"
+                                          variant="outline"
+                                        >
+                                          📞 Recall {formatNumber(need.outstandingLoan)}
+                                        </Button>
+                                      )}
+                                      
+                                      {/* Only show Release Pledge if there's an outstanding pledge */}
+                                      {need.outstandingPledge && need.outstandingPledge > 0 && (
+                                        <Button
+                                          size="sm"
+                                          className="w-full justify-start text-purple-600 border-purple-200 hover:bg-purple-50 h-8"
+                                          variant="outline"
+                                        >
+                                          🔓 Release Pledge {formatNumber(need.outstandingPledge)}
+                                        </Button>
+                                      )}
+                                      
+                                      {/* Show if no existing positions available */}
+                                      {(!need.outstandingLoan || need.outstandingLoan === 0) && (!need.outstandingPledge || need.outstandingPledge === 0) && (
+                                        <div className="text-xs text-gray-500 italic py-2 px-3 bg-gray-50 rounded">
+                                          No existing loans or pledges to recall/release
+                                        </div>
+                                      )}
+                                    </div>
+                                    
+                                    {/* Outstanding Positions Summary */}
+                                    <div className="mt-3 pt-2 border-t text-xs">
+                                      <div className="text-gray-700 font-medium mb-1">Outstanding Positions:</div>
+                                      {need.outstandingLoan && need.outstandingLoan > 0 && (
+                                        <div className="flex justify-between text-gray-600">
+                                          <span>On Loan:</span>
+                                          <span className="font-medium text-orange-600">{formatNumber(need.outstandingLoan)}</span>
+                                        </div>
+                                      )}
+                                      {need.outstandingPledge && need.outstandingPledge > 0 && (
+                                        <div className="flex justify-between text-gray-600">
+                                          <span>Pledged:</span>
+                                          <span className="font-medium text-purple-600">{formatNumber(need.outstandingPledge)}</span>
+                                        </div>
+                                      )}
+                                      {(!need.outstandingLoan || need.outstandingLoan === 0) && (!need.outstandingPledge || need.outstandingPledge === 0) && (
+                                        <div className="text-gray-500 text-xs">None</div>
+                                      )}
+                                      
+                                      {/* Coverage Analysis */}
+                                      {((need.outstandingLoan || 0) + (need.outstandingPledge || 0)) > 0 && (
+                                        <div className="mt-2 pt-1 border-t border-gray-100">
+                                          <div className="flex justify-between text-xs">
+                                            <span className="text-gray-600">Available Coverage:</span>
+                                            <span className={`font-medium ${
+                                              ((need.outstandingLoan || 0) + (need.outstandingPledge || 0)) >= need.remainingQuantity 
+                                                ? 'text-green-600' 
+                                                : 'text-yellow-600'
+                                            }`}>
+                                              {formatNumber((need.outstandingLoan || 0) + (need.outstandingPledge || 0))} / {formatNumber(need.remainingQuantity)}
+                                            </span>
+                                          </div>
+                                          {((need.outstandingLoan || 0) + (need.outstandingPledge || 0)) >= need.remainingQuantity && (
+                                            <div className="text-xs text-green-600 mt-1">✓ Sufficient to cover need</div>
+                                          )}
+                                          {((need.outstandingLoan || 0) + (need.outstandingPledge || 0)) < need.remainingQuantity && (
+                                            <div className="text-xs text-yellow-600 mt-1">⚠ Partial coverage only</div>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Counterparty Availability */}
+                                <div className="lg:col-span-1">
+                                  <div className="bg-white rounded-lg border p-3">
+                                    <h4 className="text-sm font-semibold text-gray-900 mb-2 flex items-center">
+                                      <Users className="w-4 h-4 mr-1" />
+                                      Availability
+                                    </h4>
+                                    <div className="space-y-1 text-sm">
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-gray-600">Goldman:</span>
+                                        <div className="flex items-center space-x-1">
+                                          <span className="font-medium text-green-600">{formatNumber(Math.floor(need.remainingQuantity * 0.6))}</span>
+                                          <Badge className="bg-green-100 text-green-800 text-xs px-1">✓</Badge>
+                                        </div>
+                                      </div>
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-gray-600">Morgan:</span>
+                                        <div className="flex items-center space-x-1">
+                                          <span className="font-medium text-green-600">{formatNumber(Math.floor(need.remainingQuantity * 0.3))}</span>
+                                          <Badge className="bg-green-100 text-green-800 text-xs px-1">✓</Badge>
+                                        </div>
+                                      </div>
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-gray-600">JPMorgan:</span>
+                                        <div className="flex items-center space-x-1">
+                                          <span className="font-medium text-yellow-600">{formatNumber(Math.floor(need.remainingQuantity * 0.1))}</span>
+                                          <Badge className="bg-yellow-100 text-yellow-800 text-xs px-1">~</Badge>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="mt-3 pt-2 border-t text-xs text-gray-500">
+                                      <div className="flex justify-between">
+                                        <span>Rate Range:</span>
+                                        <span>2.5% - 4.2%</span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span>Updated:</span>
+                                        <span>2 min ago</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                        </tr>
                       )}
                     </React.Fragment>
-                  ))}
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
@@ -2043,7 +2177,6 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
         </div>
         </div>
       </div>
-    </TooltipProvider>
   )
 }
 

@@ -22,7 +22,7 @@ body {
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
+    --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -31,8 +31,9 @@ body {
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
+    /* FIS Brand Colors */
+    --primary: 102 75% 52%; /* FIS Green #4BCD3E */
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 210 40% 96%;
     --secondary-foreground: 222.2 84% 4.9%;
@@ -48,17 +49,60 @@ body {
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --ring: 102 75% 52%; /* FIS Green for focus rings */
 
     --radius: 0.5rem;
 
-    /* Custom semantic colors */
-    --success: 142.1 76.2% 36.3%;
-    --success-foreground: 355.7 100% 97.3%;
-    --warning: 32.5 94.6% 43.7%;
-    --warning-foreground: 210 40% 98%;
-    --info: 221.2 83.2% 53.3%;
-    --info-foreground: 210 40% 98%;
+    /* FIS Brand Color System */
+    --fis-green: 102 75% 52%; /* #4BCD3E - Primary FIS Green */
+    --fis-green-dark: 102 75% 42%; /* Darker variant */
+    --fis-green-light: 102 75% 92%; /* Light background variant */
+    --fis-green-muted: 102 75% 92%; /* Muted background variant */
+    
+    --fis-blue: 201 91% 52%; /* #0D97F7 - FIS Blue accent */
+    --fis-blue-dark: 201 91% 42%;
+    --fis-blue-light: 201 91% 95%;
+    
+    --fis-orange: 25 100% 58%; /* #FF8D00 - FIS Orange accent */
+    --fis-orange-light: 25 100% 95%;
+    
+    --fis-purple: 258 100% 67%; /* #6B46FF - FIS Purple accent */
+    --fis-purple-light: 258 100% 95%;
+
+    /* Semantic colors using FIS palette */
+    --success: 102 75% 52%; /* FIS Green */
+    --success-foreground: 0 0% 100%;
+    --success-muted: 102 75% 92%;
+    
+    --warning: 25 100% 58%; /* FIS Orange */
+    --warning-foreground: 0 0% 100%;
+    --warning-muted: 25 100% 95%;
+    
+    --info: 201 91% 52%; /* FIS Blue */
+    --info-foreground: 0 0% 100%;
+    --info-muted: 201 91% 95%;
+    
+    --critical: 0 84% 60%; /* Red for critical states */
+    --critical-foreground: 0 0% 100%;
+    --critical-muted: 0 100% 95%;
+    
+    /* Status colors using FIS palette */
+    --status-high: 0 84% 60%; /* Red for high priority */
+    --status-high-foreground: 0 0% 100%;
+    --status-high-muted: 0 100% 95%;
+    
+    --status-medium: 25 100% 58%; /* FIS Orange for medium */
+    --status-medium-foreground: 0 0% 100%;
+    --status-medium-muted: 25 100% 95%;
+    
+    --status-low: 201 91% 52%; /* FIS Blue for low priority */
+    --status-low-foreground: 0 0% 100%;
+    --status-low-muted: 201 91% 95%;
+    
+    /* Progress colors */
+    --progress-complete: 102 75% 52%; /* FIS Green */
+    --progress-partial: 25 100% 58%; /* FIS Orange */
+    --progress-none: 215 20% 65%; /* Neutral gray */
   }
 }
 

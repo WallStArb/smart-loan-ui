@@ -14,13 +14,28 @@ function App() {
   const renderActivePage = () => {
     switch (activePage) {
       case 'collateral':
-        return <CollateralManager />
+        return (
+          <CollateralManager />
+        )
       case 'needs':
-        return <NeedsPage onNavigateToParameters={() => setActivePage('parameters')} />
+        return (
+          <NeedsPage 
+            onNavigateToParameters={() => setActivePage('parameters')}
+          />
+        )
       case 'parameters':
-        return <ParametersPage />
+        return (
+          <ParametersPage />
+        )
       default:
-        return <CollateralManager />
+        return (
+          <div className="h-full w-full p-8">
+            <div style={{ padding: '20px', backgroundColor: 'white', borderRadius: '8px' }}>
+              <h1 style={{ color: '#4BCD3E' }}>FIS Smart Loan Application</h1>
+              <p>Page: {activePage}</p>
+            </div>
+          </div>
+        )
     }
   }
 

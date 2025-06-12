@@ -26,7 +26,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Tooltip } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 
 interface Account {
@@ -351,8 +351,7 @@ const CollateralManager = () => {
   })
 
   return (
-    <TooltipProvider>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white p-6">
         {/* Modern Header */}
         <div className="max-w-7xl mx-auto mb-6">
           <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border border-gray-200">
@@ -370,16 +369,11 @@ const CollateralManager = () => {
                 <Clock className="w-4 h-4 mr-1.5" />
                 Updated: {lastUpdate.toLocaleTimeString()}
               </Badge>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-9 px-4">
-                    <Settings className="w-4 h-4 mr-2" />
-                    Settings
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Configure collateral management settings</p>
-                </TooltipContent>
+              <Tooltip content="Configure collateral management settings">
+                <Button variant="outline" size="sm" className="h-9 px-4">
+                  <Settings className="w-4 h-4 mr-2" />
+                  Settings
+                </Button>
               </Tooltip>
             </div>
           </div>
@@ -958,7 +952,6 @@ const CollateralManager = () => {
           </Card>
         </div>
       </div>
-    </TooltipProvider>
   );
 }
 
