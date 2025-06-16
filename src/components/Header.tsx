@@ -100,11 +100,14 @@ const Header: React.FC = () => {
           <div className={`flex items-center ${density === 'compact' ? 'space-x-2' : 'space-x-3'}`}>
             
             {/* Current Time - Using new DateTimeDisplay component */}
-            <div className={`hidden md:block ${density === 'compact' ? 'hidden-compact' : ''}`}>
+            <div className="hidden md:block">
               <DateTimeDisplay 
                 variant={density === 'compact' ? 'minimal' : 'inline'} 
                 size={density === 'compact' ? 'xs' : 'sm'} 
-                showDate={!density || density !== 'compact'}
+                showDate={true}
+                showIcon={density !== 'compact'}
+                compactDate={density === 'compact'}
+                className={density === 'compact' ? 'bg-white/10 backdrop-blur-sm rounded px-2 py-1' : ''}
               />
             </div>
 

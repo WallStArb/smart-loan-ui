@@ -10,6 +10,7 @@ interface DateTimeDisplayProps {
   showSeconds?: boolean;
   size?: 'xs' | 'sm' | 'md';
   variant?: 'card' | 'inline' | 'minimal';
+  compactDate?: boolean; // When true, shows a more compact date format
 }
 
 export const DateTimeDisplay: React.FC<DateTimeDisplayProps> = ({
@@ -18,7 +19,8 @@ export const DateTimeDisplay: React.FC<DateTimeDisplayProps> = ({
   showDate = true,
   showSeconds = false,
   size = 'sm',
-  variant = 'card'
+  variant = 'card',
+  compactDate = false
 }) => {
   const [time, setTime] = useState(new Date());
   const { density } = useDensityMode();
@@ -43,6 +45,14 @@ export const DateTimeDisplay: React.FC<DateTimeDisplayProps> = ({
   };
 
   const getFormattedDate = () => {
+    if (compactDate) {
+      // More compact format: MM/DD (without year) or M/D
+      return time.toLocaleDateString('en-US', {
+        month: 'numeric',
+        day: 'numeric'
+      });
+    }
+    
     return time.toLocaleDateString('en-US', {
       month: '2-digit',
       day: '2-digit',
@@ -76,9 +86,19 @@ export const DateTimeDisplay: React.FC<DateTimeDisplayProps> = ({
     return (
       <div className={`flex items-center ${currentSize.space} ${className}`}>
         {showIcon && <Clock size={currentSize.icon} className="text-white/70" />}
-        <span className={`${currentSize.text} text-white`}>
-          {getFormattedTime()}
-        </span>
+        <div className="flex items-center space-x-1">
+          {showDate && (
+            <>
+              <span className={`${currentSize.text} text-white/70`}>
+                {getFormattedDate()}
+              </span>
+              <span className="text-white/50">•</span>
+            </>
+          )}
+          <span className={`${currentSize.text} text-white font-medium`}>
+            {getFormattedTime()}
+          </span>
+        </div>
       </div>
     );
   }
