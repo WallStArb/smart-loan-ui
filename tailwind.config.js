@@ -108,4 +108,11 @@ export default {
     },
   },
   plugins: [],
+  safelist: [
+    'data-[state=checked]:bg-blue-600',
+    'data-[state=checked]:text-white', 
+    'data-[state=checked]:border-blue-600',
+    'data-[state=unchecked]:bg-white',
+    'data-[state=unchecked]:border-gray-300'
+  ],
 } 

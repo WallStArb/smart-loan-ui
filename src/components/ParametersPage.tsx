@@ -27,8 +27,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
 
 import { Tooltip } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
@@ -343,13 +343,13 @@ const ParametersPage: React.FC = () => {
       </div>
 
       {/* Content Grid */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-4">
         
         {/* Left Column */}
         <div className="space-y-4">
           
           {/* Regulatory Components */}
-          <Card className="border-0 shadow-sm bg-white hover:shadow-md transition-all duration-200">
+          <Card className="border-0 shadow-sm bg-white hover:shadow-md transition-all duration-200 min-w-[320px]">
             <CardHeader className="pb-3 border-b bg-[#015B7E]/5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
@@ -419,7 +419,7 @@ const ParametersPage: React.FC = () => {
           </Card>
 
           {/* Special Conditions */}
-          <Card className="border-0 shadow-sm bg-white hover:shadow-md transition-all duration-200">
+          <Card className="border-0 shadow-sm bg-white hover:shadow-md transition-all duration-200 min-w-[320px]">
             <CardHeader className="pb-3 border-b bg-[#285BC5]/5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
@@ -444,12 +444,8 @@ const ParametersPage: React.FC = () => {
                         checked={settings.borrowForDeficitWhenDeliveryExists}
                         disabled={settings.regulatoryDeficits}
                         onCheckedChange={(checked) => handleInputChange('borrowForDeficitWhenDeliveryExists', checked)}
-                        className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
                       />
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium">Borrow for deficit when delivery exists</span>
-                        <Info className="w-3 h-3 text-gray-400" />
-                      </div>
+                      <span className="text-sm font-medium">Borrow for deficit when delivery exists</span>
                     </div>
                   </div>
                   {settings.regulatoryDeficits && (
@@ -465,7 +461,7 @@ const ParametersPage: React.FC = () => {
 
         {/* Right Column - Business Components */}
         <div className="space-y-4">
-          <Card className="border-0 shadow-sm bg-white hover:shadow-md transition-all duration-200">
+          <Card className="border-0 shadow-sm bg-white hover:shadow-md transition-all duration-200 min-w-[320px]">
             <CardHeader className="pb-3 border-b bg-[#00a651]/5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
@@ -489,7 +485,6 @@ const ParametersPage: React.FC = () => {
                     <Checkbox 
                       checked={settings.regulatoryDeficits}
                       onCheckedChange={(checked) => handleInputChange('regulatoryDeficits', checked)}
-                      className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
                     />
                     <span className="text-sm font-medium">Regulatory Deficits</span>
                   </div>
@@ -501,7 +496,7 @@ const ParametersPage: React.FC = () => {
                   )}>
                     {settings.regulatoryDeficits ? "Active" : "Inactive"}
                   </Badge>
-                  </div>
+                </div>
 
                 <Separator />
 
@@ -512,9 +507,10 @@ const ParametersPage: React.FC = () => {
                       <Checkbox 
                         checked={settings.customerShorts}
                         onCheckedChange={(checked) => handleInputChange('customerShorts', checked)}
-                        className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
                       />
                       <span className="text-sm font-medium">Customer Shorts</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
                       <Button
                         variant="ghost"
                         size="sm"
@@ -523,15 +519,15 @@ const ParametersPage: React.FC = () => {
                       >
                         {settings.customerShortsExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                       </Button>
+                      <Badge variant="secondary" className={cn(
+                        "text-xs px-2 py-0.5",
+                        settings.customerShorts 
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                          : "bg-gray-50 text-gray-500 border-gray-200"
+                      )}>
+                        {settings.customerShorts ? "Active" : "Inactive"}
+                      </Badge>
                     </div>
-                    <Badge variant="secondary" className={cn(
-                      "text-xs px-2 py-0.5",
-                      settings.customerShorts 
-                        ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
-                        : "bg-gray-50 text-gray-500 border-gray-200"
-                    )}>
-                      {settings.customerShorts ? "Active" : "Inactive"}
-                    </Badge>
                   </div>
                   
                   {settings.customerShortsExpanded && settings.customerShorts && (
@@ -543,7 +539,6 @@ const ParametersPage: React.FC = () => {
                               checked={settings.customerCashMargin}
                               disabled={!settings.customerShorts}
                               onCheckedChange={(checked) => handleInputChange('customerCashMargin', checked)}
-                              className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
                             />
                             <span className="text-sm">Customer Cash/Margin</span>
                           </div>
@@ -562,7 +557,6 @@ const ParametersPage: React.FC = () => {
                               checked={settings.customerShort}
                               disabled={!settings.customerShorts}
                               onCheckedChange={(checked) => handleInputChange('customerShort', checked)}
-                              className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
                             />
                             <span className="text-sm">Customer Short</span>
                           </div>
@@ -601,9 +595,10 @@ const ParametersPage: React.FC = () => {
                       <Checkbox 
                         checked={settings.nonCustomerShorts}
                         onCheckedChange={(checked) => handleInputChange('nonCustomerShorts', checked)}
-                        className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
                       />
                       <span className="text-sm font-medium">Non-Customer Shorts</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
                       <Button
                         variant="ghost"
                         size="sm"
@@ -612,15 +607,15 @@ const ParametersPage: React.FC = () => {
                       >
                         {settings.nonCustomerShortsExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                       </Button>
+                      <Badge variant="secondary" className={cn(
+                        "text-xs px-2 py-0.5",
+                        settings.nonCustomerShorts 
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                          : "bg-gray-50 text-gray-500 border-gray-200"
+                      )}>
+                        {settings.nonCustomerShorts ? "Active" : "Inactive"}
+                      </Badge>
                     </div>
-                    <Badge variant="secondary" className={cn(
-                      "text-xs px-2 py-0.5",
-                      settings.nonCustomerShorts 
-                        ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
-                        : "bg-gray-50 text-gray-500 border-gray-200"
-                    )}>
-                      {settings.nonCustomerShorts ? "Active" : "Inactive"}
-                    </Badge>
                   </div>
                   
                   {settings.nonCustomerShortsExpanded && settings.nonCustomerShorts && (
@@ -632,7 +627,6 @@ const ParametersPage: React.FC = () => {
                               checked={settings.nonCustomerCashMargin}
                               disabled={!settings.nonCustomerShorts}
                               onCheckedChange={(checked) => handleInputChange('nonCustomerCashMargin', checked)}
-                              className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
                             />
                             <span className="text-sm">Non-Customer Cash/Margin</span>
                           </div>
@@ -651,7 +645,6 @@ const ParametersPage: React.FC = () => {
                               checked={settings.nonCustomerShort}
                               disabled={!settings.nonCustomerShorts}
                               onCheckedChange={(checked) => handleInputChange('nonCustomerShort', checked)}
-                              className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
                             />
                             <span className="text-sm">Non-Customer Short</span>
                           </div>
@@ -689,9 +682,9 @@ const ParametersPage: React.FC = () => {
                     <Checkbox 
                       checked={settings.firmShorts}
                       onCheckedChange={(checked) => handleInputChange('firmShorts', checked)}
-                      className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
-                    />
-                    <span className="text-sm font-medium">Firm Shorts</span>
+                    >
+                      <span className="text-sm font-medium">Firm Shorts</span>
+                    </Checkbox>
                   </div>
                   <Badge variant="secondary" className={cn(
                     "text-xs px-2 py-0.5",
@@ -760,7 +753,7 @@ const ParametersPage: React.FC = () => {
           </Card>
 
           {/* Reduction Methods */}
-          <Card className="border-0 shadow-sm bg-white hover:shadow-md transition-all duration-200">
+          <Card className="border-0 shadow-sm bg-white hover:shadow-md transition-all duration-200 min-w-[320px]">
             <CardHeader className="pb-3 border-b bg-[#1B1B6F]/5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
@@ -785,17 +778,8 @@ const ParametersPage: React.FC = () => {
                       <Checkbox 
                         checked={settings.reduceByAnticipatedReceives}
                         onCheckedChange={(checked) => handleInputChange('reduceByAnticipatedReceives', checked)}
-                        className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
                       />
                       <span className="text-sm font-medium text-gray-900">Reduce by Anticipated Receives</span>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => handleInputChange('anticipatedReceivesExpanded', !settings.anticipatedReceivesExpanded)}
-                        className="h-6 w-6 p-0"
-                      >
-                        {settings.anticipatedReceivesExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                      </Button>
                       <Tooltip content="Automatically reduces borrowing needs based on expected incoming securities deliveries">
                         <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-help" />
                       </Tooltip>
@@ -805,7 +789,7 @@ const ParametersPage: React.FC = () => {
                           type="time"
                           value={settings.cutoffTime}
                           onChange={(e) => handleInputChange('cutoffTime', e.target.value)}
-                          className="h-6 w-16 text-xs border-gray-300 focus:border-[#015B7E] focus:ring-[#015B7E] px-1"
+                          className="h-6 w-20 text-xs border-gray-300 focus:border-[#015B7E] focus:ring-[#015B7E] px-1"
                         />
                         <Tooltip content="Eastern Time">
                           <Info className="w-3 h-3 text-gray-400 cursor-help" />
@@ -813,14 +797,24 @@ const ParametersPage: React.FC = () => {
                         <span className="text-xs text-gray-600">ET</span>
                       </div>
                     </div>
-                    <Badge variant="secondary" className={cn(
-                      "text-xs px-2 py-0.5",
-                      settings.reduceByAnticipatedReceives 
-                        ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
-                        : "bg-gray-50 text-gray-500 border-gray-200"
-                    )}>
-                      {settings.reduceByAnticipatedReceives ? "Active" : "Inactive"}
-                    </Badge>
+                    <div className="flex items-center space-x-2">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleInputChange('anticipatedReceivesExpanded', !settings.anticipatedReceivesExpanded)}
+                        className="h-6 w-6 p-0"
+                      >
+                        {settings.anticipatedReceivesExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                      </Button>
+                      <Badge variant="secondary" className={cn(
+                        "text-xs px-2 py-0.5",
+                        settings.reduceByAnticipatedReceives 
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                          : "bg-gray-50 text-gray-500 border-gray-200"
+                      )}>
+                        {settings.reduceByAnticipatedReceives ? "Active" : "Inactive"}
+                      </Badge>
+                    </div>
                   </div>
                   
                   {settings.anticipatedReceivesExpanded && (
@@ -886,7 +880,6 @@ const ParametersPage: React.FC = () => {
                     <Checkbox 
                       checked={settings.reduceByOpenStockLoans}
                       onCheckedChange={(checked) => handleInputChange('reduceByOpenStockLoans', checked)}
-                      className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
                     />
                     <span className="text-sm font-medium">Reduce by Open Stock Loans</span>
                   </div>
@@ -910,7 +903,6 @@ const ParametersPage: React.FC = () => {
                         checked={settings.reduceByOpenStockLoanRecall}
                         disabled={!settings.reduceByOpenStockLoans}
                         onCheckedChange={(checked) => handleInputChange('reduceByOpenStockLoanRecall', checked)}
-                        className="data-[state=checked]:bg-[#00a651] data-[state=checked]:border-[#00a651]"
                       />
                       <span className="text-sm font-medium">Reduce by Open Stock Loan Recall</span>
                     </div>

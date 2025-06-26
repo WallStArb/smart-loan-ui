@@ -38,6 +38,7 @@ import { Separator } from '@/components/ui/separator'
 import { Tooltip } from '@/components/ui/tooltip'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Checkbox } from '@/components/ui/checkbox'
 import { cn } from '@/lib/utils'
 import FISLogo from '@/components/ui/fis-logo'
 
@@ -218,6 +219,8 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
   const [securityNeeds, setSecurityNeeds] = useState<SecurityNeed[]>([])
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null)
   const [advancedMetrics, setAdvancedMetrics] = useState<AdvancedMetrics | null>(null)
+  const [counterpartySortBy, setCounterpartySortBy] = useState<'borrowCount' | 'totalBorrowAmount' | 'dailyCost' | 'weightedAverageRate'>('dailyCost')
+  const [showAllCounterparties, setShowAllCounterparties] = useState(false)
 
   // Generate realistic mock data
   const generateMockData = (): { needs: SecurityNeed[], metrics: DashboardMetrics, advancedMetrics: AdvancedMetrics } => {
@@ -1544,44 +1547,72 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
             </div>
           )}
 
-          {/* Ultra-Compact Counterparty Breakdown - Collapsible */}
+          {/* Counterparty Borrowing - Enhanced with sorting and expand/collapse */}
           {advancedMetrics && (
               <div className="bg-white rounded-md shadow border border-gray-200 mb-4">
                 <div className="px-3 py-1 border-b border-gray-200 bg-gray-50 rounded-t-md">
-                                      <div className="flex items-center justify-between">
-                      <h3 className="text-xs font-semibold text-gray-900">Top Counterparty Borrowing</h3>
-                      <div className="flex items-center space-x-2">
-                        <div className="flex items-center space-x-2 text-xs text-gray-500">
-                          <span>Live Grid - Ranked by efficiency</span>
-                          <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => toggleSectionCollapse('counterparty')}
-                          className="h-6 px-1 text-gray-500 hover:text-gray-700"
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-semibold text-gray-900">Counterparty Borrowing</h3>
+                    <div className="flex items-center space-x-2">
+                      {/* Sort Dropdown */}
+                      <div className="flex items-center space-x-1">
+                        <span className="text-xs text-gray-500">Sort by:</span>
+                        <select 
+                          value={counterpartySortBy}
+                          onChange={(e) => setCounterpartySortBy(e.target.value as typeof counterpartySortBy)}
+                          className="text-xs bg-transparent border border-gray-300 rounded px-1 py-0.5 text-gray-700"
                         >
-                          {collapsedSections.has('counterparty') ? (
-                            <>
-                              <ChevronDown size={16} className="mr-1" />
-                              <span className="text-xs">Show</span>
-                            </>
-                          ) : (
-                            <>
-                              <ChevronUp size={16} className="mr-1" />
-                              <span className="text-xs">Hide</span>
-                            </>
-                          )}
-                        </Button>
+                          <option value="borrowCount"># Borrows</option>
+                          <option value="totalBorrowAmount">Amount</option>
+                          <option value="dailyCost">Daily Cost</option>
+                          <option value="weightedAverageRate">Rate</option>
+                        </select>
                       </div>
+                      <div className="flex items-center space-x-2 text-xs text-gray-500">
+                        <span>Live Grid</span>
+                        <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggleSectionCollapse('counterparty')}
+                        className="h-6 px-1 text-gray-500 hover:text-gray-700"
+                      >
+                        {collapsedSections.has('counterparty') ? (
+                          <>
+                            <ChevronDown size={16} className="mr-1" />
+                            <span className="text-xs">Show</span>
+                          </>
+                        ) : (
+                          <>
+                            <ChevronUp size={16} className="mr-1" />
+                            <span className="text-xs">Hide</span>
+                          </>
+                        )}
+                      </Button>
                     </div>
+                  </div>
                 </div>
                 {!collapsedSections.has('counterparty') && (
                   <div className="p-1.5">
-                    <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-1.5">
+                    {/* Main row with 5-6 counterparties */}
+                    <div className="grid grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-1.5 mb-2">
                       {advancedMetrics.borrowingCosts.counterpartyBreakdown
-                        .sort((a, b) => b.dailyCost - a.dailyCost)
-                        .slice(0, 6)
+                        .sort((a, b) => {
+                          switch (counterpartySortBy) {
+                            case 'borrowCount':
+                              return b.borrowCount - a.borrowCount
+                            case 'totalBorrowAmount':
+                              return b.totalBorrowAmount - a.totalBorrowAmount
+                            case 'dailyCost':
+                              return b.dailyCost - a.dailyCost
+                            case 'weightedAverageRate':
+                              return a.weightedAverageRate - b.weightedAverageRate
+                            default:
+                              return b.dailyCost - a.dailyCost
+                          }
+                        })
+                        .slice(0, showAllCounterparties ? undefined : 6)
                         .map((counterparty, idx) => {
                           const avgRate = advancedMetrics.borrowingCosts.averageRate
                           const efficiency = ((avgRate - counterparty.weightedAverageRate) / avgRate) * 100
@@ -1670,8 +1701,23 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                         })}
                     </div>
                     
+                    {/* Show More/Less Button */}
+                    {advancedMetrics.borrowingCosts.counterpartyBreakdown.length > 6 && (
+                      <div className="flex justify-center mb-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setShowAllCounterparties(!showAllCounterparties)}
+                          className="h-7 px-3 text-xs"
+                        >
+                          <ChevronDown className={`w-4 h-4 mr-1 transition-transform ${showAllCounterparties ? 'rotate-180' : ''}`} />
+                          {showAllCounterparties ? `Show Less` : `Show ${advancedMetrics.borrowingCosts.counterpartyBreakdown.length - 6} More`}
+                        </Button>
+                      </div>
+                    )}
+                    
                     {/* Summary Footer */}
-                    <div className="mt-2 pt-1.5 border-t border-gray-200 bg-gray-50 rounded px-2 py-1">
+                    <div className="pt-1.5 border-t border-gray-200 bg-gray-50 rounded px-2 py-1">
                       <div className="grid grid-cols-5 gap-2 text-center text-xs">
                         <div>
                           <div className="font-bold text-gray-900">{advancedMetrics.borrowingCosts.counterpartyBreakdown.reduce((sum, cp) => sum + cp.borrowCount, 0)}</div>
@@ -1944,11 +1990,9 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                           selectedSecurities.has(need.id) && "bg-blue-50"
                         )}>
                           <td className="px-2 py-1">
-                            <input
-                              type="checkbox"
+                            <Checkbox
                               checked={selectedSecurities.has(need.id)}
-                              onChange={() => toggleSecuritySelection(need.id)}
-                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                              onCheckedChange={() => toggleSecuritySelection(need.id)}
                             />
                           </td>
                           <td className="px-2 py-1 text-center">
@@ -2019,7 +2063,7 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                                               {expandedRows.has(need.id) && (
                           <tr className="bg-gray-50">
                                                         <td colSpan={9} className="px-4 py-3">
-                              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                              <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
                                 {/* Need Breakdown & Progress */}
                                 <div className="lg:col-span-1">
                                   <div className="bg-white rounded-lg border p-3">
@@ -2206,6 +2250,55 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                                       <div className="flex justify-between">
                                         <span>Updated:</span>
                                         <span>2 min ago</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Trade Activity */}
+                                <div className="lg:col-span-1">
+                                  <div className="bg-white rounded-lg border p-3">
+                                    <h4 className="text-sm font-semibold text-gray-900 mb-2 flex items-center">
+                                      <Activity className="w-4 h-4 mr-1" />
+                                      Trade activity
+                                    </h4>
+                                    <div className="space-y-1 text-sm">
+                                      <div className="text-xs text-gray-700 font-medium mb-2">Unsettled Activity:</div>
+                                      
+                                      {/* Customer Shorts */}
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-gray-600">Customer Shorts:</span>
+                                        <span className="font-medium text-blue-600">{formatNumber(need.needReasons.customerShorts || 0)}</span>
+                                      </div>
+                                      
+                                      {/* Non-Customer Shorts */}
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-gray-600">Non-Customer Shorts:</span>
+                                        <span className="font-medium text-purple-600">{formatNumber(need.needReasons.nonCustomerShorts || 0)}</span>
+                                      </div>
+                                      
+                                      {/* Firm Shorts */}
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-gray-600">Firm Shorts:</span>
+                                        <span className="font-medium text-gray-600">{formatNumber(need.needReasons.firmShorts || 0)}</span>
+                                      </div>
+                                      
+                                      {/* Buy (Cover) */}
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-gray-600">Buy (Cover):</span>
+                                        <span className="font-medium text-green-600">{formatNumber(Math.floor(need.remainingQuantity * 0.15))}</span>
+                                      </div>
+                                      
+                                      {/* Buys */}
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-gray-600">Buys:</span>
+                                        <span className="font-medium text-emerald-600">{formatNumber(Math.floor(need.remainingQuantity * 0.25))}</span>
+                                      </div>
+                                      
+                                      {/* Sells */}
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-gray-600">Sells:</span>
+                                        <span className="font-medium text-red-600">{formatNumber(Math.floor(need.remainingQuantity * 0.35))}</span>
                                       </div>
                                     </div>
                                   </div>

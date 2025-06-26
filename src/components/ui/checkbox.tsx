@@ -1,7 +1,5 @@
 import * as React from "react"
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
-import { Check } from "lucide-react"
-
 import { cn } from "@/lib/utils"
 
 const Checkbox = React.forwardRef<
@@ -19,7 +17,8 @@ const Checkbox = React.forwardRef<
     <CheckboxPrimitive.Indicator
       className={cn("flex items-center justify-center text-current")}
     >
-      <Check className="h-4 w-4" />
+      {/* Default shadcn checkmark SVG */}
+      <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 8.5 7 11.5 12 6.5" /></svg>
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>
 ))
