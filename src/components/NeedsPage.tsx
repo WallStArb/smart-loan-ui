@@ -131,6 +131,14 @@ interface DashboardMetrics {
     borrows: number
     releases: number
   }
+  borrowRecallActivity: {
+    borrowsMade: number
+    borrowsPending: number
+    recallsMade: number
+    recallsPending: number
+    borrowsSuccessRate: number
+    recallsSuccessRate: number
+  }
 }
 
 interface AdvancedMetrics {
@@ -442,6 +450,14 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
         returns: Math.floor(Math.random() * 80) + 20,
         borrows: Math.floor(Math.random() * 200) + 100,
         releases: Math.floor(Math.random() * 60) + 15
+      },
+      borrowRecallActivity: {
+        borrowsMade: Math.floor(Math.random() * 80) + 40,
+        borrowsPending: Math.floor(Math.random() * 25) + 10,
+        recallsMade: Math.floor(Math.random() * 60) + 20,
+        recallsPending: Math.floor(Math.random() * 15) + 5,
+        borrowsSuccessRate: Math.floor(Math.random() * 15) + 85, // 85-100%
+        recallsSuccessRate: Math.floor(Math.random() * 10) + 90  // 90-100%
       }
     }
 
@@ -1389,7 +1405,7 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
             </div>
             {!collapsedSections.has('progress') && (
               <div className="p-2">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-2">
             {/* Daily Progress */}
             <div className="fis-metric-gradient rounded-md shadow-sm border border-gray-100 p-2">
               <div className="flex items-center space-x-2 mb-1">      
@@ -1490,6 +1506,55 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                 <div className="flex justify-between bg-yellow-50 px-1.5 py-0.5 rounded">
                   <span>Releases</span>
                   <span className="font-semibold text-yellow-600">{metrics.cureMethods.releases}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Borrow & Recall Activity */}
+            <div className="bg-white rounded-md shadow border border-gray-200 p-2">
+              <div className="flex items-center space-x-2 mb-1">
+                <Activity className="w-3 h-3 text-indigo-600" />
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs font-semibold text-gray-900">Borrow & Recall Activity</div>
+                  <div className="text-lg font-bold text-indigo-600 leading-none">
+                    {metrics.borrowRecallActivity.borrowsMade + metrics.borrowRecallActivity.recallsMade}
+                  </div>
+                </div>
+                <div className="text-right text-xs">
+                  <div className="text-gray-500">Made</div>
+                  <div className="font-semibold">Today</div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-0.5 text-xs mb-1">
+                <div className="bg-blue-50 px-1.5 py-1 rounded text-center">
+                  <div className="text-blue-500 text-xs">Borrows</div>
+                  <div className="font-semibold text-blue-600">{metrics.borrowRecallActivity.borrowsMade}</div>
+                  <div className="text-gray-500 text-xs">Made</div>
+                </div>
+                <div className="bg-orange-50 px-1.5 py-1 rounded text-center">
+                  <div className="text-orange-500 text-xs">Recalls</div>
+                  <div className="font-semibold text-orange-600">{metrics.borrowRecallActivity.recallsMade}</div>
+                  <div className="text-gray-500 text-xs">Made</div>
+                </div>
+              </div>
+              <div className="space-y-0.5 text-xs">
+                <div className="flex justify-between bg-purple-50 px-1.5 py-0.5 rounded">
+                  <span>Borrows Pending</span>
+                  <span className="font-semibold text-purple-600">{metrics.borrowRecallActivity.borrowsPending}</span>
+                </div>
+                <div className="flex justify-between bg-yellow-50 px-1.5 py-0.5 rounded">
+                  <span>Recalls Pending</span>
+                  <span className="font-semibold text-yellow-600">{metrics.borrowRecallActivity.recallsPending}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-0.5 text-xs">
+                  <div className="bg-green-50 px-1 py-0.5 rounded text-center">
+                    <div className="text-green-500 text-xs">Borrow Success</div>
+                    <div className="font-semibold text-green-600">{metrics.borrowRecallActivity.borrowsSuccessRate}%</div>
+                  </div>
+                  <div className="bg-teal-50 px-1 py-0.5 rounded text-center">
+                    <div className="text-teal-500 text-xs">Recall Success</div>
+                    <div className="font-semibold text-teal-600">{metrics.borrowRecallActivity.recallsSuccessRate}%</div>
+                  </div>
                 </div>
               </div>
             </div>
