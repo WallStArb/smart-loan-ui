@@ -180,6 +180,39 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
   const getFilteredNeeds = () => {
     let filtered = [...securityNeeds]
 
+    // Apply advanced filters first
+    if (advancedFilters.needTypes.cns || advancedFilters.needTypes.dvp || 
+        advancedFilters.needTypes.deficit || advancedFilters.needTypes.agedDeficit || 
+        advancedFilters.tradeActivity.customerShorts || advancedFilters.tradeActivity.nonCustomerShorts || 
+        advancedFilters.tradeActivity.firmShorts) {
+      
+      filtered = filtered.filter(need => {
+        // Need type filters
+        const needTypeMatch = 
+          (advancedFilters.needTypes.cns && need.needReasons.cnsDelivery) ||
+          (advancedFilters.needTypes.dvp && need.needReasons.dvpDelivery) ||
+          (advancedFilters.needTypes.deficit && need.needReasons.deficit) ||
+          (advancedFilters.needTypes.agedDeficit && need.needReasons.deficit && need.agingDays >= advancedFilters.agedDeficitDays)
+        
+        // Trade activity filters (individual)
+        const tradeActivityFiltersActive = advancedFilters.tradeActivity.customerShorts || 
+                                          advancedFilters.tradeActivity.nonCustomerShorts || 
+                                          advancedFilters.tradeActivity.firmShorts
+        
+        const tradeActivityMatch = tradeActivityFiltersActive ? 
+          (advancedFilters.tradeActivity.customerShorts && need.needReasons.customerShorts) ||
+          (advancedFilters.tradeActivity.nonCustomerShorts && need.needReasons.nonCustomerShorts) ||
+          (advancedFilters.tradeActivity.firmShorts && need.needReasons.firmShorts) : 
+          true
+        
+        // If no need type filters are active, only apply trade activity filter
+        const needTypeFiltersActive = advancedFilters.needTypes.cns || advancedFilters.needTypes.dvp || 
+                                     advancedFilters.needTypes.deficit || advancedFilters.needTypes.agedDeficit
+        
+        return (!needTypeFiltersActive || needTypeMatch) && tradeActivityMatch
+      })
+    }
+
     // Apply view mode
     switch (viewMode) {
       case 'critical-only':
@@ -221,6 +254,23 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
   const [advancedMetrics, setAdvancedMetrics] = useState<AdvancedMetrics | null>(null)
   const [counterpartySortBy, setCounterpartySortBy] = useState<'borrowCount' | 'totalBorrowAmount' | 'dailyCost' | 'weightedAverageRate'>('dailyCost')
   const [showAllCounterparties, setShowAllCounterparties] = useState(false)
+  
+  // Advanced filtering state
+  const [advancedFilters, setAdvancedFilters] = useState({
+    needTypes: {
+      cns: false,
+      dvp: false,
+      deficit: false,
+      agedDeficit: false
+    },
+    agedDeficitDays: 3,
+    tradeActivity: {
+      customerShorts: false,
+      nonCustomerShorts: false,
+      firmShorts: false
+    },
+    showFilterPanel: false
+  })
 
   // Generate realistic mock data
   const generateMockData = (): { needs: SecurityNeed[], metrics: DashboardMetrics, advancedMetrics: AdvancedMetrics } => {
@@ -480,6 +530,25 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
     setMetrics(newMetrics)
     setAdvancedMetrics(newAdvancedMetrics)
   }, [])
+
+  // Close filter panel when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const filterPanel = document.querySelector('[data-filter-panel]')
+      const filterButton = document.querySelector('[data-filter-button]')
+      
+      if (advancedFilters.showFilterPanel && 
+          filterPanel && 
+          !filterPanel.contains(event.target as Node) &&
+          filterButton &&
+          !filterButton.contains(event.target as Node)) {
+        setAdvancedFilters(prev => ({ ...prev, showFilterPanel: false }))
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [advancedFilters.showFilterPanel])
 
   // Smart filter presets (after securityNeeds is initialized)
   const filterPresets = [
@@ -1824,15 +1893,170 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                     </>
                   )}
                   
-                  <Button 
-                    variant="outline"
-                    size="sm"
-                    className="h-8"
-                    onClick={() => console.log('Filter functionality coming soon')}
-                  >
-                    <Filter className="w-4 h-4 mr-2" />
-                    Filter
-                  </Button>
+                  <div className="relative">
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      className={`h-8 ${advancedFilters.showFilterPanel ? 'bg-blue-50 border-blue-300 text-blue-700' : ''}`}
+                      onClick={() => setAdvancedFilters(prev => ({ ...prev, showFilterPanel: !prev.showFilterPanel }))}
+                      data-filter-button
+                    >
+                      <Filter className="w-4 h-4 mr-2" />
+                      Filter
+                      {(advancedFilters.needTypes.cns || advancedFilters.needTypes.dvp || 
+                        advancedFilters.needTypes.deficit || advancedFilters.needTypes.agedDeficit || 
+                        advancedFilters.tradeActivity.customerShorts || advancedFilters.tradeActivity.nonCustomerShorts || 
+                        advancedFilters.tradeActivity.firmShorts) && (
+                        <div className="ml-1 w-2 h-2 bg-blue-500 rounded-full"></div>
+                      )}
+                    </Button>
+                    
+                    {/* Advanced Filter Panel */}
+                    {advancedFilters.showFilterPanel && (
+                      <div className="absolute top-full right-0 mt-1 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4" data-filter-panel>
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <h3 className="text-sm font-semibold text-gray-900">Advanced Filters</h3>
+                            <button
+                              onClick={() => setAdvancedFilters({
+                                needTypes: { cns: false, dvp: false, deficit: false, agedDeficit: false },
+                                agedDeficitDays: 3,
+                                tradeActivity: { customerShorts: false, nonCustomerShorts: false, firmShorts: false },
+                                showFilterPanel: true
+                              })}
+                              className="text-xs text-blue-600 hover:text-blue-800"
+                            >
+                              Clear All
+                            </button>
+                          </div>
+                          
+                          {/* Need Types */}
+                          <div>
+                            <h4 className="text-xs font-medium text-gray-700 mb-2">Need Types</h4>
+                            <div className="space-y-2">
+                              <label className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  checked={advancedFilters.needTypes.cns}
+                                  onChange={(e) => setAdvancedFilters(prev => ({
+                                    ...prev,
+                                    needTypes: { ...prev.needTypes, cns: e.target.checked }
+                                  }))}
+                                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span className="text-sm text-gray-700">CNS Delivery</span>
+                              </label>
+                              <label className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  checked={advancedFilters.needTypes.dvp}
+                                  onChange={(e) => setAdvancedFilters(prev => ({
+                                    ...prev,
+                                    needTypes: { ...prev.needTypes, dvp: e.target.checked }
+                                  }))}
+                                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span className="text-sm text-gray-700">DVP Delivery</span>
+                              </label>
+                              <label className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  checked={advancedFilters.needTypes.deficit}
+                                  onChange={(e) => setAdvancedFilters(prev => ({
+                                    ...prev,
+                                    needTypes: { ...prev.needTypes, deficit: e.target.checked }
+                                  }))}
+                                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span className="text-sm text-gray-700">Deficit</span>
+                              </label>
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  checked={advancedFilters.needTypes.agedDeficit}
+                                  onChange={(e) => setAdvancedFilters(prev => ({
+                                    ...prev,
+                                    needTypes: { ...prev.needTypes, agedDeficit: e.target.checked }
+                                  }))}
+                                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span className="text-sm text-gray-700">Aged Deficit (</span>
+                                <input
+                                  type="number"
+                                  value={advancedFilters.agedDeficitDays}
+                                  onChange={(e) => setAdvancedFilters(prev => ({
+                                    ...prev,
+                                    agedDeficitDays: parseInt(e.target.value) || 3
+                                  }))}
+                                  min="1"
+                                  max="30"
+                                  className="w-12 text-xs border border-gray-300 rounded px-1 py-0.5"
+                                />
+                                <span className="text-sm text-gray-700">+ days)</span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="border-t border-gray-200 pt-3">
+                            <h4 className="text-xs font-medium text-gray-700 mb-2">Trade Activity</h4>
+                            <div className="space-y-2">
+                              <label className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  checked={advancedFilters.tradeActivity.customerShorts}
+                                  onChange={(e) => setAdvancedFilters(prev => ({
+                                    ...prev,
+                                    tradeActivity: { ...prev.tradeActivity, customerShorts: e.target.checked }
+                                  }))}
+                                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span className="text-sm text-gray-700">Customer Shorts</span>
+                              </label>
+                              <label className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  checked={advancedFilters.tradeActivity.nonCustomerShorts}
+                                  onChange={(e) => setAdvancedFilters(prev => ({
+                                    ...prev,
+                                    tradeActivity: { ...prev.tradeActivity, nonCustomerShorts: e.target.checked }
+                                  }))}
+                                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span className="text-sm text-gray-700">Non-Customer Shorts</span>
+                              </label>
+                              <label className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  checked={advancedFilters.tradeActivity.firmShorts}
+                                  onChange={(e) => setAdvancedFilters(prev => ({
+                                    ...prev,
+                                    tradeActivity: { ...prev.tradeActivity, firmShorts: e.target.checked }
+                                  }))}
+                                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span className="text-sm text-gray-700">Firm Shorts</span>
+                              </label>
+                            </div>
+                          </div>
+                          
+                          {/* Filter Results Summary */}
+                          <div className="border-t border-gray-200 pt-3">
+                            <div className="text-xs text-gray-600">
+                              <span className="font-medium">
+                                {getFilteredNeeds().length} of {securityNeeds.length} securities
+                              </span>
+                              {(advancedFilters.needTypes.cns || advancedFilters.needTypes.dvp || 
+                                advancedFilters.needTypes.deficit || advancedFilters.needTypes.agedDeficit || 
+                                advancedFilters.tradeActivity.customerShorts || advancedFilters.tradeActivity.nonCustomerShorts || 
+                                advancedFilters.tradeActivity.firmShorts) && (
+                                <span className="text-blue-600"> (filtered)</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   <Button 
                     variant="outline"
                     size="sm"
