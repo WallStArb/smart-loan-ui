@@ -76,6 +76,26 @@ interface SecurityNeed {
   // Outstanding positions that can be recalled/released
   outstandingLoan?: number  // Quantity currently on loan that can be recalled
   outstandingPledge?: number  // Quantity currently pledged that can be released
+  // Enhanced trade activity data
+  tradeActivity?: {
+    // Shorts/Covers
+    customerShortCovers?: number
+    nonCustomerShortCovers?: number
+    firmShortCovers?: number
+    // Customer trading (cash and margin)
+    customerCashBuys?: number
+    customerCashSells?: number
+    customerMarginBuys?: number
+    customerMarginSells?: number
+    // Non-Customer trading (cash and margin)
+    nonCustomerCashBuys?: number
+    nonCustomerCashSells?: number
+    nonCustomerMarginBuys?: number
+    nonCustomerMarginSells?: number
+    // Firm trading
+    firmBuys?: number
+    firmSells?: number
+  }
 }
 
 interface DashboardMetrics {
@@ -364,7 +384,27 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
         cureMethod,
         failedAttempts: Math.floor(Math.random() * 3),
         outstandingLoan: outstandingLoan > 0 ? outstandingLoan : undefined,
-        outstandingPledge: outstandingPledge > 0 ? outstandingPledge : undefined
+        outstandingPledge: outstandingPledge > 0 ? outstandingPledge : undefined,
+        // Generate enhanced trade activity data
+        tradeActivity: {
+          // Shorts/Covers
+          customerShortCovers: needReasons.customerShorts ? Math.floor(needReasons.customerShorts * (0.1 + Math.random() * 0.4)) : 0,
+          nonCustomerShortCovers: needReasons.nonCustomerShorts ? Math.floor(needReasons.nonCustomerShorts * (0.1 + Math.random() * 0.4)) : 0,
+          firmShortCovers: needReasons.firmShorts ? Math.floor(needReasons.firmShorts * (0.1 + Math.random() * 0.4)) : 0,
+          // Customer trading
+          customerCashBuys: Math.floor(Math.random() * quantity * 0.3),
+          customerCashSells: Math.floor(Math.random() * quantity * 0.25),
+          customerMarginBuys: Math.floor(Math.random() * quantity * 0.2),
+          customerMarginSells: Math.floor(Math.random() * quantity * 0.15),
+          // Non-Customer trading
+          nonCustomerCashBuys: Math.floor(Math.random() * quantity * 0.15),
+          nonCustomerCashSells: Math.floor(Math.random() * quantity * 0.1),
+          nonCustomerMarginBuys: Math.floor(Math.random() * quantity * 0.1),
+          nonCustomerMarginSells: Math.floor(Math.random() * quantity * 0.08),
+          // Firm trading
+          firmBuys: Math.floor(Math.random() * quantity * 0.12),
+          firmSells: Math.floor(Math.random() * quantity * 0.1)
+        }
       }
 
       needs.push(need)
@@ -2486,43 +2526,96 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                                       <Activity className="w-4 h-4 mr-1" />
                                       Trade activity
                                     </h4>
-                                    <div className="space-y-1 text-sm">
-                                      <div className="text-xs text-gray-700 font-medium mb-2">Unsettled Activity:</div>
-                                      
-                                      {/* Customer Shorts */}
+                                    <div className="space-y-1.5 text-xs">
+                                      {/* Customer Shorts/Cover */}
                                       <div className="flex justify-between items-center">
-                                        <span className="text-gray-600">Customer Shorts:</span>
-                                        <span className="font-medium text-blue-600">{formatNumber(need.needReasons.customerShorts || 0)}</span>
+                                        <span className="text-gray-600">Customer Shorts/Cover:</span>
+                                        <span className="font-medium">
+                                          <span className="text-blue-600">{formatNumber(need.needReasons.customerShorts || 0)}</span>
+                                          <span className="text-gray-400">/</span>
+                                          <span className="text-green-600">{formatNumber(need.tradeActivity?.customerShortCovers || 0)}</span>
+                                          <span className="ml-2 text-gray-800">{formatNumber((need.needReasons.customerShorts || 0) - (need.tradeActivity?.customerShortCovers || 0))}</span>
+                                        </span>
                                       </div>
                                       
-                                      {/* Non-Customer Shorts */}
+                                      {/* Non-Customer Shorts/Cover */}
                                       <div className="flex justify-between items-center">
-                                        <span className="text-gray-600">Non-Customer Shorts:</span>
-                                        <span className="font-medium text-purple-600">{formatNumber(need.needReasons.nonCustomerShorts || 0)}</span>
+                                        <span className="text-gray-600">Non-Customer Shorts/Cover:</span>
+                                        <span className="font-medium">
+                                          <span className="text-purple-600">{formatNumber(need.needReasons.nonCustomerShorts || 0)}</span>
+                                          <span className="text-gray-400">/</span>
+                                          <span className="text-green-600">{formatNumber(need.tradeActivity?.nonCustomerShortCovers || 0)}</span>
+                                          <span className="ml-2 text-gray-800">{formatNumber((need.needReasons.nonCustomerShorts || 0) - (need.tradeActivity?.nonCustomerShortCovers || 0))}</span>
+                                        </span>
                                       </div>
                                       
-                                      {/* Firm Shorts */}
+                                      {/* Firm Shorts/Cover */}
                                       <div className="flex justify-between items-center">
-                                        <span className="text-gray-600">Firm Shorts:</span>
-                                        <span className="font-medium text-gray-600">{formatNumber(need.needReasons.firmShorts || 0)}</span>
+                                        <span className="text-gray-600">Firm Shorts/Cover:</span>
+                                        <span className="font-medium">
+                                          <span className="text-gray-600">{formatNumber(need.needReasons.firmShorts || 0)}</span>
+                                          <span className="text-gray-400">/</span>
+                                          <span className="text-green-600">{formatNumber(need.tradeActivity?.firmShortCovers || 0)}</span>
+                                          <span className="ml-2 text-gray-800">{formatNumber((need.needReasons.firmShorts || 0) - (need.tradeActivity?.firmShortCovers || 0))}</span>
+                                        </span>
                                       </div>
-                                      
-                                      {/* Buy (Cover) */}
+
+                                      {/* Separator */}
+                                      <div className="border-t border-gray-200 my-2"></div>
+
+                                      {/* Customer Cash Buy/Sell */}
                                       <div className="flex justify-between items-center">
-                                        <span className="text-gray-600">Buy (Cover):</span>
-                                        <span className="font-medium text-green-600">{formatNumber(Math.floor(need.remainingQuantity * 0.15))}</span>
+                                        <span className="text-gray-600">Customer Cash Buy/Sell:</span>
+                                        <span className="font-medium">
+                                          <span className="text-green-600">{formatNumber(need.tradeActivity?.customerCashBuys || 0)}</span>
+                                          <span className="text-gray-400">/</span>
+                                          <span className="text-red-600">{formatNumber(need.tradeActivity?.customerCashSells || 0)}</span>
+                                          <span className="ml-2 text-gray-800">{formatNumber((need.tradeActivity?.customerCashBuys || 0) - (need.tradeActivity?.customerCashSells || 0))}</span>
+                                        </span>
                                       </div>
-                                      
-                                      {/* Buys */}
+
+                                      {/* Customer Margin Buy/Sell */}
                                       <div className="flex justify-between items-center">
-                                        <span className="text-gray-600">Buys:</span>
-                                        <span className="font-medium text-emerald-600">{formatNumber(Math.floor(need.remainingQuantity * 0.25))}</span>
+                                        <span className="text-gray-600">Customer Margin Buy/Sell:</span>
+                                        <span className="font-medium">
+                                          <span className="text-green-600">{formatNumber(need.tradeActivity?.customerMarginBuys || 0)}</span>
+                                          <span className="text-gray-400">/</span>
+                                          <span className="text-red-600">{formatNumber(need.tradeActivity?.customerMarginSells || 0)}</span>
+                                          <span className="ml-2 text-gray-800">{formatNumber((need.tradeActivity?.customerMarginBuys || 0) - (need.tradeActivity?.customerMarginSells || 0))}</span>
+                                        </span>
                                       </div>
-                                      
-                                      {/* Sells */}
+
+                                      {/* Non-Customer Cash Buy/Sell */}
                                       <div className="flex justify-between items-center">
-                                        <span className="text-gray-600">Sells:</span>
-                                        <span className="font-medium text-red-600">{formatNumber(Math.floor(need.remainingQuantity * 0.35))}</span>
+                                        <span className="text-gray-600">Non-Customer Cash Buy/Sell:</span>
+                                        <span className="font-medium">
+                                          <span className="text-green-600">{formatNumber(need.tradeActivity?.nonCustomerCashBuys || 0)}</span>
+                                          <span className="text-gray-400">/</span>
+                                          <span className="text-red-600">{formatNumber(need.tradeActivity?.nonCustomerCashSells || 0)}</span>
+                                          <span className="ml-2 text-gray-800">{formatNumber((need.tradeActivity?.nonCustomerCashBuys || 0) - (need.tradeActivity?.nonCustomerCashSells || 0))}</span>
+                                        </span>
+                                      </div>
+
+                                      {/* Non-Customer Margin Buy/Sell */}
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-gray-600">Non-Customer Margin Buy/Sell:</span>
+                                        <span className="font-medium">
+                                          <span className="text-green-600">{formatNumber(need.tradeActivity?.nonCustomerMarginBuys || 0)}</span>
+                                          <span className="text-gray-400">/</span>
+                                          <span className="text-red-600">{formatNumber(need.tradeActivity?.nonCustomerMarginSells || 0)}</span>
+                                          <span className="ml-2 text-gray-800">{formatNumber((need.tradeActivity?.nonCustomerMarginBuys || 0) - (need.tradeActivity?.nonCustomerMarginSells || 0))}</span>
+                                        </span>
+                                      </div>
+
+                                      {/* Firm Buy/Sell */}
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-gray-600">Firm Buy/Sell:</span>
+                                        <span className="font-medium">
+                                          <span className="text-green-600">{formatNumber(need.tradeActivity?.firmBuys || 0)}</span>
+                                          <span className="text-gray-400">/</span>
+                                          <span className="text-red-600">{formatNumber(need.tradeActivity?.firmSells || 0)}</span>
+                                          <span className="ml-2 text-gray-800">{formatNumber((need.tradeActivity?.firmBuys || 0) - (need.tradeActivity?.firmSells || 0))}</span>
+                                        </span>
                                       </div>
                                     </div>
                                   </div>
