@@ -1662,6 +1662,31 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                 <div className="px-3 py-1 border-b border-gray-200 bg-gray-50 rounded-t-md">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xs font-semibold text-gray-900">Counterparty Borrowing</h3>
+                    
+                    {/* Summary Totals in top bar */}
+                    <div className="flex items-center space-x-3 text-xs">
+                      <div className="text-center">
+                        <span className="font-bold text-gray-900">{advancedMetrics.borrowingCosts.counterpartyBreakdown.reduce((sum, cp) => sum + cp.borrowCount, 0)}</span>
+                        <span className="text-gray-600 ml-1">Borrows</span>
+                      </div>
+                      <div className="text-center">
+                        <span className="font-bold text-blue-700">{formatCurrency(advancedMetrics.borrowingCosts.counterpartyBreakdown.reduce((sum, cp) => sum + cp.totalBorrowAmount, 0) / 1000000).replace('$', '')}M</span>
+                        <span className="text-gray-600 ml-1">Volume</span>
+                      </div>
+                      <div className="text-center">
+                        <span className="font-bold text-purple-700">{advancedMetrics.borrowingCosts.averageRate.toFixed(2)}%</span>
+                        <span className="text-gray-600 ml-1">Avg Rate</span>
+                      </div>
+                      <div className="text-center">
+                        <span className="font-bold text-green-700">{formatCurrency(advancedMetrics.borrowingCosts.counterpartyBreakdown.reduce((sum, cp) => sum + cp.dailyCost, 0) / 1000).replace('$', '')}K</span>
+                        <span className="text-gray-600 ml-1">Daily Cost</span>
+                      </div>
+                      <div className="text-center">
+                        <span className="font-bold text-orange-700">{(93.5 + Math.random() * 4).toFixed(1)}%</span>
+                        <span className="text-gray-600 ml-1">Fill Rate</span>
+                      </div>
+                    </div>
+                    
                     <div className="flex items-center space-x-2">
                       {/* Sort Dropdown */}
                       <div className="flex items-center space-x-1">
@@ -1824,32 +1849,7 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                         </Button>
                       </div>
                     )}
-                    
-                    {/* Summary Footer */}
-                    <div className="pt-1.5 border-t border-gray-200 bg-gray-50 rounded px-2 py-1">
-                      <div className="grid grid-cols-5 gap-2 text-center text-xs">
-                        <div>
-                          <div className="font-bold text-gray-900">{advancedMetrics.borrowingCosts.counterpartyBreakdown.reduce((sum, cp) => sum + cp.borrowCount, 0)}</div>
-                          <div className="text-gray-600">Borrows</div>
-                        </div>
-                        <div>
-                          <div className="font-bold text-blue-700">{formatCurrency(advancedMetrics.borrowingCosts.counterpartyBreakdown.reduce((sum, cp) => sum + cp.totalBorrowAmount, 0) / 1000000).replace('$', '')}M</div>
-                          <div className="text-gray-600">Volume</div>
-                        </div>
-                        <div>
-                          <div className="font-bold text-purple-700">{advancedMetrics.borrowingCosts.averageRate.toFixed(2)}%</div>
-                          <div className="text-gray-600">Avg Rate</div>
-                        </div>
-                        <div>
-                          <div className="font-bold text-green-700">{formatCurrency(advancedMetrics.borrowingCosts.counterpartyBreakdown.reduce((sum, cp) => sum + cp.dailyCost, 0) / 1000).replace('$', '')}K</div>
-                          <div className="text-gray-600">Daily Cost</div>
-                        </div>
-                        <div>
-                          <div className="font-bold text-orange-700">{(93.5 + Math.random() * 4).toFixed(1)}%</div>
-                          <div className="text-gray-600">Fill Rate</div>
-                        </div>
-                      </div>
-                    </div>
+
                   </div>
                 )}
               </div>
