@@ -8,7 +8,7 @@ import {
   DollarSign, 
   Calendar,
   Clock,
-  BarChart3,
+
   Activity,
   RefreshCw,
   CheckCircle2,
@@ -427,107 +427,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
     return { securities, metrics }
   }
 
-  // Industry utilization data for heatmap
-  const getIndustryData = () => {
-    const industries = [
-      { name: 'TECH', fullName: 'Technology', utilization: 67, trend: 'up' },
-      { name: 'HLTH', fullName: 'Healthcare', utilization: 45, trend: 'stable' },
-      { name: 'FINL', fullName: 'Financial Services', utilization: 82, trend: 'down' },
-      { name: 'ENGY', fullName: 'Energy', utilization: 38, trend: 'up' },
-      { name: 'CONS', fullName: 'Consumer Discretionary', utilization: 56, trend: 'up' },
-      { name: 'INDL', fullName: 'Industrials', utilization: 71, trend: 'stable' },
-      { name: 'COMM', fullName: 'Communication', utilization: 43, trend: 'down' },
-      { name: 'MTRL', fullName: 'Materials', utilization: 29, trend: 'stable' },
-      { name: 'STPL', fullName: 'Consumer Staples', utilization: 34, trend: 'up' },
-      { name: 'UTIL', fullName: 'Utilities', utilization: 22, trend: 'stable' },
-      { name: 'REIT', fullName: 'Real Estate', utilization: 41, trend: 'down' },
-      { name: 'ETFS', fullName: 'ETFs', utilization: 59, trend: 'up' }
-    ]
-    
-    // Add some variation based on historical view
-    if (historicalView === 'yesterday') {
-      return industries.map(ind => ({
-        ...ind,
-        utilization: Math.max(0, Math.min(100, ind.utilization + (Math.random() - 0.5) * 10))
-      }))
-    }
-    if (historicalView === 'lastWeek') {
-      return industries.map(ind => ({
-        ...ind,
-        utilization: Math.max(0, Math.min(100, ind.utilization + (Math.random() - 0.5) * 20))
-      }))
-    }
-    
-    return industries
-  }
 
-  // Asset class data for donut chart
-  const getAssetClassData = () => {
-    if (!metrics) return []
-    
-    return [
-      {
-        name: 'Equity',
-        value: metrics.assetClassBreakdown.equity.available,
-        percentage: ((metrics.assetClassBreakdown.equity.available / metrics.totalAvailable) * 100),
-        color: '#3B82F6',
-        count: metrics.assetClassBreakdown.equity.count
-      },
-      {
-        name: 'ETF',
-        value: metrics.assetClassBreakdown.etf.available,
-        percentage: ((metrics.assetClassBreakdown.etf.available / metrics.totalAvailable) * 100),
-        color: '#8B5CF6',
-        count: metrics.assetClassBreakdown.etf.count
-      },
-      {
-        name: 'Corp Bond',
-        value: metrics.assetClassBreakdown.corporateBond.available,
-        percentage: ((metrics.assetClassBreakdown.corporateBond.available / metrics.totalAvailable) * 100),
-        color: '#10B981',
-        count: metrics.assetClassBreakdown.corporateBond.count
-      },
-      {
-        name: 'Gov Bond',
-        value: metrics.assetClassBreakdown.governmentBond.available,
-        percentage: ((metrics.assetClassBreakdown.governmentBond.available / metrics.totalAvailable) * 100),
-        color: '#F59E0B',
-        count: metrics.assetClassBreakdown.governmentBond.count
-      }
-    ].filter(item => item.value > 0)
-  }
-
-  // Top securities data for bar chart
-  const getTopSecuritiesData = () => {
-    return securities
-      .sort((a, b) => (b.totalAvailable * b.currentPrice) - (a.totalAvailable * a.currentPrice))
-      .slice(0, 8)
-      .map(security => ({
-        ticker: security.ticker,
-        value: security.totalAvailable * security.currentPrice,
-        available: security.totalAvailable,
-        difficulty: security.difficulty,
-        rate: security.averageRate,
-        trend: security.trends.availabilityTrend
-      }))
-  }
-
-  const getUtilizationColor = (utilization: number) => {
-    if (utilization >= 75) return 'bg-red-500'
-    if (utilization >= 50) return 'bg-orange-500'
-    if (utilization >= 25) return 'bg-yellow-500'
-    return 'bg-green-500'
-  }
-
-  const getDifficultyColorForChart = (difficulty: string) => {
-    switch (difficulty) {
-      case 'GC': return '#10B981'
-      case 'Non-Interesting': return '#6B7280'
-      case 'Warm': return '#F59E0B'
-      case 'Hard-to-Borrow': return '#EF4444'
-      default: return '#6B7280'
-    }
-  }
 
   // Initialize data
   useEffect(() => {
@@ -719,7 +619,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
               <div className="text-right">
                 <div className="text-xs text-gray-500">{metrics.sourceBreakdown.length} sources</div>
               </div>
-              <BarChart3 className="w-3 h-3 text-purple-600" />
+                              <Activity className="w-3 h-3 text-purple-600" />
             </div>
           </div>
 
@@ -743,7 +643,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
 
           <div className="bg-white rounded shadow border border-gray-200 px-1.5 py-1">
             <div className="flex items-center space-x-2">
-              <BarChart3 className="w-3 h-3 text-gray-400" />
+                              <Activity className="w-3 h-3 text-gray-400" />
               <span className="text-xs font-medium text-gray-500">Total Secs</span>
               <div className="flex-1 text-center">
                 <span className="text-sm font-bold text-gray-900">{metrics.totalSecurities}</span>
@@ -854,7 +754,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
                 title="Click to filter by Equity securities"
               >
                 <div className="flex items-center space-x-2">
-                  <BarChart3 className="w-3 h-3 text-blue-600" />
+                  <Activity className="w-3 h-3 text-blue-600" />
                   <span className="text-xs font-medium text-gray-900">Equity</span>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -1001,7 +901,8 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
 
 
 
-        {/* Main Content Grid: Left side (Widgets) + Right side (Charts) */}
+        {/* COMMENTED OUT - DUPLICATE SECTION 
+        Main Content Grid: Left side (Widgets) + Right side (Charts) */}
         <div className="flex flex-col lg:flex-row gap-3 mb-3 px-2">
           {/* Left Column: Widget Cards - Both rows together */}
           <div className="flex-1 flex flex-col gap-3">
@@ -1103,7 +1004,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
                     title="Click to filter by Equity securities"
                   >
                     <div className="flex items-center space-x-2">
-                      <BarChart3 className="w-3 h-3 text-blue-600" />
+                      <Activity className="w-3 h-3 text-blue-600" />
                       <span className="text-xs font-medium text-gray-900">Equity</span>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -1210,8 +1111,8 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
               </div>
             </div>
 
-            {/* Bottom Row: 2 cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {/* Bottom Row: 3 cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {/* Availability Trends */}
               <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
                 <h3 className="text-sm font-semibold text-gray-900 mb-2">Availability Trends</h3>
@@ -1247,6 +1148,75 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
                     </div>
                     <div className="text-xs font-bold text-red-600">{securities.filter(s => s.utilizationRate > 75).length} secs</div>
                   </div>
+                </div>
+              </div>
+
+              {/* HTB FPL Availability */}
+              <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-semibold text-gray-900">HTB FPL Availability</h3>
+                  <div className="flex items-center space-x-1">
+                    <Shield className="w-3 h-3 text-blue-500" />
+                    <span className="text-xs text-gray-600">
+                      {securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.fpl > 0).length}
+                    </span>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  {securities
+                    .filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.fpl > 0)
+                    .slice(0, showAllS3Opportunities ? undefined : 3)
+                    .map((security) => (
+                      <div 
+                        key={`fpl-${security.id}`} 
+                        className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200 hover:bg-blue-100 transition-colors cursor-pointer"
+                        onClick={() => {
+                          setSelectedTicker(security.ticker)
+                          setSelectedFilter('all')
+                          setSearchTerm('')
+                        }}
+                        title={`Click to filter by ${security.ticker}`}
+                      >
+                        <div className="flex items-center space-x-2">
+                          <span className="text-xs font-medium text-gray-900">{security.ticker}</span>
+                          <span className="text-xs text-gray-600">{formatRate(security.averageRate)}</span>
+                          {showAllS3Opportunities && (
+                            <span className="text-xs text-gray-500">
+                              {(security.availabilityBreakdown.fpl * (security.currentPrice || 50) / 1000000).toFixed(1)}M
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <div className="text-xs font-bold text-blue-600">
+                            {formatNumber(security.availabilityBreakdown.fpl / 1000)}K
+                          </div>
+                          <span className="text-xs text-gray-500">FPL</span>
+                          {showAllS3Opportunities && (
+                            <span className="text-xs text-gray-400">
+                              ({security.availabilityBreakdown.fpl})
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  
+                  {/* Show More/Less Button */}
+                  {securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.fpl > 0).length > 3 && (
+                    <div className="pt-1 border-t border-gray-200">
+                      <button
+                        onClick={() => setShowAllS3Opportunities(!showAllS3Opportunities)}
+                        className="w-full flex items-center justify-center space-x-1 p-1 text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded transition-colors"
+                      >
+                        <ChevronDown className={`w-3 h-3 transition-transform ${showAllS3Opportunities ? 'rotate-180' : ''}`} />
+                        <span>
+                          {showAllS3Opportunities 
+                            ? 'Show Less' 
+                            : `Show ${securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.fpl > 0).length - 3} More`
+                          }
+                        </span>
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1321,173 +1291,10 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
             </div>
           </div>
 
-          {/* Right Column: Charts - Full Height */}
-          <div className="w-80 flex flex-col">
-            {/* Charts Header with Historical Toggle */}
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center space-x-2">
-                <BarChart3 className="w-4 h-4 text-gray-600" />
-                <span className="text-sm font-semibold text-gray-900">Analytics</span>
-              </div>
-              <select
-                value={historicalView}
-                onChange={(e) => setHistoricalView(e.target.value as 'current' | 'yesterday' | 'lastWeek')}
-                className="border border-gray-300 rounded px-2 py-1 text-xs h-6"
-              >
-                <option value="current">Current</option>
-                <option value="yesterday">vs Yesterday</option>
-                <option value="lastWeek">vs Last Week</option>
-              </select>
-            </div>
 
-            {/* Charts Container - Equal height distribution */}
-            <div className="flex flex-col gap-3 flex-1">
-              {/* Industry Utilization Heatmap */}
-              <div className="bg-white rounded shadow border border-gray-200 p-3 flex-1">
-                <h4 className="text-xs font-semibold text-gray-900 mb-2">Industry Utilization</h4>
-                <div className="grid grid-cols-4 gap-1 h-full">
-                  {getIndustryData().map((industry, idx) => (
-                    <div
-                      key={industry.name}
-                      className={`rounded border border-gray-200 p-1 flex flex-col items-center justify-center cursor-pointer hover:opacity-80 transition-opacity ${getUtilizationColor(industry.utilization)}`}
-                      onClick={() => {
-                        // Filter by industry logic would go here
-                        console.log('Filter by industry:', industry.fullName)
-                      }}
-                      title={`${industry.fullName}: ${industry.utilization}% utilization`}
-                    >
-                      <div className="text-xs font-bold text-white">{industry.name}</div>
-                      <div className="text-xs text-white">{industry.utilization}%</div>
-                      {industry.trend === 'up' && <TrendingUp className="w-2 h-2 text-white" />}
-                      {industry.trend === 'down' && <TrendingDown className="w-2 h-2 text-white" />}
-                      {industry.trend === 'stable' && <Minus className="w-2 h-2 text-white" />}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Asset Class Donut Chart */}
-              <div className="bg-white rounded shadow border border-gray-200 p-3 flex-1">
-                <h4 className="text-xs font-semibold text-gray-900 mb-2">Asset Classes</h4>
-                <div className="relative h-full flex items-center justify-center min-h-[200px]">
-                  {/* SVG Donut Chart */}
-                  <svg width="180" height="180" className="transform -rotate-90">
-                    {(() => {
-                      const data = getAssetClassData()
-                      const radius = 70
-                      const strokeWidth = 25
-                      const circumference = 2 * Math.PI * radius
-                      let accumulatedPercentage = 0
-                      
-                      return data.map((item, index) => {
-                        const strokeDasharray = `${(item.percentage / 100) * circumference} ${circumference}`
-                        const strokeDashoffset = -accumulatedPercentage * circumference / 100
-                        accumulatedPercentage += item.percentage
-                        
-                        return (
-                          <circle
-                            key={item.name}
-                            cx="90"
-                            cy="90"
-                            r={radius}
-                            fill="transparent"
-                            stroke={item.color}
-                            strokeWidth={strokeWidth}
-                            strokeDasharray={strokeDasharray}
-                            strokeDashoffset={strokeDashoffset}
-                            className="cursor-pointer hover:opacity-80 transition-opacity"
-                            onClick={() => {
-                              setSelectedFilter(item.name === 'Corp Bond' ? 'Corporate Bond' : 
-                                             item.name === 'Gov Bond' ? 'Government Bond' : item.name)
-                              setSelectedTicker('')
-                              setSearchTerm('')
-                            }}
-                          />
-                        )
-                      })
-                    })()}
-                  </svg>
-                  
-                  {/* Center Content */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <div className="text-sm font-bold text-gray-900">
-                      {formatCurrency(metrics?.totalAvailable * 150 || 0)}
-                    </div>
-                    <div className="text-xs text-gray-500">{metrics?.totalSecurities} securities</div>
-                    <div className="text-xs text-gray-500">{metrics?.overallUtilization.toFixed(1)}% util</div>
-                  </div>
-                  
-                  {/* Legend */}
-                  <div className="absolute bottom-0 left-0 right-0">
-                    <div className="grid grid-cols-2 gap-1 text-xs">
-                      {getAssetClassData().map((item) => (
-                        <div key={item.name} className="flex items-center space-x-1">
-                          <div 
-                            className="w-2 h-2 rounded" 
-                            style={{ backgroundColor: item.color }}
-                          ></div>
-                          <span className="text-gray-700">{item.name} {item.percentage.toFixed(0)}%</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Top Securities Bar Chart */}
-              <div className="bg-white rounded shadow border border-gray-200 p-3 flex-1">
-                <h4 className="text-xs font-semibold text-gray-900 mb-2">Top Securities by Value</h4>
-                <div className="space-y-2 h-full overflow-hidden">
-                  {getTopSecuritiesData().map((security, index) => {
-                    const maxValue = getTopSecuritiesData()[0]?.value || 1
-                    const barWidth = (security.value / maxValue) * 100
-                    
-                    return (
-                      <div
-                        key={security.ticker}
-                        className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors"
-                        onClick={() => {
-                          setSelectedTicker(security.ticker)
-                          setSelectedFilter('all')
-                          setSearchTerm('')
-                        }}
-                      >
-                        <div className="w-12 text-xs font-medium text-gray-900">{security.ticker}</div>
-                        <div className="flex-1 relative">
-                          <div className="h-4 bg-gray-100 rounded-sm overflow-hidden">
-                            <div
-                              className="h-full rounded-sm transition-all duration-300"
-                              style={{ 
-                                width: `${barWidth}%`,
-                                backgroundColor: getDifficultyColorForChart(security.difficulty)
-                              }}
-                            ></div>
-                          </div>
-                        </div>
-                        <div className="w-12 text-right">
-                          <div className="text-xs font-bold text-gray-900">
-                            {formatCurrency(security.value / 1000000)}M
-                          </div>
-                        </div>
-                        <div className="w-6 flex justify-center">
-                          <div
-                            className="w-2 h-2 rounded-full"
-                            style={{ backgroundColor: getDifficultyColorForChart(security.difficulty) }}
-                          ></div>
-                        </div>
-                        <div className="w-4 flex justify-center">
-                          {security.trend === 'up' && <TrendingUp className="w-3 h-3 text-green-600" />}
-                          {security.trend === 'down' && <TrendingDown className="w-3 h-3 text-red-600" />}
-                          {security.trend === 'stable' && <Minus className="w-3 h-3 text-gray-600" />}
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
+
+        {/* END DUPLICATE SECTION COMMENT */}
 
         {/* Securities Table */}
         <div className="bg-white rounded shadow border border-gray-200 mx-2">
