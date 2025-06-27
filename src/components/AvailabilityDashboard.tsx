@@ -3,35 +3,24 @@ import {
   Target, 
   TrendingUp, 
   Search, 
-  Filter, 
   AlertTriangle, 
   DollarSign, 
-  Calendar,
   Clock,
-
   Activity,
-  RefreshCw,
   CheckCircle2,
   XCircle,
-  Users,
   Building,
   FileText,
   Shield,
-  Eye,
-  EyeOff,
   ArrowUp,
-  ArrowDown,
   ArrowLeft,
   ArrowRight,
   ChevronDown,
-  ChevronUp,
   Settings,
-  Zap,
   TrendingDown,
   Minus
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
@@ -142,32 +131,25 @@ interface AvailabilityDashboardProps {
 
 const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigateToParameters }) => {
   const [searchTerm, setSearchTerm] = useState('')
-  const [viewMode, setViewMode] = useState<'overview' | 'asset-class' | 'difficulty'>('overview')
   const [lastUpdate, setLastUpdate] = useState(new Date())
   const [selectedFilter, setSelectedFilter] = useState<string>('all')
   const [selectedTicker, setSelectedTicker] = useState<string>('')
-  
   const [securities, setSecurities] = useState<SecurityAvailability[]>([])
   const [metrics, setMetrics] = useState<AvailabilityMetrics | null>(null)
   const [showAllS3Opportunities, setShowAllS3Opportunities] = useState(false)
-  const [historicalView, setHistoricalView] = useState<'current' | 'yesterday' | 'lastWeek'>('current')
 
-  // Generate mock data with realistic securities lending rates
   const generateMockData = (): { securities: SecurityAvailability[], metrics: AvailabilityMetrics } => {
-    const tickers = ['AAPL', 'MSFT', 'UNH', 'GS', 'HD', 'CAT', 'CRM', 'V', 'BA', 'MCD', 'AXP', 'AMGN', 'IBM', 'TRV', 'JPM', 'HON', 'NKE', 'JNJ', 'WMT', 'PG', 'NVDA', 'TSLA', 'META', 'GOOGL', 'AMZN', 'SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'INTC', 'CSCO', 'ADBE', 'PFE', 'KO', 'VZ', 'DIS', 'NFLX', 'CRM', 'PYPL', 'UBER', 'ABNB', 'COIN', 'ROKU', 'SQ', 'SHOP', 'SPOT', 'DOCU', 'ZOOM', 'SNOW', 'PLTR', 'RBLX', 'RIVN', 'LCID', 'AMC', 'GME', 'MEME', 'SPCE', 'TLRY', 'SNDL']
+    const tickers = ['AAPL', 'MSFT', 'UNH', 'GS', 'HD', 'CAT', 'CRM', 'V', 'BA', 'MCD', 'AXP', 'AMGN', 'IBM', 'TRV', 'JPM', 'HON', 'NKE', 'JNJ', 'WMT', 'PG', 'NVDA', 'TSLA', 'META', 'GOOGL', 'AMZN', 'SPY', 'QQQ', 'IWM', 'XLF', 'XLE']
     const descriptions = [
       'APPLE INC', 'MICROSOFT CORP', 'UNITEDHEALTH GROUP INC', 'GOLDMAN SACHS GROUP INC', 'HOME DEPOT INC',
       'CATERPILLAR INC', 'SALESFORCE INC', 'VISA INC-CLASS A', 'BOEING CO', 'MCDONALDS CORP',
       'AMERICAN EXPRESS CO', 'AMGEN INC', 'INTL BUSINESS MACHINES CORP', 'TRAVELERS COS INC', 'JPMORGAN CHASE & CO',
       'HONEYWELL INTERNATIONAL INC', 'NIKE INC-CLASS B', 'JOHNSON & JOHNSON', 'WALMART INC', 'PROCTER & GAMBLE CO',
       'NVIDIA CORP', 'TESLA INC', 'META PLATFORMS INC', 'ALPHABET INC-CL A', 'AMAZON.COM INC',
-      'SPDR S&P 500 ETF', 'INVESCO QQQ TRUST', 'ISHARES RUSSELL 2000 ETF', 'FINANCIAL SELECT SECTOR SPDR', 'ENERGY SELECT SECTOR SPDR',
-      'INTEL CORP', 'CISCO SYSTEMS INC', 'ADOBE INC', 'PFIZER INC', 'COCA-COLA CO', 'VERIZON COMMUNICATIONS', 'WALT DISNEY CO', 'NETFLIX INC', 'SALESFORCE INC', 'PAYPAL HOLDINGS',
-      'UBER TECHNOLOGIES', 'AIRBNB INC', 'COINBASE GLOBAL', 'ROKU INC', 'BLOCK INC', 'SHOPIFY INC', 'SPOTIFY TECHNOLOGY', 'DOCUSIGN INC', 'ZOOM VIDEO COMMUNICATIONS', 'SNOWFLAKE INC',
-      'PALANTIR TECHNOLOGIES', 'ROBLOX CORP', 'RIVIAN AUTOMOTIVE', 'LUCID GROUP INC', 'AMC ENTERTAINMENT', 'GAMESTOP CORP', 'MEME STOCK CORP', 'VIRGIN GALACTIC', 'TILRAY BRANDS', 'SUNDIAL GROWERS'
+      'SPDR S&P 500 ETF', 'INVESCO QQQ TRUST', 'ISHARES RUSSELL 2000 ETF', 'FINANCIAL SELECT SECTOR SPDR', 'ENERGY SELECT SECTOR SPDR'
     ]
-    const sectors = ['Technology', 'Healthcare', 'Financial Services', 'Consumer Discretionary', 'Industrials', 'Consumer Staples', 'Energy', 'Communication Services', 'Materials', 'ETF']
-    const counterparties = ['Goldman Sachs', 'Morgan Stanley', 'JPMorgan', 'Bank of America', 'Citi', 'UBS', 'Barclays', 'Deutsche Bank', 'Credit Suisse', 'Wells Fargo']
+    const sectors = ['Technology', 'Healthcare', 'Financial Services', 'Consumer Discretionary', 'Industrials']
+    const counterparties = ['Goldman Sachs', 'Morgan Stanley', 'JPMorgan', 'Bank of America', 'Citi']
     const assetClasses: Array<'Equity' | 'Corporate Bond' | 'Government Bond' | 'ETF' | 'Other'> = ['Equity', 'Corporate Bond', 'Government Bond', 'ETF', 'Other']
     const marketCaps: Array<'Large' | 'Mid' | 'Small' | 'Micro'> = ['Large', 'Mid', 'Small', 'Micro']
     const trends: Array<'up' | 'down' | 'stable'> = ['up', 'down', 'stable']
@@ -187,8 +169,6 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
       other: { count: 0, available: 0, avgRate: 0 }
     }
     const sourceMap = new Map<string, { totalAvailable: number, totalRate: number, count: number, activeSecurities: number }>()
-
-    // GC Rate (General Collateral - Fed Funds Rate)
     const gcRate = 4.5
 
     for (let i = 0; i < 60; i++) {
@@ -196,8 +176,6 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
       const description = descriptions[i % descriptions.length]
       const sector = sectors[i % sectors.length]
       let assetClass: 'Equity' | 'Corporate Bond' | 'Government Bond' | 'ETF' | 'Other' = 'Equity'
-      
-      // Determine asset class based on ticker
       if (ticker.includes('SPY') || ticker.includes('QQQ') || ticker.includes('IWM') || ticker.includes('XL')) {
         assetClass = 'ETF'
       } else if (Math.random() < 0.1) {
@@ -532,7 +510,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
 
   return (
     <div className="fis-page-gradient">
-      {/* Compact Header */}
+
       <div className="max-w-full mx-auto mb-2 px-2">
         <div className="flex items-center justify-between p-2 bg-white rounded shadow-sm border border-gray-200">
           <div className="flex items-center space-x-2">
@@ -563,7 +541,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
       </div>
 
       <div className="w-full mx-auto">
-        {/* Key Rate Indicators */}
+
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 mb-3 px-2">
           <div className="bg-white rounded shadow border border-gray-200 px-1.5 py-1">
             <div className="flex items-center space-x-2">
@@ -609,7 +587,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
 
           <div className="bg-white rounded shadow border border-gray-200 px-1.5 py-1">
             <div className="flex items-center space-x-2">
-              <Users className="w-3 h-3 text-purple-400" />
+              <Activity className="w-3 h-3 text-purple-400" />
               <span className="text-xs font-medium text-gray-500">External Avail</span>
               <div className="flex-1 text-center">
                 <span className="text-sm font-bold text-gray-900">
@@ -619,7 +597,6 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
               <div className="text-right">
                 <div className="text-xs text-gray-500">{metrics.sourceBreakdown.length} sources</div>
               </div>
-                              <Activity className="w-3 h-3 text-purple-600" />
             </div>
           </div>
 
@@ -633,17 +610,12 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
               <div className="text-right">
                 <div className="text-xs text-gray-500">{metrics.marketMetrics.tightestSecurities} tight</div>
               </div>
-              {metrics.trends.utilizationChange >= 0 ? (
-                <TrendingUp className="w-3 h-3 text-green-600" />
-              ) : (
-                <TrendingDown className="w-3 h-3 text-red-600" />
-              )}
             </div>
           </div>
 
           <div className="bg-white rounded shadow border border-gray-200 px-1.5 py-1">
             <div className="flex items-center space-x-2">
-                              <Activity className="w-3 h-3 text-gray-400" />
+              <Activity className="w-3 h-3 text-gray-400" />
               <span className="text-xs font-medium text-gray-500">Total Secs</span>
               <div className="flex-1 text-center">
                 <span className="text-sm font-bold text-gray-900">{metrics.totalSecurities}</span>
@@ -656,244 +628,425 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
           </div>
         </div>
 
-        {/* Breakdown Cards */}
-        <div className="flex flex-col lg:flex-row gap-3 mb-3 w-full px-2">
-          {/* Securities Lending Categories */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full flex-1">
-            <h3 className="text-sm font-semibold text-gray-900 mb-2">Lending Categories</h3>
-            <div className="space-y-1">
-              <div 
-                className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200 cursor-pointer hover:bg-green-100 transition-colors"
-                onClick={() => {
-                  setSelectedFilter('GC')
-                  setSelectedTicker('')
-                  setSearchTerm('')
-                }}
-                title="Click to filter by GC securities"
-              >
-                <div className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-3 h-3 text-green-600" />
-                  <span className="text-xs font-medium text-gray-900">GC</span>
+
+                  <div className="flex flex-col gap-3 mb-3 w-full px-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+              <h3 className="text-sm font-semibold text-gray-900 mb-2">Lending Categories</h3>
+              <div className="space-y-1">
+                <div 
+                  className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200 cursor-pointer hover:bg-green-100 transition-colors"
+                  onClick={() => {
+                    setSelectedFilter('GC')
+                    setSelectedTicker('')
+                    setSearchTerm('')
+                  }}
+                  title="Click to filter by GC securities"
+                >
+                  <div className="flex items-center space-x-2">
+                    <CheckCircle2 className="w-3 h-3 text-green-600" />
+                    <span className="text-xs font-medium text-gray-900">GC</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-green-600">{metrics.difficultyBreakdown.gc.count}</div>
+                    <div className="text-xs text-gray-500">{formatRate(metrics.difficultyBreakdown.gc.avgRate)}</div>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <div className="text-xs font-bold text-green-600">{metrics.difficultyBreakdown.gc.count}</div>
-                  <div className="text-xs text-gray-500">{formatRate(metrics.difficultyBreakdown.gc.avgRate)}</div>
+
+                <div 
+                  className="flex items-center justify-between px-1.5 py-1 bg-gray-50 rounded border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors"
+                  onClick={() => {
+                    setSelectedFilter('Non-Interesting')
+                    setSelectedTicker('')
+                    setSearchTerm('')
+                  }}
+                  title="Click to filter by Non-Interesting securities"
+                >
+                  <div className="flex items-center space-x-2">
+                    <Target className="w-3 h-3 text-gray-600" />
+                    <span className="text-xs font-medium text-gray-900">Non-Int</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-gray-600">{metrics.difficultyBreakdown.nonInteresting.count}</div>
+                    <div className="text-xs text-gray-500">{formatRate(metrics.difficultyBreakdown.nonInteresting.avgRate)}</div>
+                  </div>
+                </div>
+
+                <div 
+                  className="flex items-center justify-between px-1.5 py-1 bg-orange-50 rounded border border-orange-200 cursor-pointer hover:bg-orange-100 transition-colors"
+                  onClick={() => {
+                    setSelectedFilter('Warm')
+                    setSelectedTicker('')
+                    setSearchTerm('')
+                  }}
+                  title="Click to filter by Warm securities"
+                >
+                  <div className="flex items-center space-x-2">
+                    <AlertTriangle className="w-3 h-3 text-orange-600" />
+                    <span className="text-xs font-medium text-gray-900">Warm</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-orange-600">{metrics.difficultyBreakdown.warm.count}</div>
+                    <div className="text-xs text-gray-500">{formatRate(metrics.difficultyBreakdown.warm.avgRate)}</div>
+                  </div>
+                </div>
+
+                <div 
+                  className="flex items-center justify-between px-1.5 py-1 bg-red-50 rounded border border-red-200 cursor-pointer hover:bg-red-100 transition-colors"
+                  onClick={() => {
+                    setSelectedFilter('Hard-to-Borrow')
+                    setSelectedTicker('')
+                    setSearchTerm('')
+                  }}
+                  title="Click to filter by Hard-to-Borrow securities"
+                >
+                  <div className="flex items-center space-x-2">
+                    <XCircle className="w-3 h-3 text-red-600" />
+                    <span className="text-xs font-medium text-gray-900">HTB</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-red-600">{metrics.difficultyBreakdown.hardToBorrow.count}</div>
+                    <div className="text-xs text-gray-500">{formatRate(metrics.difficultyBreakdown.hardToBorrow.avgRate)}</div>
+                  </div>
                 </div>
               </div>
+            </div>
 
-              <div 
-                className="flex items-center justify-between px-1.5 py-1 bg-gray-50 rounded border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors"
-                onClick={() => {
-                  setSelectedFilter('Non-Interesting')
-                  setSelectedTicker('')
-                  setSearchTerm('')
-                }}
-                title="Click to filter by Non-Interesting securities"
-              >
-                <div className="flex items-center space-x-2">
-                  <Target className="w-3 h-3 text-gray-600" />
-                  <span className="text-xs font-medium text-gray-900">Non-Int</span>
+
+            <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+              <h3 className="text-sm font-semibold text-gray-900 mb-2">Asset Classes</h3>
+              <div className="space-y-1">
+                <div 
+                  className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200 cursor-pointer hover:bg-blue-100 transition-colors"
+                  onClick={() => {
+                    setSelectedFilter('Equity')
+                    setSelectedTicker('')
+                    setSearchTerm('')
+                  }}
+                  title="Click to filter by Equity securities"
+                >
+                  <div className="flex items-center space-x-2">
+                    <Activity className="w-3 h-3 text-blue-600" />
+                    <span className="text-xs font-medium text-gray-900">Equity</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-blue-600">{metrics.assetClassBreakdown.equity.count}</div>
+                    <div className="text-xs text-gray-500">{formatRate(metrics.assetClassBreakdown.equity.avgRate)}</div>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <div className="text-xs font-bold text-gray-600">{metrics.difficultyBreakdown.nonInteresting.count}</div>
-                  <div className="text-xs text-gray-500">{formatRate(metrics.difficultyBreakdown.nonInteresting.avgRate)}</div>
+
+                <div 
+                  className="flex items-center justify-between px-1.5 py-1 bg-purple-50 rounded border border-purple-200 cursor-pointer hover:bg-purple-100 transition-colors"
+                  onClick={() => {
+                    setSelectedFilter('ETF')
+                    setSelectedTicker('')
+                    setSearchTerm('')
+                  }}
+                  title="Click to filter by ETF securities"
+                >
+                  <div className="flex items-center space-x-2">
+                    <Building className="w-3 h-3 text-purple-600" />
+                    <span className="text-xs font-medium text-gray-900">ETF</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-purple-600">{metrics.assetClassBreakdown.etf.count}</div>
+                    <div className="text-xs text-gray-500">{formatRate(metrics.assetClassBreakdown.etf.avgRate)}</div>
+                  </div>
+                </div>
+
+                <div 
+                  className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200 cursor-pointer hover:bg-green-100 transition-colors"
+                  onClick={() => {
+                    setSelectedFilter('Corporate Bond')
+                    setSelectedTicker('')
+                    setSearchTerm('')
+                  }}
+                  title="Click to filter by Corporate Bond securities"
+                >
+                  <div className="flex items-center space-x-2">
+                    <Shield className="w-3 h-3 text-green-600" />
+                    <span className="text-xs font-medium text-gray-900">Corp Bond</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-green-600">{metrics.assetClassBreakdown.corporateBond.count}</div>
+                    <div className="text-xs text-gray-500">{formatRate(metrics.assetClassBreakdown.corporateBond.avgRate)}</div>
+                  </div>
+                </div>
+
+                <div 
+                  className="flex items-center justify-between px-1.5 py-1 bg-yellow-50 rounded border border-yellow-200 cursor-pointer hover:bg-yellow-100 transition-colors"
+                  onClick={() => {
+                    setSelectedFilter('Government Bond')
+                    setSelectedTicker('')
+                    setSearchTerm('')
+                  }}
+                  title="Click to filter by Government Bond securities"
+                >
+                  <div className="flex items-center space-x-2">
+                    <FileText className="w-3 h-3 text-yellow-600" />
+                    <span className="text-xs font-medium text-gray-900">Gov Bond</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-yellow-600">{metrics.assetClassBreakdown.governmentBond.count}</div>
+                    <div className="text-xs text-gray-500">{formatRate(metrics.assetClassBreakdown.governmentBond.avgRate)}</div>
+                  </div>
                 </div>
               </div>
+            </div>
 
-              <div 
-                className="flex items-center justify-between px-1.5 py-1 bg-orange-50 rounded border border-orange-200 cursor-pointer hover:bg-orange-100 transition-colors"
-                onClick={() => {
-                  setSelectedFilter('Warm')
-                  setSelectedTicker('')
-                  setSearchTerm('')
-                }}
-                title="Click to filter by Warm securities"
-              >
-                <div className="flex items-center space-x-2">
-                  <AlertTriangle className="w-3 h-3 text-orange-600" />
-                  <span className="text-xs font-medium text-gray-900">Warm</span>
+
+            <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+              <h3 className="text-sm font-semibold text-gray-900 mb-2">Anticipated Availability</h3>
+              <div className="space-y-1">
+                {/* Recalls Pending */}
+                <div className="flex items-center justify-between px-1.5 py-1 bg-red-50 rounded border border-red-200">
+                  <div className="flex items-center space-x-2">
+                    <ArrowLeft className="w-3 h-3 text-red-600" />
+                    <span className="text-xs font-medium text-gray-900">Recalls Pending</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-red-600">-292K</div>
+                    <div className="text-xs text-red-500">Today</div>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <div className="text-xs font-bold text-orange-600">{metrics.difficultyBreakdown.warm.count}</div>
-                  <div className="text-xs text-gray-500">{formatRate(metrics.difficultyBreakdown.warm.avgRate)}</div>
+
+                {/* Anticipated Receives */}
+                <div className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200">
+                  <div className="flex items-center space-x-2">
+                    <ArrowRight className="w-3 h-3 text-green-600" />
+                    <span className="text-xs font-medium text-gray-900">Anticipated Receives</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-green-600">+479K</div>
+                    <div className="text-xs text-green-500">T+1</div>
+                  </div>
+                </div>
+
+                {/* Pledge Recalls */}
+                <div className="flex items-center justify-between px-1.5 py-1 bg-orange-50 rounded border border-orange-200">
+                  <div className="flex items-center space-x-2">
+                    <Shield className="w-3 h-3 text-orange-600" />
+                    <span className="text-xs font-medium text-gray-900">Pledge Recalls</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-orange-600">-386K</div>
+                    <div className="text-xs text-orange-500">T+2</div>
+                  </div>
+                </div>
+
+                {/* Net Change Summary */}
+                <div className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200">
+                  <div className="flex items-center space-x-2">
+                    <TrendingUp className="w-3 h-3 text-blue-600" />
+                    <span className="text-xs font-medium text-gray-900">Net Change</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-blue-600">+182K</div>
+                    <div className="text-xs text-blue-500">3D</div>
+                  </div>
                 </div>
               </div>
+            </div>
 
-              <div 
-                className="flex items-center justify-between px-1.5 py-1 bg-red-50 rounded border border-red-200 cursor-pointer hover:bg-red-100 transition-colors"
-                onClick={() => {
-                  setSelectedFilter('Hard-to-Borrow')
-                  setSelectedTicker('')
-                  setSearchTerm('')
-                }}
-                title="Click to filter by Hard-to-Borrow securities"
-              >
-                <div className="flex items-center space-x-2">
-                  <XCircle className="w-3 h-3 text-red-600" />
-                  <span className="text-xs font-medium text-gray-900">HTB</span>
+
+            <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+              <h3 className="text-sm font-semibold text-gray-900 mb-2">Availability Trends</h3>
+              <div className="space-y-1">
+                <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-green-50 to-green-100 rounded border border-green-200">
+                  <div className="flex items-center space-x-2">
+                    <TrendingDown className="w-3 h-3 text-green-600" />
+                    <span className="text-xs font-medium text-gray-900">Low Util (0-25%)</span>
+                  </div>
+                  <div className="text-xs font-bold text-green-600">7 secs</div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <div className="text-xs font-bold text-red-600">{metrics.difficultyBreakdown.hardToBorrow.count}</div>
-                  <div className="text-xs text-gray-500">{formatRate(metrics.difficultyBreakdown.hardToBorrow.avgRate)}</div>
+
+                <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded border border-yellow-200">
+                  <div className="flex items-center space-x-2">
+                    <Minus className="w-3 h-3 text-yellow-600" />
+                    <span className="text-xs font-medium text-gray-900">Mod Util (25-50%)</span>
+                  </div>
+                  <div className="text-xs font-bold text-yellow-600">21 secs</div>
+                </div>
+
+                <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-orange-50 to-orange-100 rounded border border-orange-200">
+                  <div className="flex items-center space-x-2">
+                    <TrendingUp className="w-3 h-3 text-orange-600" />
+                    <span className="text-xs font-medium text-gray-900">High Util (50-75%)</span>
+                  </div>
+                  <div className="text-xs font-bold text-orange-600">26 secs</div>
+                </div>
+
+                <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-red-50 to-red-100 rounded border border-red-200">
+                  <div className="flex items-center space-x-2">
+                    <AlertTriangle className="w-3 h-3 text-red-600" />
+                    <span className="text-xs font-medium text-gray-900">Critical (75%+)</span>
+                  </div>
+                  <div className="text-xs font-bold text-red-600">6 secs</div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Asset Class Breakdown */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full flex-1">
-            <h3 className="text-sm font-semibold text-gray-900 mb-2">Asset Classes</h3>
-            <div className="space-y-1">
-              <div 
-                className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200 cursor-pointer hover:bg-blue-100 transition-colors"
-                onClick={() => {
-                  setSelectedFilter('Equity')
-                  setSelectedTicker('')
-                  setSearchTerm('')
-                }}
-                title="Click to filter by Equity securities"
-              >
-                <div className="flex items-center space-x-2">
-                  <Activity className="w-3 h-3 text-blue-600" />
-                  <span className="text-xs font-medium text-gray-900">Equity</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="text-xs font-bold text-blue-600">{metrics.assetClassBreakdown.equity.count}</div>
-                  <div className="text-xs text-gray-500">{formatRate(metrics.assetClassBreakdown.equity.avgRate)}</div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+
+            <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-semibold text-gray-900">HTB FPL Availability</h3>
+                <div className="flex items-center space-x-1">
+                  <Shield className="w-3 h-3 text-blue-500" />
+                  <span className="text-xs text-gray-600">5</span>
                 </div>
               </div>
-
-              <div 
-                className="flex items-center justify-between px-1.5 py-1 bg-purple-50 rounded border border-purple-200 cursor-pointer hover:bg-purple-100 transition-colors"
-                onClick={() => {
-                  setSelectedFilter('ETF')
-                  setSelectedTicker('')
-                  setSearchTerm('')
-                }}
-                title="Click to filter by ETF securities"
-              >
-                <div className="flex items-center space-x-2">
-                  <Building className="w-3 h-3 text-purple-600" />
-                  <span className="text-xs font-medium text-gray-900">ETF</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="text-xs font-bold text-purple-600">{metrics.assetClassBreakdown.etf.count}</div>
-                  <div className="text-xs text-gray-500">{formatRate(metrics.assetClassBreakdown.etf.avgRate)}</div>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200">
-                <div className="flex items-center space-x-2">
-                  <Shield className="w-3 h-3 text-green-600" />
-                  <span className="text-xs font-medium text-gray-900">Corp Bond</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="text-xs font-bold text-green-600">{metrics.assetClassBreakdown.corporateBond.count}</div>
-                  <div className="text-xs text-gray-500">{formatRate(metrics.assetClassBreakdown.corporateBond.avgRate)}</div>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between px-1.5 py-1 bg-yellow-50 rounded border border-yellow-200">
-                <div className="flex items-center space-x-2">
-                  <FileText className="w-3 h-3 text-yellow-600" />
-                  <span className="text-xs font-medium text-gray-900">Gov Bond</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="text-xs font-bold text-yellow-600">{metrics.assetClassBreakdown.governmentBond.count}</div>
-                  <div className="text-xs text-gray-500">{formatRate(metrics.assetClassBreakdown.governmentBond.avgRate)}</div>
+              <div className="space-y-1">
+                {securities
+                  .filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.fpl > 0)
+                  .slice(0, 3)
+                  .map((security) => (
+                    <div 
+                      key={`fpl-${security.id}`} 
+                      className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200 hover:bg-blue-100 transition-colors cursor-pointer"
+                      onClick={() => {
+                        setSelectedTicker(security.ticker)
+                        setSelectedFilter('all')
+                        setSearchTerm('')
+                      }}
+                      title={`Click to filter by ${security.ticker}`}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs font-medium text-gray-900">{security.ticker}</span>
+                        <span className="text-xs text-gray-600">{formatRate(security.averageRate)}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <div className="text-xs font-bold text-blue-600">
+                          {formatNumber(security.availabilityBreakdown.fpl / 1000)}K
+                        </div>
+                        <span className="text-xs text-gray-500">FPL</span>
+                      </div>
+                    </div>
+                  ))}
+                
+                {/* Show 2 More Button */}
+                <div className="pt-1 border-t border-gray-200">
+                  <button
+                    onClick={() => setShowAllS3Opportunities(!showAllS3Opportunities)}
+                    className="w-full flex items-center justify-center space-x-1 p-1 text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded transition-colors"
+                  >
+                    <ChevronDown className="w-3 h-3" />
+                    <span>Show 2 More</span>
+                  </button>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Anticipated Availability */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full flex-1">
-            <h3 className="text-sm font-semibold text-gray-900 mb-2">Anticipated Availability</h3>
-            <div className="space-y-1">
-              {/* Recalls Pending */}
-              <div className="flex items-center justify-between px-1.5 py-1 bg-red-50 rounded border border-red-200">
-                <div className="flex items-center space-x-2">
-                  <ArrowLeft className="w-3 h-3 text-red-600" />
-                  <span className="text-xs font-medium text-gray-900">Recalls Pending</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="text-xs font-bold text-red-600">-{formatNumber(Math.floor(Math.random() * 500 + 200))}K</div>
-                  <div className="text-xs text-red-500">Today</div>
+            
+            <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-semibold text-gray-900">HTB S3 Opportunities</h3>
+                <div className="flex items-center space-x-1">
+                  <AlertTriangle className="w-3 h-3 text-red-500" />
+                  <span className="text-xs text-gray-600">5</span>
                 </div>
               </div>
-
-              {/* Anticipated Receives */}
-              <div className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200">
-                <div className="flex items-center space-x-2">
-                  <ArrowRight className="w-3 h-3 text-green-600" />
-                  <span className="text-xs font-medium text-gray-900">Anticipated Receives</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="text-xs font-bold text-green-600">+{formatNumber(Math.floor(Math.random() * 800 + 300))}K</div>
-                  <div className="text-xs text-green-500">T+1</div>
-                </div>
-              </div>
-
-              {/* Pledge Recalls */}
-              <div className="flex items-center justify-between px-1.5 py-1 bg-orange-50 rounded border border-orange-200">
-                <div className="flex items-center space-x-2">
-                  <Shield className="w-3 h-3 text-orange-600" />
-                  <span className="text-xs font-medium text-gray-900">Pledge Recalls</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="text-xs font-bold text-orange-600">-{formatNumber(Math.floor(Math.random() * 300 + 100))}K</div>
-                  <div className="text-xs text-orange-500">T+2</div>
-                </div>
-              </div>
-
-              {/* Net Change Summary */}
-              <div className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200">
-                <div className="flex items-center space-x-2">
-                  <TrendingUp className="w-3 h-3 text-blue-600" />
-                  <span className="text-xs font-medium text-gray-900">Net Change</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="text-xs font-bold text-blue-600">+{formatNumber(Math.floor(Math.random() * 200 + 50))}K</div>
-                  <div className="text-xs text-blue-500">3D</div>
+              <div className="space-y-1">
+                {securities
+                  .filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.s3Potential > 0)
+                  .slice(0, 3)
+                  .map((security) => (
+                    <div 
+                      key={`s3-${security.id}`} 
+                      className="flex items-center justify-between px-1.5 py-1 bg-red-50 rounded border border-red-200 hover:bg-red-100 transition-colors cursor-pointer"
+                      onClick={() => {
+                        setSelectedTicker(security.ticker)
+                        setSelectedFilter('all')
+                        setSearchTerm('')
+                      }}
+                      title={`Click to filter by ${security.ticker}`}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs font-medium text-gray-900">{security.ticker}</span>
+                        <span className="text-xs text-gray-600">{formatRate(security.averageRate)}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <div className="text-xs font-bold text-red-600">
+                          {formatNumber(security.availabilityBreakdown.s3Potential / 1000)}K
+                        </div>
+                        <span className="text-xs text-gray-500">S3</span>
+                      </div>
+                    </div>
+                  ))}
+                
+                {/* Show 2 More Button */}
+                <div className="pt-1 border-t border-gray-200">
+                  <button
+                    onClick={() => setShowAllS3Opportunities(!showAllS3Opportunities)}
+                    className="w-full flex items-center justify-center space-x-1 p-1 text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded transition-colors"
+                  >
+                    <ChevronDown className="w-3 h-3" />
+                    <span>Show 2 More</span>
+                  </button>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Availability Trends */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full flex-1">
-            <h3 className="text-sm font-semibold text-gray-900 mb-2">Availability Trends</h3>
-            <div className="space-y-1">
-              <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-green-50 to-green-100 rounded border border-green-200">
-                <div className="flex items-center space-x-2">
-                  <TrendingDown className="w-3 h-3 text-green-600" />
-                  <span className="text-xs font-medium text-gray-900">Low Util (0-25%)</span>
-                </div>
-                <div className="text-xs font-bold text-green-600">{securities.filter(s => s.utilizationRate <= 25).length} secs</div>
+            
+            <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+              <h3 className="text-sm font-semibold text-gray-900 mb-2">Top Counterparties</h3>
+              <div className="space-y-1">
+                {metrics.sourceBreakdown.slice(0, 4).map((source, index) => {
+                  const colors = ['yellow', 'green', 'blue', 'purple'];
+                  const color = colors[index % colors.length];
+                  return (
+                    <div key={source.counterparty} className={`flex items-center justify-between px-1.5 py-1 bg-${color}-50 rounded border border-${color}-200`}>
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-2 h-2 rounded-full bg-${color}-500`}></div>
+                        <span className="text-xs font-medium text-gray-900">{source.counterparty}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className={`text-xs font-bold text-${color}-600`}>{source.activeSecurities}</div>
+                        <div className="text-xs text-gray-500">{source.reliability.toFixed(0)}%</div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
+            </div>
 
-              <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded border border-yellow-200">
-                <div className="flex items-center space-x-2">
-                  <Minus className="w-3 h-3 text-yellow-600" />
-                  <span className="text-xs font-medium text-gray-900">Mod Util (25-50%)</span>
+            
+            <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+              <h3 className="text-sm font-semibold text-gray-900 mb-2">Market Summary</h3>
+              <div className="space-y-1">
+                <div className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200">
+                  <div className="flex items-center space-x-2">
+                    <DollarSign className="w-3 h-3 text-blue-600" />
+                    <span className="text-xs font-medium text-gray-900">Avg Rate</span>
+                  </div>
+                  <div className="text-xs font-bold text-blue-600">{formatRate(metrics.averageRate)}</div>
                 </div>
-                <div className="text-xs font-bold text-yellow-600">{securities.filter(s => s.utilizationRate > 25 && s.utilizationRate <= 50).length} secs</div>
-              </div>
 
-              <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-orange-50 to-orange-100 rounded border border-orange-200">
-                <div className="flex items-center space-x-2">
-                  <TrendingUp className="w-3 h-3 text-orange-600" />
-                  <span className="text-xs font-medium text-gray-900">High Util (50-75%)</span>
+                <div className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200">
+                  <div className="flex items-center space-x-2">
+                    <Activity className="w-3 h-3 text-green-600" />
+                    <span className="text-xs font-medium text-gray-900">Total Avail</span>
+                  </div>
+                  <div className="text-xs font-bold text-green-600">{formatNumber(metrics.totalAvailable / 1000000)}M</div>
                 </div>
-                <div className="text-xs font-bold text-orange-600">{securities.filter(s => s.utilizationRate > 50 && s.utilizationRate <= 75).length} secs</div>
-              </div>
 
-              <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-red-50 to-red-100 rounded border border-red-200">
-                <div className="flex items-center space-x-2">
-                  <AlertTriangle className="w-3 h-3 text-red-600" />
-                  <span className="text-xs font-medium text-gray-900">Critical (75%+)</span>
+                <div className="flex items-center justify-between px-1.5 py-1 bg-orange-50 rounded border border-orange-200">
+                  <div className="flex items-center space-x-2">
+                    <Target className="w-3 h-3 text-orange-600" />
+                    <span className="text-xs font-medium text-gray-900">Utilization</span>
+                  </div>
+                  <div className="text-xs font-bold text-orange-600">{metrics.overallUtilization.toFixed(1)}%</div>
                 </div>
-                <div className="text-xs font-bold text-red-600">{securities.filter(s => s.utilizationRate > 75).length} secs</div>
+
+                <div className="flex items-center justify-between px-1.5 py-1 bg-purple-50 rounded border border-purple-200">
+                  <div className="flex items-center space-x-2">
+                    <Building className="w-3 h-3 text-purple-600" />
+                    <span className="text-xs font-medium text-gray-900">Securities</span>
+                  </div>
+                  <div className="text-xs font-bold text-purple-600">{metrics.totalSecurities}</div>
+                </div>
               </div>
             </div>
           </div>
@@ -901,408 +1054,15 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
 
 
 
-        {/* COMMENTED OUT - DUPLICATE SECTION 
-        Main Content Grid: Left side (Widgets) + Right side (Charts) */}
-        <div className="flex flex-col lg:flex-row gap-3 mb-3 px-2">
-          {/* Left Column: Widget Cards - Both rows together */}
-          <div className="flex-1 flex flex-col gap-3">
-            {/* Top Row: 3 cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {/* Securities Lending Categories */}
-              <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
-                <h3 className="text-sm font-semibold text-gray-900 mb-2">Lending Categories</h3>
-                <div className="space-y-1">
-                  <div 
-                    className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200 cursor-pointer hover:bg-green-100 transition-colors"
-                    onClick={() => {
-                      setSelectedFilter('GC')
-                      setSelectedTicker('')
-                      setSearchTerm('')
-                    }}
-                    title="Click to filter by GC securities"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <CheckCircle2 className="w-3 h-3 text-green-600" />
-                      <span className="text-xs font-medium text-gray-900">GC</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="text-xs font-bold text-green-600">{metrics.difficultyBreakdown.gc.count}</div>
-                      <div className="text-xs text-gray-500">{formatRate(metrics.difficultyBreakdown.gc.avgRate)}</div>
-                    </div>
-                  </div>
-
-                  <div 
-                    className="flex items-center justify-between px-1.5 py-1 bg-gray-50 rounded border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => {
-                      setSelectedFilter('Non-Interesting')
-                      setSelectedTicker('')
-                      setSearchTerm('')
-                    }}
-                    title="Click to filter by Non-Interesting securities"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <Target className="w-3 h-3 text-gray-600" />
-                      <span className="text-xs font-medium text-gray-900">Non-Int</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="text-xs font-bold text-gray-600">{metrics.difficultyBreakdown.nonInteresting.count}</div>
-                      <div className="text-xs text-gray-500">{formatRate(metrics.difficultyBreakdown.nonInteresting.avgRate)}</div>
-                    </div>
-                  </div>
-
-                  <div 
-                    className="flex items-center justify-between px-1.5 py-1 bg-orange-50 rounded border border-orange-200 cursor-pointer hover:bg-orange-100 transition-colors"
-                    onClick={() => {
-                      setSelectedFilter('Warm')
-                      setSelectedTicker('')
-                      setSearchTerm('')
-                    }}
-                    title="Click to filter by Warm securities"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <AlertTriangle className="w-3 h-3 text-orange-600" />
-                      <span className="text-xs font-medium text-gray-900">Warm</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="text-xs font-bold text-orange-600">{metrics.difficultyBreakdown.warm.count}</div>
-                      <div className="text-xs text-gray-500">{formatRate(metrics.difficultyBreakdown.warm.avgRate)}</div>
-                    </div>
-                  </div>
-
-                  <div 
-                    className="flex items-center justify-between px-1.5 py-1 bg-red-50 rounded border border-red-200 cursor-pointer hover:bg-red-100 transition-colors"
-                    onClick={() => {
-                      setSelectedFilter('Hard-to-Borrow')
-                      setSelectedTicker('')
-                      setSearchTerm('')
-                    }}
-                    title="Click to filter by HTB securities"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <XCircle className="w-3 h-3 text-red-600" />
-                      <span className="text-xs font-medium text-gray-900">HTB</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="text-xs font-bold text-red-600">{metrics.difficultyBreakdown.hardToBorrow.count}</div>
-                      <div className="text-xs text-gray-500">{formatRate(metrics.difficultyBreakdown.hardToBorrow.avgRate)}</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Asset Class Breakdown */}
-              <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
-                <h3 className="text-sm font-semibold text-gray-900 mb-2">Asset Classes</h3>
-                <div className="space-y-1">
-                  <div 
-                    className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200 cursor-pointer hover:bg-blue-100 transition-colors"
-                    onClick={() => {
-                      setSelectedFilter('Equity')
-                      setSelectedTicker('')
-                      setSearchTerm('')
-                    }}
-                    title="Click to filter by Equity securities"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <Activity className="w-3 h-3 text-blue-600" />
-                      <span className="text-xs font-medium text-gray-900">Equity</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="text-xs font-bold text-blue-600">{metrics.assetClassBreakdown.equity.count}</div>
-                      <div className="text-xs text-gray-500">{formatRate(metrics.assetClassBreakdown.equity.avgRate)}</div>
-                    </div>
-                  </div>
-
-                  <div 
-                    className="flex items-center justify-between px-1.5 py-1 bg-purple-50 rounded border border-purple-200 cursor-pointer hover:bg-purple-100 transition-colors"
-                    onClick={() => {
-                      setSelectedFilter('ETF')
-                      setSelectedTicker('')
-                      setSearchTerm('')
-                    }}
-                    title="Click to filter by ETF securities"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <Building className="w-3 h-3 text-purple-600" />
-                      <span className="text-xs font-medium text-gray-900">ETF</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="text-xs font-bold text-purple-600">{metrics.assetClassBreakdown.etf.count}</div>
-                      <div className="text-xs text-gray-500">{formatRate(metrics.assetClassBreakdown.etf.avgRate)}</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200">
-                    <div className="flex items-center space-x-2">
-                      <Shield className="w-3 h-3 text-green-600" />
-                      <span className="text-xs font-medium text-gray-900">Corp Bond</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="text-xs font-bold text-green-600">{metrics.assetClassBreakdown.corporateBond.count}</div>
-                      <div className="text-xs text-gray-500">{formatRate(metrics.assetClassBreakdown.corporateBond.avgRate)}</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between px-1.5 py-1 bg-yellow-50 rounded border border-yellow-200">
-                    <div className="flex items-center space-x-2">
-                      <FileText className="w-3 h-3 text-yellow-600" />
-                      <span className="text-xs font-medium text-gray-900">Gov Bond</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="text-xs font-bold text-yellow-600">{metrics.assetClassBreakdown.governmentBond.count}</div>
-                      <div className="text-xs text-gray-500">{formatRate(metrics.assetClassBreakdown.governmentBond.avgRate)}</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Anticipated Availability */}
-              <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
-                <h3 className="text-sm font-semibold text-gray-900 mb-2">Anticipated Availability</h3>
-                <div className="space-y-1">
-                  {/* Recalls Pending */}
-                  <div className="flex items-center justify-between px-1.5 py-1 bg-red-50 rounded border border-red-200">
-                    <div className="flex items-center space-x-2">
-                      <ArrowLeft className="w-3 h-3 text-red-600" />
-                      <span className="text-xs font-medium text-gray-900">Recalls Pending</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="text-xs font-bold text-red-600">-{formatNumber(Math.floor(Math.random() * 500 + 200))}K</div>
-                      <div className="text-xs text-red-500">Today</div>
-                    </div>
-                  </div>
-
-                  {/* Anticipated Receives */}
-                  <div className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200">
-                    <div className="flex items-center space-x-2">
-                      <ArrowRight className="w-3 h-3 text-green-600" />
-                      <span className="text-xs font-medium text-gray-900">Anticipated Receives</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="text-xs font-bold text-green-600">+{formatNumber(Math.floor(Math.random() * 800 + 300))}K</div>
-                      <div className="text-xs text-green-500">T+1</div>
-                    </div>
-                  </div>
-
-                  {/* Pledge Recalls */}
-                  <div className="flex items-center justify-between px-1.5 py-1 bg-orange-50 rounded border border-orange-200">
-                    <div className="flex items-center space-x-2">
-                      <Shield className="w-3 h-3 text-orange-600" />
-                      <span className="text-xs font-medium text-gray-900">Pledge Recalls</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="text-xs font-bold text-orange-600">-{formatNumber(Math.floor(Math.random() * 300 + 100))}K</div>
-                      <div className="text-xs text-orange-500">T+2</div>
-                    </div>
-                  </div>
-
-                  {/* Net Change Summary */}
-                  <div className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200">
-                    <div className="flex items-center space-x-2">
-                      <TrendingUp className="w-3 h-3 text-blue-600" />
-                      <span className="text-xs font-medium text-gray-900">Net Change</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="text-xs font-bold text-blue-600">+{formatNumber(Math.floor(Math.random() * 200 + 50))}K</div>
-                      <div className="text-xs text-blue-500">3D</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom Row: 3 cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {/* Availability Trends */}
-              <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
-                <h3 className="text-sm font-semibold text-gray-900 mb-2">Availability Trends</h3>
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-green-50 to-green-100 rounded border border-green-200">
-                    <div className="flex items-center space-x-2">
-                      <TrendingDown className="w-3 h-3 text-green-600" />
-                      <span className="text-xs font-medium text-gray-900">Low Util (0-25%)</span>
-                    </div>
-                    <div className="text-xs font-bold text-green-600">{securities.filter(s => s.utilizationRate <= 25).length} secs</div>
-                  </div>
-
-                  <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded border border-yellow-200">
-                    <div className="flex items-center space-x-2">
-                      <Minus className="w-3 h-3 text-yellow-600" />
-                      <span className="text-xs font-medium text-gray-900">Mod Util (25-50%)</span>
-                    </div>
-                    <div className="text-xs font-bold text-yellow-600">{securities.filter(s => s.utilizationRate > 25 && s.utilizationRate <= 50).length} secs</div>
-                  </div>
-
-                  <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-orange-50 to-orange-100 rounded border border-orange-200">
-                    <div className="flex items-center space-x-2">
-                      <TrendingUp className="w-3 h-3 text-orange-600" />
-                      <span className="text-xs font-medium text-gray-900">High Util (50-75%)</span>
-                    </div>
-                    <div className="text-xs font-bold text-orange-600">{securities.filter(s => s.utilizationRate > 50 && s.utilizationRate <= 75).length} secs</div>
-                  </div>
-
-                  <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-red-50 to-red-100 rounded border border-red-200">
-                    <div className="flex items-center space-x-2">
-                      <AlertTriangle className="w-3 h-3 text-red-600" />
-                      <span className="text-xs font-medium text-gray-900">Critical (75%+)</span>
-                    </div>
-                    <div className="text-xs font-bold text-red-600">{securities.filter(s => s.utilizationRate > 75).length} secs</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* HTB FPL Availability */}
-              <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-semibold text-gray-900">HTB FPL Availability</h3>
-                  <div className="flex items-center space-x-1">
-                    <Shield className="w-3 h-3 text-blue-500" />
-                    <span className="text-xs text-gray-600">
-                      {securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.fpl > 0).length}
-                    </span>
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  {securities
-                    .filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.fpl > 0)
-                    .slice(0, showAllS3Opportunities ? undefined : 3)
-                    .map((security) => (
-                      <div 
-                        key={`fpl-${security.id}`} 
-                        className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200 hover:bg-blue-100 transition-colors cursor-pointer"
-                        onClick={() => {
-                          setSelectedTicker(security.ticker)
-                          setSelectedFilter('all')
-                          setSearchTerm('')
-                        }}
-                        title={`Click to filter by ${security.ticker}`}
-                      >
-                        <div className="flex items-center space-x-2">
-                          <span className="text-xs font-medium text-gray-900">{security.ticker}</span>
-                          <span className="text-xs text-gray-600">{formatRate(security.averageRate)}</span>
-                          {showAllS3Opportunities && (
-                            <span className="text-xs text-gray-500">
-                              {(security.availabilityBreakdown.fpl * (security.currentPrice || 50) / 1000000).toFixed(1)}M
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <div className="text-xs font-bold text-blue-600">
-                            {formatNumber(security.availabilityBreakdown.fpl / 1000)}K
-                          </div>
-                          <span className="text-xs text-gray-500">FPL</span>
-                          {showAllS3Opportunities && (
-                            <span className="text-xs text-gray-400">
-                              ({security.availabilityBreakdown.fpl})
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  
-                  {/* Show More/Less Button */}
-                  {securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.fpl > 0).length > 3 && (
-                    <div className="pt-1 border-t border-gray-200">
-                      <button
-                        onClick={() => setShowAllS3Opportunities(!showAllS3Opportunities)}
-                        className="w-full flex items-center justify-center space-x-1 p-1 text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded transition-colors"
-                      >
-                        <ChevronDown className={`w-3 h-3 transition-transform ${showAllS3Opportunities ? 'rotate-180' : ''}`} />
-                        <span>
-                          {showAllS3Opportunities 
-                            ? 'Show Less' 
-                            : `Show ${securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.fpl > 0).length - 3} More`
-                          }
-                        </span>
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* HTB S3 Opportunities */}
-              <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-semibold text-gray-900">HTB S3 Opportunities</h3>
-                  <div className="flex items-center space-x-1">
-                    <AlertTriangle className="w-3 h-3 text-red-500" />
-                    <span className="text-xs text-gray-600">
-                      {securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.s3Potential > 0).length}
-                    </span>
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  {securities
-                    .filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.s3Potential > 0)
-                    .slice(0, showAllS3Opportunities ? undefined : 3)
-                    .map((security) => (
-                      <div 
-                        key={security.id} 
-                        className="flex items-center justify-between px-1.5 py-1 bg-red-50 rounded border border-red-200 hover:bg-red-100 transition-colors cursor-pointer"
-                        onClick={() => {
-                          setSelectedTicker(security.ticker)
-                          setSelectedFilter('all')
-                          setSearchTerm('')
-                        }}
-                        title={`Click to filter by ${security.ticker}`}
-                      >
-                        <div className="flex items-center space-x-2">
-                          <span className="text-xs font-medium text-gray-900">{security.ticker}</span>
-                          <span className="text-xs text-gray-600">{formatRate(security.averageRate)}</span>
-                          {showAllS3Opportunities && (
-                            <span className="text-xs text-gray-500">
-                              {(security.availabilityBreakdown.s3Potential * (security.currentPrice || 50) / 1000000).toFixed(1)}M
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <div className="text-xs font-bold text-red-600">
-                            {formatNumber(security.availabilityBreakdown.s3Potential / 1000)}K
-                          </div>
-                          <span className="text-xs text-gray-500">S3</span>
-                          {showAllS3Opportunities && (
-                            <span className="text-xs text-gray-400">
-                              ({security.availabilityBreakdown.s3Potential})
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  
-                  {/* Show More/Less Button */}
-                  {securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.s3Potential > 0).length > 3 && (
-                    <div className="pt-1 border-t border-gray-200">
-                      <button
-                        onClick={() => setShowAllS3Opportunities(!showAllS3Opportunities)}
-                        className="w-full flex items-center justify-center space-x-1 p-1 text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded transition-colors"
-                      >
-                        <ChevronDown className={`w-3 h-3 transition-transform ${showAllS3Opportunities ? 'rotate-180' : ''}`} />
-                        <span>
-                          {showAllS3Opportunities 
-                            ? 'Show Less' 
-                            : `Show ${securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.s3Potential > 0).length - 3} More`
-                          }
-                        </span>
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
 
 
-        </div>
 
-        {/* END DUPLICATE SECTION COMMENT */}
-
-        {/* Securities Table */}
         <div className="bg-white rounded shadow border border-gray-200 mx-2">
           <div className="border-b border-gray-200 px-3 py-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <h2 className="text-sm font-semibold text-gray-900">Securities Availability</h2>
-                {/* Active Filters Display */}
+    
                 <div className="flex items-center space-x-2">
                   {selectedTicker && (
                     <Badge className="bg-blue-100 text-blue-800 text-xs px-2 py-1 flex items-center space-x-1">
