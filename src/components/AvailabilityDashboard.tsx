@@ -142,9 +142,11 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
   const [viewMode, setViewMode] = useState<'overview' | 'asset-class' | 'difficulty'>('overview')
   const [lastUpdate, setLastUpdate] = useState(new Date())
   const [selectedFilter, setSelectedFilter] = useState<string>('all')
+  const [selectedTicker, setSelectedTicker] = useState<string>('')
   
   const [securities, setSecurities] = useState<SecurityAvailability[]>([])
   const [metrics, setMetrics] = useState<AvailabilityMetrics | null>(null)
+  const [showAllS3Opportunities, setShowAllS3Opportunities] = useState(false)
 
   // Generate mock data with realistic securities lending rates
   const generateMockData = (): { securities: SecurityAvailability[], metrics: AvailabilityMetrics } => {
@@ -513,7 +515,8 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
     const matchesFilter = selectedFilter === 'all' || 
                          security.difficulty === selectedFilter ||
                          security.assetClass === selectedFilter
-    return matchesSearch && matchesFilter
+    const matchesTicker = selectedTicker === '' || security.ticker === selectedTicker
+    return matchesSearch && matchesFilter && matchesTicker
   })
 
   if (!metrics) return <div>Loading...</div>
@@ -646,12 +649,20 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
         </div>
 
         {/* Breakdown Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-3">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 mb-3">
           {/* Securities Lending Categories */}
           <div className="bg-white rounded shadow border border-gray-200 p-2">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">Lending Categories</h3>
             <div className="space-y-1">
-              <div className="flex items-center justify-between p-2 bg-green-50 rounded border border-green-200">
+              <div 
+                className="flex items-center justify-between p-2 bg-green-50 rounded border border-green-200 cursor-pointer hover:bg-green-100 transition-colors"
+                onClick={() => {
+                  setSelectedFilter('GC')
+                  setSelectedTicker('')
+                  setSearchTerm('')
+                }}
+                title="Click to filter by GC securities"
+              >
                 <div className="flex items-center space-x-2">
                   <CheckCircle2 className="w-3 h-3 text-green-600" />
                   <div>
@@ -664,7 +675,15 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-2 bg-gray-50 rounded border border-gray-200">
+              <div 
+                className="flex items-center justify-between p-2 bg-gray-50 rounded border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors"
+                onClick={() => {
+                  setSelectedFilter('Non-Interesting')
+                  setSelectedTicker('')
+                  setSearchTerm('')
+                }}
+                title="Click to filter by Non-Interesting securities"
+              >
                 <div className="flex items-center space-x-2">
                   <Target className="w-3 h-3 text-gray-600" />
                   <div>
@@ -677,7 +696,15 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-2 bg-orange-50 rounded border border-orange-200">
+              <div 
+                className="flex items-center justify-between p-2 bg-orange-50 rounded border border-orange-200 cursor-pointer hover:bg-orange-100 transition-colors"
+                onClick={() => {
+                  setSelectedFilter('Warm')
+                  setSelectedTicker('')
+                  setSearchTerm('')
+                }}
+                title="Click to filter by Warm securities"
+              >
                 <div className="flex items-center space-x-2">
                   <AlertTriangle className="w-3 h-3 text-orange-600" />
                   <div>
@@ -690,7 +717,15 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-2 bg-red-50 rounded border border-red-200">
+              <div 
+                className="flex items-center justify-between p-2 bg-red-50 rounded border border-red-200 cursor-pointer hover:bg-red-100 transition-colors"
+                onClick={() => {
+                  setSelectedFilter('Hard-to-Borrow')
+                  setSelectedTicker('')
+                  setSearchTerm('')
+                }}
+                title="Click to filter by Hard-to-Borrow securities"
+              >
                 <div className="flex items-center space-x-2">
                   <XCircle className="w-3 h-3 text-red-600" />
                   <div>
@@ -709,7 +744,15 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
           <div className="bg-white rounded shadow border border-gray-200 p-2">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">Asset Classes</h3>
             <div className="space-y-1">
-              <div className="flex items-center justify-between p-2 bg-blue-50 rounded border border-blue-200">
+              <div 
+                className="flex items-center justify-between p-2 bg-blue-50 rounded border border-blue-200 cursor-pointer hover:bg-blue-100 transition-colors"
+                onClick={() => {
+                  setSelectedFilter('Equity')
+                  setSelectedTicker('')
+                  setSearchTerm('')
+                }}
+                title="Click to filter by Equity securities"
+              >
                 <div className="flex items-center space-x-2">
                   <BarChart3 className="w-3 h-3 text-blue-600" />
                   <div>
@@ -722,7 +765,15 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-2 bg-purple-50 rounded border border-purple-200">
+              <div 
+                className="flex items-center justify-between p-2 bg-purple-50 rounded border border-purple-200 cursor-pointer hover:bg-purple-100 transition-colors"
+                onClick={() => {
+                  setSelectedFilter('ETF')
+                  setSelectedTicker('')
+                  setSearchTerm('')
+                }}
+                title="Click to filter by ETF securities"
+              >
                 <div className="flex items-center space-x-2">
                   <Building className="w-3 h-3 text-purple-600" />
                   <div>
@@ -762,10 +813,92 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
               </div>
             </div>
           </div>
+
+          {/* Top Counterparties */}
+          <div className="bg-white rounded shadow border border-gray-200 p-2">
+            <h3 className="text-sm font-semibold text-gray-900 mb-2">Top Counterparties</h3>
+            <div className="space-y-1">
+              {metrics.sourceBreakdown.slice(0, 4).map((source, idx) => (
+                <div key={source.counterparty} className="flex items-center justify-between p-2 bg-gray-50 rounded border border-gray-200 hover:bg-gray-100 transition-colors cursor-pointer">
+                  <div className="flex items-center space-x-2">
+                    <div className={`w-2 h-2 rounded-full ${
+                      source.reliability > 95 ? 'bg-green-500' : 
+                      source.reliability > 90 ? 'bg-yellow-500' : 'bg-red-500'
+                    }`}></div>
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">{source.counterparty.split(' ')[0]}</div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm font-bold text-gray-700">{source.activeSecurities}</div>
+                    <div className="text-xs text-gray-500">{source.reliability.toFixed(0)}%</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Market Trends */}
+          <div className="bg-white rounded shadow border border-gray-200 p-2">
+            <h3 className="text-sm font-semibold text-gray-900 mb-2">Market Trends</h3>
+            <div className="space-y-1">
+              <div className="flex items-center justify-between p-2 bg-green-50 rounded border border-green-200">
+                <div className="flex items-center space-x-2">
+                  <TrendingUp className="w-3 h-3 text-green-600" />
+                  <div>
+                    <div className="text-sm font-medium text-gray-900">Avail Up</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-bold text-green-600">{Math.abs(metrics.trends.availabilityChange)}</div>
+                  <div className="text-xs text-gray-500">securities</div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-2 bg-red-50 rounded border border-red-200">
+                <div className="flex items-center space-x-2">
+                  <TrendingDown className="w-3 h-3 text-red-600" />
+                  <div>
+                    <div className="text-sm font-medium text-gray-900">Rate Fall</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-bold text-red-600">{formatRate(Math.abs(metrics.trends.rateChange))}</div>
+                  <div className="text-xs text-gray-500">avg</div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-2 bg-blue-50 rounded border border-blue-200">
+                <div className="flex items-center space-x-2">
+                  <Activity className="w-3 h-3 text-blue-600" />
+                  <div>
+                    <div className="text-sm font-medium text-gray-900">Util Change</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-bold text-blue-600">{metrics.trends.utilizationChange > 0 ? '+' : ''}{metrics.trends.utilizationChange.toFixed(1)}%</div>
+                  <div className="text-xs text-gray-500">today</div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-2 bg-yellow-50 rounded border border-yellow-200">
+                <div className="flex items-center space-x-2">
+                  <AlertTriangle className="w-3 h-3 text-yellow-600" />
+                  <div>
+                    <div className="text-sm font-medium text-gray-900">Volatility</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-bold text-yellow-600">{metrics.marketMetrics.highVolatilitySecurities}</div>
+                  <div className="text-xs text-gray-500">high vol</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Smart Loan Availability Types */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-2 mb-3">
+        <div className="grid grid-cols-1 lg:grid-cols-6 gap-2 mb-3">
           {/* Internal Availability Breakdown */}
           <div className="bg-white rounded shadow border border-gray-200 p-2">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">Internal Availability</h3>
@@ -892,32 +1025,93 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
             </div>
           </div>
 
+          {/* S3 Potential - Internal Availability */}
+          <div className="bg-white rounded shadow border border-gray-200 p-2">
+            <h3 className="text-sm font-semibold text-gray-900 mb-2">S3 Potential</h3>
+            <div className="text-center p-2 bg-yellow-50 rounded border border-yellow-200">
+              <div className="text-lg font-bold text-yellow-600">
+                {formatNumber(metrics.availabilityTypeBreakdown.s3Potential.total / 1000)}K
+              </div>
+              <div className="text-xs text-gray-600 mb-1">S3 Shares</div>
+              <div className="text-sm font-semibold text-yellow-700">
+                {formatCurrency(metrics.availabilityTypeBreakdown.s3Potential.totalValue / 1000000)}M
+              </div>
+              <div className="text-xs text-gray-500 mt-1">
+                {metrics.availabilityTypeBreakdown.s3Potential.securities} securities
+              </div>
+            </div>
+          </div>
+
           {/* Hard Securities with S3 Widget */}
           <div className="bg-white rounded shadow border border-gray-200 p-2">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-semibold text-gray-900">HTB S3 Opportunities</h3>
-              <AlertTriangle className="w-3 h-3 text-red-500" />
+              <div className="flex items-center space-x-1">
+                <AlertTriangle className="w-3 h-3 text-red-500" />
+                <span className="text-xs text-gray-600">
+                  {securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.s3Potential > 0).length}
+                </span>
+              </div>
             </div>
             <div className="space-y-1">
               {securities
                 .filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.s3Potential > 0)
-                .slice(0, 3)
+                .slice(0, showAllS3Opportunities ? undefined : 3)
                 .map((security) => (
-                  <div key={security.id} className="flex items-center justify-between p-1.5 bg-red-50 rounded border border-red-200">
+                  <div 
+                    key={security.id} 
+                    className="flex items-center justify-between p-1.5 bg-red-50 rounded border border-red-200 hover:bg-red-100 transition-colors cursor-pointer"
+                    onClick={() => {
+                      setSelectedTicker(security.ticker)
+                      setSelectedFilter('all')
+                      setSearchTerm('')
+                    }}
+                    title={`Click to filter by ${security.ticker}`}
+                  >
                     <div className="flex-1">
                       <div className="text-sm font-medium text-gray-900">{security.ticker}</div>
                       <div className="text-xs text-gray-600">
                         {formatRate(security.averageRate)}
+                        {showAllS3Opportunities && (
+                          <span className="ml-2 text-gray-500">
+                            • {(security.availabilityBreakdown.s3Potential * (security.currentPrice || 50) / 1000000).toFixed(1)}M value
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="text-sm font-bold text-red-600">
                         {formatNumber(security.availabilityBreakdown.s3Potential / 1000)}K
                       </div>
-                      <div className="text-xs text-gray-500">S3</div>
+                      <div className="text-xs text-gray-500">
+                        S3
+                        {showAllS3Opportunities && (
+                          <span className="ml-1 text-gray-400">
+                            ({security.availabilityBreakdown.s3Potential} shares)
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
+              
+              {/* Show More/Less Button */}
+              {securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.s3Potential > 0).length > 3 && (
+                <div className="pt-1 border-t border-gray-200">
+                  <button
+                    onClick={() => setShowAllS3Opportunities(!showAllS3Opportunities)}
+                    className="w-full flex items-center justify-center space-x-1 p-1 text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded transition-colors"
+                  >
+                    <ChevronDown className={`w-3 h-3 transition-transform ${showAllS3Opportunities ? 'rotate-180' : ''}`} />
+                    <span>
+                      {showAllS3Opportunities 
+                        ? 'Show Less' 
+                        : `Show ${securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.s3Potential > 0).length - 3} More`
+                      }
+                    </span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -926,7 +1120,49 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
         <div className="bg-white rounded shadow border border-gray-200">
           <div className="border-b border-gray-200 px-3 py-2">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-gray-900">Securities Availability</h2>
+              <div className="flex items-center space-x-3">
+                <h2 className="text-sm font-semibold text-gray-900">Securities Availability</h2>
+                {/* Active Filters Display */}
+                <div className="flex items-center space-x-2">
+                  {selectedTicker && (
+                    <Badge className="bg-blue-100 text-blue-800 text-xs px-2 py-1 flex items-center space-x-1">
+                      <span>Ticker: {selectedTicker}</span>
+                      <button
+                        onClick={() => setSelectedTicker('')}
+                        className="ml-1 hover:bg-blue-200 rounded"
+                        title="Clear ticker filter"
+                      >
+                        <XCircle className="w-3 h-3" />
+                      </button>
+                    </Badge>
+                  )}
+                  {selectedFilter !== 'all' && (
+                    <Badge className="bg-green-100 text-green-800 text-xs px-2 py-1 flex items-center space-x-1">
+                      <span>Filter: {selectedFilter}</span>
+                      <button
+                        onClick={() => setSelectedFilter('all')}
+                        className="ml-1 hover:bg-green-200 rounded"
+                        title="Clear category filter"
+                      >
+                        <XCircle className="w-3 h-3" />
+                      </button>
+                    </Badge>
+                  )}
+                  {(selectedTicker || selectedFilter !== 'all' || searchTerm) && (
+                    <button
+                      onClick={() => {
+                        setSelectedTicker('')
+                        setSelectedFilter('all')
+                        setSearchTerm('')
+                      }}
+                      className="text-xs text-gray-600 hover:text-gray-800 underline"
+                      title="Clear all filters"
+                    >
+                      Clear All
+                    </button>
+                  )}
+                </div>
+              </div>
               <div className="flex items-center space-x-2">
                 <select
                   value={selectedFilter}
