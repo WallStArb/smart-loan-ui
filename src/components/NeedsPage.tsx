@@ -955,10 +955,339 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
 
         <div className="max-w-7xl mx-auto">{/* Main Dashboard */}
 
+        {/* Compact Summary Metrics Bar - Availability Style */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 mb-3 px-2">
+          <div className="bg-white rounded shadow border border-gray-200 px-1.5 py-1">
+            <div className="flex items-center space-x-2">
+              <AlertTriangle className="w-3 h-3 text-red-400" />
+              <span className="text-xs font-medium text-gray-500">Critical</span>
+              <div className="flex-1 text-center">
+                <span className="text-sm font-bold text-red-600">{metrics.priorityBreakdown.critical}</span>
+              </div>
+              <div className="text-right">
+                <div className="text-xs text-gray-500">{formatCurrency(securityNeeds.filter(n => n.priority === 'Critical').reduce((sum, n) => sum + n.marketValue, 0) / 1000000).replace('$', '')}M</div>
+              </div>
+              <TrendingUp className="w-3 h-3 text-red-600" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded shadow border border-gray-200 px-1.5 py-1">
+            <div className="flex items-center space-x-2">
+              <Clock className="w-3 h-3 text-orange-400" />
+              <span className="text-xs font-medium text-gray-500">Aging</span>
+              <div className="flex-1 text-center">
+                <span className="text-sm font-bold text-orange-600">{metrics.agingNeeds}</span>
+              </div>
+              <div className="text-right">
+                <div className="text-xs text-gray-500">3+ days</div>
+              </div>
+              <TrendingDown className="w-3 h-3 text-orange-600" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded shadow border border-gray-200 px-1.5 py-1">
+            <div className="flex items-center space-x-2">
+              <Shield className="w-3 h-3 text-blue-400" />
+              <span className="text-xs font-medium text-gray-500">RegSHO</span>
+              <div className="flex-1 text-center">
+                <span className="text-sm font-bold text-blue-600">{metrics.regShoSecurities}</span>
+              </div>
+              <div className="text-right">
+                <div className="text-xs text-gray-500">securities</div>
+              </div>
+              <TrendingUp className="w-3 h-3 text-blue-600" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded shadow border border-gray-200 px-1.5 py-1">
+            <div className="flex items-center space-x-2">
+              <Activity className="w-3 h-3 text-green-400" />
+              <span className="text-xs font-medium text-gray-500">Progress</span>
+              <div className="flex-1 text-center">
+                <span className="text-sm font-bold text-green-600">{Math.round((metrics.dailyProgress.completed / metrics.dailyProgress.target) * 100)}%</span>
+              </div>
+              <div className="text-right">
+                <div className="text-xs text-gray-500">{metrics.dailyProgress.completed}/{metrics.dailyProgress.target}</div>
+              </div>
+              <CheckCircle2 className="w-3 h-3 text-green-600" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded shadow border border-gray-200 px-1.5 py-1">
+            <div className="flex items-center space-x-2">
+              <DollarSign className="w-3 h-3 text-purple-400" />
+              <span className="text-xs font-medium text-gray-500">Borrow Rate</span>
+              <div className="flex-1 text-center">
+                <span className="text-sm font-bold text-purple-600">{(securityNeeds.reduce((sum, n) => sum + n.borrowRate, 0) / securityNeeds.length).toFixed(1)}%</span>
+              </div>
+              <div className="text-right">
+                <div className="text-xs text-gray-500">avg</div>
+              </div>
+              <Minus className="w-3 h-3 text-purple-600" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded shadow border border-gray-200 px-1.5 py-1">
+            <div className="flex items-center space-x-2">
+              <Target className="w-3 h-3 text-gray-400" />
+              <span className="text-xs font-medium text-gray-500">Total Needs</span>
+              <div className="flex-1 text-center">
+                <span className="text-sm font-bold text-gray-900">{metrics.totalNeeds}</span>
+              </div>
+              <div className="text-right">
+                <div className="text-xs text-gray-500">{formatCurrency(metrics.totalMarketValue / 1000000).replace('$', '')}M</div>
+              </div>
+              <TrendingUp className="w-3 h-3 text-gray-600" />
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions Cards - Availability Style */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3 px-2">
+          {/* Critical Actions */}
+          <div className="bg-white rounded-lg shadow border border-red-200 p-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center space-x-2">
+                <AlertTriangle className="w-4 h-4 text-red-500" />
+                <h3 className="text-sm font-semibold text-gray-900">Critical Actions</h3>
+              </div>
+              <Badge className="bg-red-100 text-red-800 text-xs">Urgent</Badge>
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-600">204 CNS Failures:</span>
+                <span className="text-sm font-bold text-red-600">{securityNeeds.filter(n => n.is204CNS).length}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-600">RegSHO Close-outs:</span>
+                <span className="text-sm font-bold text-red-600">{metrics.regShoSecurities}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-600">Aging 3+ Days:</span>
+                <span className="text-sm font-bold text-orange-600">{securityNeeds.filter(n => n.agingDays >= 3).length}</span>
+              </div>
+              <div className="pt-1 border-t border-gray-200">
+                <Button size="sm" className="w-full h-7 text-xs bg-red-600 hover:bg-red-700">
+                  <AlertTriangle className="w-3 h-3 mr-1" />
+                  Prioritize All
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Borrow Opportunities */}
+          <div className="bg-white rounded-lg shadow border border-blue-200 p-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center space-x-2">
+                <TrendingUp className="w-4 h-4 text-blue-500" />
+                <h3 className="text-sm font-semibold text-gray-900">Borrow Queue</h3>
+              </div>
+              <Badge className="bg-blue-100 text-blue-800 text-xs">Ready</Badge>
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-600">Pending Borrows:</span>
+                <span className="text-sm font-bold text-blue-600">{metrics.borrowRecallActivity.borrowsPending}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-600">Success Rate:</span>
+                <span className="text-sm font-bold text-green-600">{metrics.borrowRecallActivity.borrowsSuccessRate}%</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-600">Avg Rate:</span>
+                <span className="text-sm font-bold text-purple-600">{(securityNeeds.reduce((sum, n) => sum + n.borrowRate, 0) / securityNeeds.length).toFixed(1)}%</span>
+              </div>
+              <div className="pt-1 border-t border-gray-200">
+                <Button size="sm" className="w-full h-7 text-xs bg-blue-600 hover:bg-blue-700">
+                  <DollarSign className="w-3 h-3 mr-1" />
+                  Execute Borrows
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Recall Opportunities */}
+          <div className="bg-white rounded-lg shadow border border-green-200 p-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center space-x-2">
+                <RefreshCw className="w-4 h-4 text-green-500" />
+                <h3 className="text-sm font-semibold text-gray-900">Recall Queue</h3>
+              </div>
+              <Badge className="bg-green-100 text-green-800 text-xs">Available</Badge>
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-600">Outstanding Loans:</span>
+                <span className="text-sm font-bold text-green-600">{formatNumber(securityNeeds.reduce((sum, n) => sum + (n.outstandingLoan || 0), 0))}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-600">Recall Success:</span>
+                <span className="text-sm font-bold text-green-600">{metrics.borrowRecallActivity.recallsSuccessRate}%</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-600">Processing:</span>
+                <span className="text-sm font-bold text-yellow-600">{metrics.borrowRecallActivity.recallsPending}</span>
+              </div>
+              <div className="pt-1 border-t border-gray-200">
+                <Button size="sm" className="w-full h-7 text-xs bg-green-600 hover:bg-green-700">
+                  <RefreshCw className="w-3 h-3 mr-1" />
+                  Execute Recalls
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Progress Tracker */}
+          <div className="bg-white rounded-lg shadow border border-purple-200 p-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center space-x-2">
+                <Activity className="w-4 h-4 text-purple-500" />
+                <h3 className="text-sm font-semibold text-gray-900">Daily Progress</h3>
+              </div>
+              <Badge className="bg-purple-100 text-purple-800 text-xs">{Math.round((metrics.dailyProgress.completed / metrics.dailyProgress.target) * 100)}%</Badge>
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-600">Target:</span>
+                <span className="text-sm font-bold text-gray-900">{metrics.dailyProgress.target}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-600">Completed:</span>
+                <span className="text-sm font-bold text-green-600">{metrics.dailyProgress.completed}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-600">Remaining:</span>
+                <span className="text-sm font-bold text-orange-600">{metrics.dailyProgress.remaining}</span>
+              </div>
+              <div className="pt-1 border-t border-gray-200">
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="bg-purple-600 h-2 rounded-full transition-all duration-300" 
+                    style={{ width: `${Math.min((metrics.dailyProgress.completed / metrics.dailyProgress.target) * 100, 100)}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Top Securities Risk Cards - Availability Style */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-3 px-2">
+          {/* Highest Risk Securities */}
+          <div className="bg-white rounded-lg shadow border border-gray-200 p-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center space-x-2">
+                <AlertCircle className="w-4 h-4 text-red-500" />
+                <h3 className="text-sm font-semibold text-gray-900">Highest Risk</h3>
+              </div>
+              <Badge className="bg-red-100 text-red-800 text-xs">Critical</Badge>
+            </div>
+            <div className="space-y-1">
+              {securityNeeds
+                .filter(n => n.priority === 'Critical' || n.is204CNS || n.agingDays >= 3)
+                .slice(0, 3)
+                .map((security, index) => (
+                  <div key={security.id} className="flex justify-between items-center py-0.5">
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-medium text-gray-900 truncate">{security.ticker}</div>
+                      <div className="text-xs text-gray-500">{formatCurrency(security.marketValue)}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className={`text-xs font-bold ${
+                        security.is204CNS ? 'text-red-600' : 
+                        security.priority === 'Critical' ? 'text-red-600' : 'text-orange-600'
+                      }`}>
+                        {security.is204CNS ? '204 CNS' : 
+                         security.priority === 'Critical' ? 'CRITICAL' : `${security.agingDays}d`}
+                      </div>
+                      <div className="text-xs text-gray-500">{security.borrowRate.toFixed(1)}%</div>
+                    </div>
+                  </div>
+                ))
+              }
+              {securityNeeds.filter(n => n.priority === 'Critical' || n.is204CNS || n.agingDays >= 3).length > 3 && (
+                <div className="pt-1 border-t border-gray-200">
+                  <div className="text-xs text-center text-gray-500">
+                    +{securityNeeds.filter(n => n.priority === 'Critical' || n.is204CNS || n.agingDays >= 3).length - 3} more critical
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Highest Borrow Costs */}
+          <div className="bg-white rounded-lg shadow border border-gray-200 p-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center space-x-2">
+                <DollarSign className="w-4 h-4 text-purple-500" />
+                <h3 className="text-sm font-semibold text-gray-900">High Borrow Cost</h3>
+              </div>
+              <Badge className="bg-purple-100 text-purple-800 text-xs">Expensive</Badge>
+            </div>
+            <div className="space-y-1">
+              {securityNeeds
+                .sort((a, b) => b.borrowRate - a.borrowRate)
+                .slice(0, 3)
+                .map((security, index) => (
+                  <div key={security.id} className="flex justify-between items-center py-0.5">
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-medium text-gray-900 truncate">{security.ticker}</div>
+                      <div className="text-xs text-gray-500">{formatNumber(security.remainingQuantity)} shares</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs font-bold text-purple-600">{security.borrowRate.toFixed(1)}%</div>
+                      <div className="text-xs text-gray-500">{formatCurrency(security.marketValue)}</div>
+                    </div>
+                  </div>
+                ))
+              }
+              <div className="pt-1 border-t border-gray-200">
+                <div className="text-xs text-center text-purple-600 font-medium">
+                  Avg: {(securityNeeds.reduce((sum, n) => sum + n.borrowRate, 0) / securityNeeds.length).toFixed(1)}%
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Largest Quantities */}
+          <div className="bg-white rounded-lg shadow border border-gray-200 p-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center space-x-2">
+                <BarChart3 className="w-4 h-4 text-blue-500" />
+                <h3 className="text-sm font-semibold text-gray-900">Largest Needs</h3>
+              </div>
+              <Badge className="bg-blue-100 text-blue-800 text-xs">Volume</Badge>
+            </div>
+            <div className="space-y-1">
+              {securityNeeds
+                .sort((a, b) => b.marketValue - a.marketValue)
+                .slice(0, 3)
+                .map((security, index) => (
+                  <div key={security.id} className="flex justify-between items-center py-0.5">
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-medium text-gray-900 truncate">{security.ticker}</div>
+                      <div className="text-xs text-gray-500">{formatNumber(security.remainingQuantity)} shares</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs font-bold text-blue-600">{formatCurrency(security.marketValue)}</div>
+                      <div className={`text-xs ${getPriorityColor(security.priority)}`}>{security.priority}</div>
+                    </div>
+                  </div>
+                ))
+              }
+              <div className="pt-1 border-t border-gray-200">
+                <div className="text-xs text-center text-blue-600 font-medium">
+                  Total: {formatCurrency(metrics.totalMarketValue)}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Ultra-Compact Metrics Cards */}
         <div className="p-2">
 
-
+          <>
           {/* First Row - Need Types Breakdown */}
           {showFirstRow && (
           <div className="fis-dashboard-section rounded-md shadow-lg mb-3">
@@ -1766,7 +2095,7 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
           )}
 
           {/* Counterparty Borrowing - Enhanced with sorting and expand/collapse */}
-          {advancedMetrics && (
+          {showThirdRow && advancedMetrics && (
               <div className="bg-white rounded-md shadow border border-gray-200 mb-4">
                 <div className="px-3 py-1 border-b border-gray-200 bg-gray-50 rounded-t-md">
                   <div className="flex items-center justify-between">
@@ -2740,6 +3069,7 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
               </table>
             </div>
           </div>
+          </>
         </div>
         </div>
       </div>
