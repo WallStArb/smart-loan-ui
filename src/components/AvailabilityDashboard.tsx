@@ -898,7 +898,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
         </div>
 
         {/* Smart Loan Availability Types */}
-        <div className="grid grid-cols-1 lg:grid-cols-6 gap-2 mb-3">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-2 mb-3">
           {/* Internal Availability Breakdown */}
           <div className="bg-white rounded shadow border border-gray-200 p-2">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">Internal Availability</h3>
@@ -1025,22 +1025,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
             </div>
           </div>
 
-          {/* S3 Potential - Internal Availability */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2">
-            <h3 className="text-sm font-semibold text-gray-900 mb-2">S3 Potential</h3>
-            <div className="text-center p-2 bg-yellow-50 rounded border border-yellow-200">
-              <div className="text-lg font-bold text-yellow-600">
-                {formatNumber(metrics.availabilityTypeBreakdown.s3Potential.total / 1000)}K
-              </div>
-              <div className="text-xs text-gray-600 mb-1">S3 Shares</div>
-              <div className="text-sm font-semibold text-yellow-700">
-                {formatCurrency(metrics.availabilityTypeBreakdown.s3Potential.totalValue / 1000000)}M
-              </div>
-              <div className="text-xs text-gray-500 mt-1">
-                {metrics.availabilityTypeBreakdown.s3Potential.securities} securities
-              </div>
-            </div>
-          </div>
+
 
           {/* Hard Securities with S3 Widget */}
           <div className="bg-white rounded shadow border border-gray-200 p-2">
