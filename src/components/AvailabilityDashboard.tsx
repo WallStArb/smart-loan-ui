@@ -44,6 +44,7 @@ interface SecurityAvailability {
   totalUtilized: number
   utilizationRate: number
   averageRate: number
+  currentPrice: number
   rateRange: { min: number; max: number }
   difficulty: 'GC' | 'Non-Interesting' | 'Warm' | 'Hard-to-Borrow'
   hasOpenBorrows: boolean
@@ -84,11 +85,11 @@ interface AvailabilityMetrics {
   averageRate: number
   // Smart Loan availability type totals
   availabilityTypeBreakdown: {
-    customer: { total: number; securities: number }
-    firm: { total: number; securities: number }
-    nonCustomer: { total: number; securities: number }
-    fpl: { total: number; securities: number }
-    s3Potential: { total: number; securities: number }
+    customer: { total: number; securities: number; totalValue: number }
+    firm: { total: number; securities: number; totalValue: number }
+    nonCustomer: { total: number; securities: number; totalValue: number }
+    fpl: { total: number; securities: number; totalValue: number }
+    s3Potential: { total: number; securities: number; totalValue: number }
   }
   assetClassBreakdown: {
     equity: { count: number; available: number; avgRate: number }
@@ -199,6 +200,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
       const totalAvailable = Math.floor(Math.random() * 500000) + 50000
       const totalUtilized = Math.floor(totalAvailable * (0.1 + Math.random() * 0.7))
       const utilizationRate = (totalUtilized / totalAvailable) * 100
+      const currentPrice = 50 + Math.random() * 300 // Stock price between $50-$350
       
       const hasOpenBorrows = Math.random() > 0.3
       const hasOpenLoans = Math.random() > 0.4
@@ -284,6 +286,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
         totalUtilized,
         utilizationRate,
         averageRate,
+        currentPrice,
         rateRange,
         difficulty,
         hasOpenBorrows,
@@ -349,23 +352,28 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
     const availabilityTypeBreakdown = {
       customer: { 
         total: securities.reduce((sum, sec) => sum + sec.availabilityBreakdown.customer, 0),
-        securities: securities.filter(sec => sec.availabilityBreakdown.customer > 0).length
+        securities: securities.filter(sec => sec.availabilityBreakdown.customer > 0).length,
+        totalValue: securities.reduce((sum, sec) => sum + (sec.availabilityBreakdown.customer * sec.currentPrice), 0)
       },
       firm: { 
         total: securities.reduce((sum, sec) => sum + sec.availabilityBreakdown.firm, 0),
-        securities: securities.filter(sec => sec.availabilityBreakdown.firm > 0).length
+        securities: securities.filter(sec => sec.availabilityBreakdown.firm > 0).length,
+        totalValue: securities.reduce((sum, sec) => sum + (sec.availabilityBreakdown.firm * sec.currentPrice), 0)
       },
       nonCustomer: { 
         total: securities.reduce((sum, sec) => sum + sec.availabilityBreakdown.nonCustomer, 0),
-        securities: securities.filter(sec => sec.availabilityBreakdown.nonCustomer > 0).length
+        securities: securities.filter(sec => sec.availabilityBreakdown.nonCustomer > 0).length,
+        totalValue: securities.reduce((sum, sec) => sum + (sec.availabilityBreakdown.nonCustomer * sec.currentPrice), 0)
       },
       fpl: { 
         total: securities.reduce((sum, sec) => sum + sec.availabilityBreakdown.fpl, 0),
-        securities: securities.filter(sec => sec.availabilityBreakdown.fpl > 0).length
+        securities: securities.filter(sec => sec.availabilityBreakdown.fpl > 0).length,
+        totalValue: securities.reduce((sum, sec) => sum + (sec.availabilityBreakdown.fpl * sec.currentPrice), 0)
       },
       s3Potential: { 
         total: securities.reduce((sum, sec) => sum + sec.availabilityBreakdown.s3Potential, 0),
-        securities: securities.filter(sec => sec.availabilityBreakdown.s3Potential > 0).length
+        securities: securities.filter(sec => sec.availabilityBreakdown.s3Potential > 0).length,
+        totalValue: securities.reduce((sum, sec) => sum + (sec.availabilityBreakdown.s3Potential * sec.currentPrice), 0)
       }
     }
 
@@ -545,7 +553,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
 
       <div className="max-w-7xl mx-auto">
         {/* Key Rate Indicators */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
           <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-medium text-gray-500">GC Rate (Fed Funds)</h3>
@@ -582,8 +590,8 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
 
           <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-gray-500">Total Available</h3>
-              <BarChart3 className="w-4 h-4 text-blue-400" />
+              <h3 className="text-sm font-medium text-gray-500">Internal Available</h3>
+              <Building className="w-4 h-4 text-blue-400" />
             </div>
             <div className="flex items-center space-x-2">
               <span className="text-2xl font-bold text-gray-900">{formatNumber(metrics.totalAvailable)}</span>
@@ -593,14 +601,33 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-1">
-              {formatNumber(metrics.totalUtilized)} utilized
+              {formatNumber(metrics.totalUtilized)} allocated to clients
+            </p>
+          </div>
+
+          <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-medium text-gray-500">External Available</h3>
+              <Users className="w-4 h-4 text-purple-400" />
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="text-2xl font-bold text-gray-900">
+                {formatNumber(metrics.sourceBreakdown.reduce((sum, s) => sum + s.totalAvailable, 0))}
+              </span>
+              <div className="flex items-center space-x-1">
+                <BarChart3 className="w-3 h-3 text-purple-600" />
+                <span className="text-xs text-purple-600">{metrics.sourceBreakdown.length} sources</span>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              from counterparties
             </p>
           </div>
 
           <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-medium text-gray-500">Utilization Rate</h3>
-              <Activity className="w-4 h-4 text-purple-400" />
+              <Activity className="w-4 h-4 text-orange-400" />
             </div>
             <div className="flex items-center space-x-2">
               <span className="text-2xl font-bold text-gray-900">{metrics.overallUtilization.toFixed(1)}%</span>
@@ -749,10 +776,11 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
         </div>
 
         {/* Smart Loan Availability Types */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          {/* Availability Type Breakdown */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+          {/* Internal Availability Breakdown */}
           <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Smart Loan Availability Types</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Internal Availability</h3>
+            <div className="text-xs text-gray-600 mb-3">Allocated to our clients internally</div>
             <div className="space-y-3">
               <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
                 <div className="flex items-center space-x-3">
@@ -765,6 +793,9 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
                 <div className="text-right">
                   <div className="font-bold text-blue-600">{formatNumber(metrics.availabilityTypeBreakdown.customer.total)}</div>
                   <div className="text-xs text-gray-500">shares</div>
+                  <div className="text-sm font-medium text-blue-700 mt-1">
+                    {formatCurrency(metrics.availabilityTypeBreakdown.customer.totalValue / 1000000)}M
+                  </div>
                 </div>
               </div>
 
@@ -779,6 +810,9 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
                 <div className="text-right">
                   <div className="font-bold text-purple-600">{formatNumber(metrics.availabilityTypeBreakdown.firm.total)}</div>
                   <div className="text-xs text-gray-500">shares</div>
+                  <div className="text-sm font-medium text-purple-700 mt-1">
+                    {formatCurrency(metrics.availabilityTypeBreakdown.firm.totalValue / 1000000)}M
+                  </div>
                 </div>
               </div>
 
@@ -793,6 +827,9 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
                 <div className="text-right">
                   <div className="font-bold text-orange-600">{formatNumber(metrics.availabilityTypeBreakdown.nonCustomer.total)}</div>
                   <div className="text-xs text-gray-500">shares</div>
+                  <div className="text-sm font-medium text-orange-700 mt-1">
+                    {formatCurrency(metrics.availabilityTypeBreakdown.nonCustomer.totalValue / 1000000)}M
+                  </div>
                 </div>
               </div>
 
@@ -807,6 +844,53 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
                 <div className="text-right">
                   <div className="font-bold text-green-600">{formatNumber(metrics.availabilityTypeBreakdown.fpl.total)}</div>
                   <div className="text-xs text-gray-500">shares</div>
+                  <div className="text-sm font-medium text-green-700 mt-1">
+                    {formatCurrency(metrics.availabilityTypeBreakdown.fpl.totalValue / 1000000)}M
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* External Counterparty Availability */}
+          <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">External Counterparty Availability</h3>
+            <div className="text-xs text-gray-600 mb-3">Available from external sources</div>
+            <div className="space-y-3">
+              {metrics.sourceBreakdown.slice(0, 4).map((source, idx) => (
+                <div key={source.counterparty} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-3 h-3 rounded-full ${
+                      source.reliability > 95 ? 'bg-green-500' : 
+                      source.reliability > 90 ? 'bg-yellow-500' : 'bg-red-500'
+                    }`}></div>
+                    <div>
+                      <div className="font-medium text-gray-900">{source.counterparty}</div>
+                      <div className="text-sm text-gray-600">{source.activeSecurities} securities</div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-bold text-gray-700">{formatNumber(source.totalAvailable)}</div>
+                    <div className="text-xs text-gray-500">shares</div>
+                    <div className="text-sm font-medium text-gray-600 mt-1">
+                      {formatCurrency(source.totalAvailable * 150 / 1000000)}M
+                    </div>
+                  </div>
+                </div>
+              ))}
+              
+              {/* Total External Summary */}
+              <div className="mt-4 pt-3 border-t border-gray-200">
+                <div className="flex items-center justify-between p-2 bg-blue-100 rounded">
+                  <div className="font-medium text-gray-900">Total External</div>
+                  <div className="text-right">
+                    <div className="font-bold text-blue-700">
+                      {formatNumber(metrics.sourceBreakdown.reduce((sum, s) => sum + s.totalAvailable, 0))}
+                    </div>
+                    <div className="text-sm font-medium text-blue-600">
+                      {formatCurrency(metrics.sourceBreakdown.reduce((sum, s) => sum + s.totalAvailable, 0) * 150 / 1000000)}M
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -823,8 +907,11 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
                 <div className="text-3xl font-bold text-yellow-600 mb-2">
                   {formatNumber(metrics.availabilityTypeBreakdown.s3Potential.total)}
                 </div>
-                <div className="text-sm text-gray-600">Total S3 Potential Shares</div>
-                <div className="text-xs text-gray-500 mt-1">
+                <div className="text-sm text-gray-600 mb-2">Total S3 Potential Shares</div>
+                <div className="text-lg font-semibold text-yellow-700 mb-1">
+                  {formatCurrency(metrics.availabilityTypeBreakdown.s3Potential.totalValue / 1000000)}M value
+                </div>
+                <div className="text-xs text-gray-500">
                   {metrics.availabilityTypeBreakdown.s3Potential.securities} securities
                 </div>
               </div>
@@ -933,7 +1020,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Security</th>
                   <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Category</th>
                   <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Available</th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Availability Types</th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Internal Types</th>
                   <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Rate</th>
                   <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Utilization</th>
                   <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Activity</th>
