@@ -652,9 +652,9 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
         </div>
 
         {/* Breakdown Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 mb-3 items-stretch w-full px-2">
+        <div className="flex flex-col lg:flex-row gap-3 mb-3 w-full px-2">
           {/* Securities Lending Categories */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full w-full">
+          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full flex-1">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">Lending Categories</h3>
             <div className="space-y-1">
               <div 
@@ -736,7 +736,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
           </div>
 
           {/* Asset Class Breakdown */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full w-full">
+          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full flex-1">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">Asset Classes</h3>
             <div className="space-y-1">
               <div 
@@ -802,7 +802,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
           </div>
 
           {/* Top Counterparties */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full w-full">
+          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full flex-1">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">Top Counterparties</h3>
             <div className="space-y-1">
               {metrics.sourceBreakdown.slice(0, 4).map((source, idx) => (
@@ -824,7 +824,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
           </div>
 
           {/* Availability Trends */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full w-full">
+          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full flex-1">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">Availability Trends</h3>
             <div className="space-y-1">
               <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-green-50 to-green-100 rounded border border-green-200">
@@ -863,9 +863,9 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
         </div>
 
         {/* Smart Loan Availability Types */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-2 mb-3 items-stretch w-full px-2">
+        <div className="flex flex-col lg:flex-row gap-2 mb-3 w-full px-2">
           {/* Internal Availability Breakdown */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full w-full">
+          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full flex-1">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">Internal Availability</h3>
             <div className="space-y-1">
               <div className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200">
@@ -915,7 +915,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
           </div>
 
           {/* External Counterparty Availability */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full w-full">
+          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full flex-1">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">External Sources</h3>
             <div className="space-y-1">
               {metrics.sourceBreakdown.slice(0, 3).map((source, idx) => (
@@ -952,7 +952,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
           </div>
 
           {/* S3 Substitution Opportunities */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full w-full">
+          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full flex-1">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-semibold text-gray-900">S3 Substitution</h3>
               <Zap className="w-3 h-3 text-yellow-500" />
@@ -993,7 +993,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
 
 
           {/* Hard Securities with S3 Widget */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full w-full">
+          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full flex-1">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-semibold text-gray-900">HTB S3 Opportunities</h3>
               <div className="flex items-center space-x-1">
