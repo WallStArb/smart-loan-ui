@@ -151,14 +151,17 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
 
   // Generate mock data with realistic securities lending rates
   const generateMockData = (): { securities: SecurityAvailability[], metrics: AvailabilityMetrics } => {
-    const tickers = ['AAPL', 'MSFT', 'UNH', 'GS', 'HD', 'CAT', 'CRM', 'V', 'BA', 'MCD', 'AXP', 'AMGN', 'IBM', 'TRV', 'JPM', 'HON', 'NKE', 'JNJ', 'WMT', 'PG', 'NVDA', 'TSLA', 'META', 'GOOGL', 'AMZN', 'SPY', 'QQQ', 'IWM', 'XLF', 'XLE']
+    const tickers = ['AAPL', 'MSFT', 'UNH', 'GS', 'HD', 'CAT', 'CRM', 'V', 'BA', 'MCD', 'AXP', 'AMGN', 'IBM', 'TRV', 'JPM', 'HON', 'NKE', 'JNJ', 'WMT', 'PG', 'NVDA', 'TSLA', 'META', 'GOOGL', 'AMZN', 'SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'INTC', 'CSCO', 'ADBE', 'PFE', 'KO', 'VZ', 'DIS', 'NFLX', 'CRM', 'PYPL', 'UBER', 'ABNB', 'COIN', 'ROKU', 'SQ', 'SHOP', 'SPOT', 'DOCU', 'ZOOM', 'SNOW', 'PLTR', 'RBLX', 'RIVN', 'LCID', 'AMC', 'GME', 'MEME', 'SPCE', 'TLRY', 'SNDL']
     const descriptions = [
       'APPLE INC', 'MICROSOFT CORP', 'UNITEDHEALTH GROUP INC', 'GOLDMAN SACHS GROUP INC', 'HOME DEPOT INC',
       'CATERPILLAR INC', 'SALESFORCE INC', 'VISA INC-CLASS A', 'BOEING CO', 'MCDONALDS CORP',
       'AMERICAN EXPRESS CO', 'AMGEN INC', 'INTL BUSINESS MACHINES CORP', 'TRAVELERS COS INC', 'JPMORGAN CHASE & CO',
       'HONEYWELL INTERNATIONAL INC', 'NIKE INC-CLASS B', 'JOHNSON & JOHNSON', 'WALMART INC', 'PROCTER & GAMBLE CO',
       'NVIDIA CORP', 'TESLA INC', 'META PLATFORMS INC', 'ALPHABET INC-CL A', 'AMAZON.COM INC',
-      'SPDR S&P 500 ETF', 'INVESCO QQQ TRUST', 'ISHARES RUSSELL 2000 ETF', 'FINANCIAL SELECT SECTOR SPDR', 'ENERGY SELECT SECTOR SPDR'
+      'SPDR S&P 500 ETF', 'INVESCO QQQ TRUST', 'ISHARES RUSSELL 2000 ETF', 'FINANCIAL SELECT SECTOR SPDR', 'ENERGY SELECT SECTOR SPDR',
+      'INTEL CORP', 'CISCO SYSTEMS INC', 'ADOBE INC', 'PFIZER INC', 'COCA-COLA CO', 'VERIZON COMMUNICATIONS', 'WALT DISNEY CO', 'NETFLIX INC', 'SALESFORCE INC', 'PAYPAL HOLDINGS',
+      'UBER TECHNOLOGIES', 'AIRBNB INC', 'COINBASE GLOBAL', 'ROKU INC', 'BLOCK INC', 'SHOPIFY INC', 'SPOTIFY TECHNOLOGY', 'DOCUSIGN INC', 'ZOOM VIDEO COMMUNICATIONS', 'SNOWFLAKE INC',
+      'PALANTIR TECHNOLOGIES', 'ROBLOX CORP', 'RIVIAN AUTOMOTIVE', 'LUCID GROUP INC', 'AMC ENTERTAINMENT', 'GAMESTOP CORP', 'MEME STOCK CORP', 'VIRGIN GALACTIC', 'TILRAY BRANDS', 'SUNDIAL GROWERS'
     ]
     const sectors = ['Technology', 'Healthcare', 'Financial Services', 'Consumer Discretionary', 'Industrials', 'Consumer Staples', 'Energy', 'Communication Services', 'Materials', 'ETF']
     const counterparties = ['Goldman Sachs', 'Morgan Stanley', 'JPMorgan', 'Bank of America', 'Citi', 'UBS', 'Barclays', 'Deutsche Bank', 'Credit Suisse', 'Wells Fargo']
@@ -185,7 +188,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
     // GC Rate (General Collateral - Fed Funds Rate)
     const gcRate = 4.5
 
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 60; i++) {
       const ticker = tickers[i % tickers.length]
       const description = descriptions[i % descriptions.length]
       const sector = sectors[i % sectors.length]
@@ -816,22 +819,20 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
           </div>
 
           {/* Top Counterparties */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2">
+          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">Top Counterparties</h3>
             <div className="space-y-1">
               {metrics.sourceBreakdown.slice(0, 4).map((source, idx) => (
-                <div key={source.counterparty} className="flex items-center justify-between p-2 bg-gray-50 rounded border border-gray-200 hover:bg-gray-100 transition-colors cursor-pointer">
+                <div key={source.counterparty} className="flex items-center justify-between px-1.5 py-1 bg-gray-50 rounded border border-gray-200 hover:bg-gray-100 transition-colors cursor-pointer">
                   <div className="flex items-center space-x-2">
                     <div className={`w-2 h-2 rounded-full ${
                       source.reliability > 95 ? 'bg-green-500' : 
                       source.reliability > 90 ? 'bg-yellow-500' : 'bg-red-500'
                     }`}></div>
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">{source.counterparty.split(' ')[0]}</div>
-                    </div>
+                    <span className="text-xs font-medium text-gray-900">{source.counterparty.split(' ')[0]}</span>
                   </div>
-                  <div className="text-right">
-                    <div className="text-sm font-bold text-gray-700">{source.activeSecurities}</div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-gray-700">{source.activeSecurities}</div>
                     <div className="text-xs text-gray-500">{source.reliability.toFixed(0)}%</div>
                   </div>
                 </div>
@@ -840,110 +841,90 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
           </div>
 
           {/* Availability Trends */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2">
+          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">Availability Trends</h3>
             <div className="space-y-1">
-              <div className="flex items-center justify-between p-2 bg-gradient-to-r from-green-50 to-green-100 rounded border border-green-200">
+              <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-green-50 to-green-100 rounded border border-green-200">
                 <div className="flex items-center space-x-2">
                   <TrendingDown className="w-3 h-3 text-green-600" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">Low Util</div>
-                  </div>
+                  <span className="text-xs font-medium text-gray-900">Low Util (0-25%)</span>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm font-bold text-green-600">0-25%</div>
-                  <div className="text-xs text-gray-500">{Math.floor(Math.random() * 15) + 12} secs</div>
-                </div>
+                <div className="text-xs font-bold text-green-600">{securities.filter(s => s.utilizationRate <= 25).length} secs</div>
               </div>
 
-              <div className="flex items-center justify-between p-2 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded border border-yellow-200">
+              <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded border border-yellow-200">
                 <div className="flex items-center space-x-2">
                   <Minus className="w-3 h-3 text-yellow-600" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">Mod Util</div>
-                  </div>
+                  <span className="text-xs font-medium text-gray-900">Mod Util (25-50%)</span>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm font-bold text-yellow-600">25-50%</div>
-                  <div className="text-xs text-gray-500">{Math.floor(Math.random() * 12) + 8} secs</div>
-                </div>
+                <div className="text-xs font-bold text-yellow-600">{securities.filter(s => s.utilizationRate > 25 && s.utilizationRate <= 50).length} secs</div>
               </div>
 
-              <div className="flex items-center justify-between p-2 bg-gradient-to-r from-orange-50 to-orange-100 rounded border border-orange-200">
+              <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-orange-50 to-orange-100 rounded border border-orange-200">
                 <div className="flex items-center space-x-2">
                   <TrendingUp className="w-3 h-3 text-orange-600" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">High Util</div>
-                  </div>
+                  <span className="text-xs font-medium text-gray-900">High Util (50-75%)</span>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm font-bold text-orange-600">50-75%</div>
-                  <div className="text-xs text-gray-500">{Math.floor(Math.random() * 8) + 5} secs</div>
-                </div>
+                <div className="text-xs font-bold text-orange-600">{securities.filter(s => s.utilizationRate > 50 && s.utilizationRate <= 75).length} secs</div>
               </div>
 
-              <div className="flex items-center justify-between p-2 bg-gradient-to-r from-red-50 to-red-100 rounded border border-red-200">
+              <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-red-50 to-red-100 rounded border border-red-200">
                 <div className="flex items-center space-x-2">
                   <AlertTriangle className="w-3 h-3 text-red-600" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">Critical</div>
-                  </div>
+                  <span className="text-xs font-medium text-gray-900">Critical (75%+)</span>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm font-bold text-red-600">75%+</div>
-                  <div className="text-xs text-gray-500">{Math.floor(Math.random() * 5) + 2} secs</div>
-                </div>
+                <div className="text-xs font-bold text-red-600">{securities.filter(s => s.utilizationRate > 75).length} secs</div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Smart Loan Availability Types */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-2 mb-3">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-2 mb-3 items-stretch">
           {/* Internal Availability Breakdown */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2">
+          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">Internal Availability</h3>
             <div className="space-y-1">
-              <div className="flex items-center justify-between p-1.5 bg-blue-50 rounded border border-blue-200">
+              <div className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200">
                 <div className="flex items-center space-x-1">
                   <Users className="w-3 h-3 text-blue-600" />
                   <span className="text-xs font-medium text-gray-900">Customer</span>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm font-bold text-blue-600">{formatNumber(metrics.availabilityTypeBreakdown.customer.total / 1000)}K</div>
+                <div className="flex items-center space-x-2">
+                  <div className="text-xs font-bold text-blue-600">{formatNumber(metrics.availabilityTypeBreakdown.customer.total / 1000)}K</div>
                   <div className="text-xs text-blue-700">{formatCurrency(metrics.availabilityTypeBreakdown.customer.totalValue / 1000000)}M</div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-1.5 bg-purple-50 rounded border border-purple-200">
+              <div className="flex items-center justify-between px-1.5 py-1 bg-purple-50 rounded border border-purple-200">
                 <div className="flex items-center space-x-1">
                   <Building className="w-3 h-3 text-purple-600" />
                   <span className="text-xs font-medium text-gray-900">Firm</span>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm font-bold text-purple-600">{formatNumber(metrics.availabilityTypeBreakdown.firm.total / 1000)}K</div>
+                <div className="flex items-center space-x-2">
+                  <div className="text-xs font-bold text-purple-600">{formatNumber(metrics.availabilityTypeBreakdown.firm.total / 1000)}K</div>
                   <div className="text-xs text-purple-700">{formatCurrency(metrics.availabilityTypeBreakdown.firm.totalValue / 1000000)}M</div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-1.5 bg-orange-50 rounded border border-orange-200">
+              <div className="flex items-center justify-between px-1.5 py-1 bg-orange-50 rounded border border-orange-200">
                 <div className="flex items-center space-x-1">
                   <Target className="w-3 h-3 text-orange-600" />
                   <span className="text-xs font-medium text-gray-900">Non-Cust</span>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm font-bold text-orange-600">{formatNumber(metrics.availabilityTypeBreakdown.nonCustomer.total / 1000)}K</div>
+                <div className="flex items-center space-x-2">
+                  <div className="text-xs font-bold text-orange-600">{formatNumber(metrics.availabilityTypeBreakdown.nonCustomer.total / 1000)}K</div>
                   <div className="text-xs text-orange-700">{formatCurrency(metrics.availabilityTypeBreakdown.nonCustomer.totalValue / 1000000)}M</div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-1.5 bg-green-50 rounded border border-green-200">
+              <div className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200">
                 <div className="flex items-center space-x-1">
                   <CheckCircle2 className="w-3 h-3 text-green-600" />
                   <span className="text-xs font-medium text-gray-900">FPL</span>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm font-bold text-green-600">{formatNumber(metrics.availabilityTypeBreakdown.fpl.total / 1000)}K</div>
+                <div className="flex items-center space-x-2">
+                  <div className="text-xs font-bold text-green-600">{formatNumber(metrics.availabilityTypeBreakdown.fpl.total / 1000)}K</div>
                   <div className="text-xs text-green-700">{formatCurrency(metrics.availabilityTypeBreakdown.fpl.totalValue / 1000000)}M</div>
                 </div>
               </div>
@@ -951,11 +932,11 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
           </div>
 
           {/* External Counterparty Availability */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2">
+          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">External Sources</h3>
             <div className="space-y-1">
               {metrics.sourceBreakdown.slice(0, 3).map((source, idx) => (
-                <div key={source.counterparty} className="flex items-center justify-between p-1.5 bg-gray-50 rounded border border-gray-200">
+                <div key={source.counterparty} className="flex items-center justify-between px-1.5 py-1 bg-gray-50 rounded border border-gray-200">
                   <div className="flex items-center space-x-1">
                     <div className={`w-2 h-2 rounded-full ${
                       source.reliability > 95 ? 'bg-green-500' : 
@@ -963,8 +944,8 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
                     }`}></div>
                     <span className="text-xs font-medium text-gray-900">{source.counterparty}</span>
                   </div>
-                  <div className="text-right">
-                    <div className="text-sm font-bold text-gray-700">{formatNumber(source.totalAvailable / 1000)}K</div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-gray-700">{formatNumber(source.totalAvailable / 1000)}K</div>
                     <div className="text-xs text-gray-600">{formatCurrency(source.totalAvailable * 150 / 1000000)}M</div>
                   </div>
                 </div>
@@ -972,10 +953,10 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
               
               {/* Total External Summary */}
               <div className="mt-2 pt-1 border-t border-gray-200">
-                <div className="flex items-center justify-between p-1.5 bg-blue-50 rounded">
+                <div className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded">
                   <span className="text-xs font-medium text-gray-900">Total External</span>
-                  <div className="text-right">
-                    <div className="text-sm font-bold text-blue-700">
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-blue-700">
                       {formatNumber(metrics.sourceBreakdown.reduce((sum, s) => sum + s.totalAvailable, 0) / 1000)}K
                     </div>
                     <div className="text-xs text-blue-600">
@@ -988,39 +969,39 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
           </div>
 
           {/* S3 Substitution Opportunities */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2">
+          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-semibold text-gray-900">S3 Substitution</h3>
               <Zap className="w-3 h-3 text-yellow-500" />
             </div>
             <div className="space-y-1">
-              <div className="text-center p-2 bg-yellow-50 rounded border border-yellow-200">
-                <div className="text-lg font-bold text-yellow-600">
-                  {formatNumber(metrics.availabilityTypeBreakdown.s3Potential.total / 1000)}K
-                </div>
-                <div className="text-xs text-gray-600 mb-1">S3 Potential</div>
-                <div className="text-sm font-semibold text-yellow-700">
-                  {formatCurrency(metrics.availabilityTypeBreakdown.s3Potential.totalValue / 1000000)}M
+              <div className="flex items-center justify-between px-2 py-1 bg-yellow-50 rounded border border-yellow-200">
+                <span className="text-xs font-medium text-gray-900">S3 Potential</span>
+                <div className="flex items-center space-x-2">
+                  <div className="text-xs font-bold text-yellow-600">
+                    {formatNumber(metrics.availabilityTypeBreakdown.s3Potential.total / 1000)}K
+                  </div>
+                  <div className="text-xs text-yellow-700">
+                    {formatCurrency(metrics.availabilityTypeBreakdown.s3Potential.totalValue / 1000000)}M
+                  </div>
                 </div>
               </div>
               
               <div className="grid grid-cols-2 gap-1">
-                <div className="text-center p-1.5 bg-red-50 rounded border border-red-200">
-                  <div className="text-sm font-bold text-red-600">{metrics.s3Metrics.hardSecuritiesWithS3}</div>
-                  <div className="text-xs text-gray-600">HTB+S3</div>
+                <div className="flex items-center justify-between px-1.5 py-1 bg-red-50 rounded border border-red-200">
+                  <span className="text-xs text-gray-600">HTB+S3</span>
+                  <div className="text-xs font-bold text-red-600">{metrics.s3Metrics.hardSecuritiesWithS3}</div>
                 </div>
-                <div className="text-center p-1.5 bg-orange-50 rounded border border-orange-200">
-                  <div className="text-sm font-bold text-orange-600">{metrics.s3Metrics.warmSecuritiesWithS3}</div>
-                  <div className="text-xs text-gray-600">Warm+S3</div>
+                <div className="flex items-center justify-between px-1.5 py-1 bg-orange-50 rounded border border-orange-200">
+                  <span className="text-xs text-gray-600">Warm+S3</span>
+                  <div className="text-xs font-bold text-orange-600">{metrics.s3Metrics.warmSecuritiesWithS3}</div>
                 </div>
               </div>
               
-              <div className="p-1.5 bg-green-50 rounded border border-green-200">
-                <div className="text-center">
-                  <div className="text-sm font-bold text-green-600">
-                    {formatCurrency(metrics.s3Metrics.potentialRevenue / 1000)}K
-                  </div>
-                  <div className="text-xs text-gray-600">Daily Revenue</div>
+              <div className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200">
+                <span className="text-xs text-gray-600">Daily Revenue</span>
+                <div className="text-xs font-bold text-green-600">
+                  {formatCurrency(metrics.s3Metrics.potentialRevenue / 1000)}K
                 </div>
               </div>
             </div>
@@ -1029,7 +1010,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
 
 
           {/* Hard Securities with S3 Widget */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2">
+          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-semibold text-gray-900">HTB S3 Opportunities</h3>
               <div className="flex items-center space-x-1">
@@ -1046,7 +1027,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
                 .map((security) => (
                   <div 
                     key={security.id} 
-                    className="flex items-center justify-between p-1.5 bg-red-50 rounded border border-red-200 hover:bg-red-100 transition-colors cursor-pointer"
+                    className="flex items-center justify-between px-1.5 py-1 bg-red-50 rounded border border-red-200 hover:bg-red-100 transition-colors cursor-pointer"
                     onClick={() => {
                       setSelectedTicker(security.ticker)
                       setSelectedFilter('all')
@@ -1054,29 +1035,25 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
                     }}
                     title={`Click to filter by ${security.ticker}`}
                   >
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-gray-900">{security.ticker}</div>
-                      <div className="text-xs text-gray-600">
-                        {formatRate(security.averageRate)}
-                        {showAllS3Opportunities && (
-                          <span className="ml-2 text-gray-500">
-                            • {(security.availabilityBreakdown.s3Potential * (security.currentPrice || 50) / 1000000).toFixed(1)}M value
-                          </span>
-                        )}
-                      </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-xs font-medium text-gray-900">{security.ticker}</span>
+                      <span className="text-xs text-gray-600">{formatRate(security.averageRate)}</span>
+                      {showAllS3Opportunities && (
+                        <span className="text-xs text-gray-500">
+                          {(security.availabilityBreakdown.s3Potential * (security.currentPrice || 50) / 1000000).toFixed(1)}M
+                        </span>
+                      )}
                     </div>
-                    <div className="text-right">
-                      <div className="text-sm font-bold text-red-600">
+                    <div className="flex items-center space-x-1">
+                      <div className="text-xs font-bold text-red-600">
                         {formatNumber(security.availabilityBreakdown.s3Potential / 1000)}K
                       </div>
-                      <div className="text-xs text-gray-500">
-                        S3
-                        {showAllS3Opportunities && (
-                          <span className="ml-1 text-gray-400">
-                            ({security.availabilityBreakdown.s3Potential} shares)
-                          </span>
-                        )}
-                      </div>
+                      <span className="text-xs text-gray-500">S3</span>
+                      {showAllS3Opportunities && (
+                        <span className="text-xs text-gray-400">
+                          ({security.availabilityBreakdown.s3Potential})
+                        </span>
+                      )}
                     </div>
                   </div>
                 ))}
