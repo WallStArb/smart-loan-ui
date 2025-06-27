@@ -6,6 +6,10 @@ import Sidebar from './components/Sidebar'
 import CollateralManager from './components/CollateralManager'
 import NeedsPage from './components/NeedsPage'
 import ParametersPage from './components/ParametersPage'
+import ShortSaleDashboard from './components/ShortSaleDashboard'
+import AvailabilityDashboard from './components/AvailabilityDashboard'
+import BorrowLoanActivityDashboard from './components/BorrowLoanActivityDashboard'
+import AutomationsDashboard from './components/AutomationsDashboard'
 import { DensityDemo } from './components/ui/density-demo'
 import { DateTimeDisplay } from './components/ui/date-time-display'
 
@@ -28,6 +32,30 @@ function App() {
       case 'parameters':
         return (
           <ParametersPage />
+        )
+      case 'short-sales':
+        return (
+          <ShortSaleDashboard 
+            onNavigateToParameters={() => setActivePage('parameters')}
+          />
+        )
+      case 'availability':
+        return (
+          <AvailabilityDashboard 
+            onNavigateToParameters={() => setActivePage('parameters')}
+          />
+        )
+      case 'borrow-loan-activity':
+        return (
+          <BorrowLoanActivityDashboard 
+            onNavigateToParameters={() => setActivePage('parameters')}
+          />
+        )
+      case 'automations':
+        return (
+          <AutomationsDashboard 
+            onNavigateToParameters={() => setActivePage('parameters')}
+          />
         )
       default:
         return (

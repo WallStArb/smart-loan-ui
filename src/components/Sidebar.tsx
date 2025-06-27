@@ -4,7 +4,11 @@ import {
   TrendingUp,
   Settings,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  TrendingDown,
+  BarChart3,
+  Activity,
+  Zap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,8 +26,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activePage, setAct
   const { density } = useDensityMode();
   
   const menuItems = [
-    { id: 'collateral', label: 'Collateral', icon: ShieldCheck, color: 'text-fis-green' },
     { id: 'needs', label: 'Needs', icon: TrendingUp, color: 'text-fis-blue' },
+    { id: 'collateral', label: 'Collateral', icon: ShieldCheck, color: 'text-fis-green' },
+    { id: 'short-sales', label: 'Short Sales', icon: TrendingDown, color: 'text-red-500' },
+    { id: 'availability', label: 'Availability', icon: BarChart3, color: 'text-blue-500' },
+    { id: 'borrow-loan-activity', label: 'Borrow/Loan', icon: Activity, color: 'text-purple-500' },
+    { id: 'automations', label: 'Automations', icon: Zap, color: 'text-yellow-500' },
     { id: 'parameters', label: 'Parameters', icon: Settings, color: 'text-fis-orange' },
   ];
 
