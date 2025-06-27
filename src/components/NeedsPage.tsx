@@ -1015,15 +1015,17 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
 
           <div className="bg-white rounded shadow border border-gray-200 px-1.5 py-1">
             <div className="flex items-center space-x-2">
-              <DollarSign className="w-3 h-3 text-purple-400" />
-              <span className="text-xs font-medium text-gray-500">Borrow Rate</span>
+              <DollarSign className="w-3 h-3 text-red-400" />
+              <span className="text-xs font-medium text-gray-500">Borrow Cost</span>
               <div className="flex-1 text-center">
-                <span className="text-sm font-bold text-purple-600">{(securityNeeds.reduce((sum, n) => sum + n.borrowRate, 0) / securityNeeds.length).toFixed(1)}%</span>
+                <span className={`text-sm font-bold ${(securityNeeds.reduce((sum, n) => sum + n.borrowRate, 0) / securityNeeds.length) < 0 ? 'text-red-600' : 'text-green-600'}`}>
+                  {(securityNeeds.reduce((sum, n) => sum + n.borrowRate, 0) / securityNeeds.length) > 0 ? '+' : ''}{(securityNeeds.reduce((sum, n) => sum + n.borrowRate, 0) / securityNeeds.length).toFixed(1)}%
+                </span>
               </div>
               <div className="text-right">
                 <div className="text-xs text-gray-500">avg</div>
               </div>
-              <Minus className="w-3 h-3 text-purple-600" />
+              <TrendingDown className="w-3 h-3 text-red-600" />
             </div>
           </div>
 
@@ -1094,8 +1096,10 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                 <span className="text-sm font-bold text-green-600">{metrics.borrowRecallActivity.borrowsSuccessRate}%</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-600">Avg Rate:</span>
-                <span className="text-sm font-bold text-purple-600">{(securityNeeds.reduce((sum, n) => sum + n.borrowRate, 0) / securityNeeds.length).toFixed(1)}%</span>
+                <span className="text-xs text-gray-600">Avg Cost:</span>
+                <span className={`text-sm font-bold ${(securityNeeds.reduce((sum, n) => sum + n.borrowRate, 0) / securityNeeds.length) < 0 ? 'text-red-600' : 'text-green-600'}`}>
+                  {(securityNeeds.reduce((sum, n) => sum + n.borrowRate, 0) / securityNeeds.length) > 0 ? '+' : ''}{(securityNeeds.reduce((sum, n) => sum + n.borrowRate, 0) / securityNeeds.length).toFixed(1)}%
+                </span>
               </div>
               <div className="pt-1 border-t border-gray-200">
                 <Button size="sm" className="w-full h-7 text-xs bg-blue-600 hover:bg-blue-700">
@@ -1219,14 +1223,14 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
           <div className="bg-white rounded-lg shadow border border-gray-200 p-3">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center space-x-2">
-                <DollarSign className="w-4 h-4 text-purple-500" />
+                <DollarSign className="w-4 h-4 text-red-500" />
                 <h3 className="text-sm font-semibold text-gray-900">High Borrow Cost</h3>
               </div>
-              <Badge className="bg-purple-100 text-purple-800 text-xs">Expensive</Badge>
+              <Badge className="bg-red-100 text-red-800 text-xs">Expensive</Badge>
             </div>
             <div className="space-y-1">
               {securityNeeds
-                .sort((a, b) => b.borrowRate - a.borrowRate)
+                .sort((a, b) => a.borrowRate - b.borrowRate) // Sort by lowest (most negative) rates = highest cost
                 .slice(0, 3)
                 .map((security, index) => (
                   <div key={security.id} className="flex justify-between items-center py-0.5">
@@ -1235,14 +1239,16 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                       <div className="text-xs text-gray-500">{formatNumber(security.remainingQuantity)} shares</div>
                     </div>
                     <div className="text-right">
-                      <div className="text-xs font-bold text-purple-600">{security.borrowRate.toFixed(1)}%</div>
+                      <div className={`text-xs font-bold ${security.borrowRate < 0 ? 'text-red-600' : 'text-green-600'}`}>
+                        {security.borrowRate > 0 ? '+' : ''}{security.borrowRate.toFixed(1)}%
+                      </div>
                       <div className="text-xs text-gray-500">{formatCurrency(security.marketValue)}</div>
                     </div>
                   </div>
                 ))
               }
               <div className="pt-1 border-t border-gray-200">
-                <div className="text-xs text-center text-purple-600 font-medium">
+                <div className="text-xs text-center text-gray-600 font-medium">
                   Avg: {(securityNeeds.reduce((sum, n) => sum + n.borrowRate, 0) / securityNeeds.length).toFixed(1)}%
                 </div>
               </div>
