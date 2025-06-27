@@ -147,6 +147,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
   const [securities, setSecurities] = useState<SecurityAvailability[]>([])
   const [metrics, setMetrics] = useState<AvailabilityMetrics | null>(null)
   const [showAllS3Opportunities, setShowAllS3Opportunities] = useState(false)
+  const [showAllFPLAvailability, setShowAllFPLAvailability] = useState(false)
   const [showAllIndustries, setShowAllIndustries] = useState(false)
   const [showFirstRow, setShowFirstRow] = useState(true)
   const [showSecondRow, setShowSecondRow] = useState(true)
@@ -1053,7 +1054,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
               <div className="space-y-1">
                 {securities
                   .filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.s3Potential > 0)
-                  .slice(0, 3)
+                  .slice(0, showAllS3Opportunities ? securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.s3Potential > 0).length : 3)
                   .map((security) => (
                     <div 
                       key={`s3-${security.id}`} 
@@ -1078,16 +1079,18 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
                     </div>
                   ))}
                 
-                {/* Show 2 More Button */}
-                <div className="pt-1 border-t border-gray-200">
-                  <button
-                    onClick={() => setShowAllS3Opportunities(!showAllS3Opportunities)}
-                    className="w-full flex items-center justify-center space-x-1 p-1 text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded transition-colors"
-                  >
-                    <ChevronDown className="w-3 h-3" />
-                    <span>Show 2 More</span>
-                  </button>
-                </div>
+                {/* Show More Button */}
+                {securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.s3Potential > 0).length > 3 && (
+                  <div className="pt-1 border-t border-gray-200">
+                    <button
+                      onClick={() => setShowAllS3Opportunities(!showAllS3Opportunities)}
+                      className="w-full flex items-center justify-center space-x-1 p-1 text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded transition-colors"
+                    >
+                      <ChevronDown className={`w-3 h-3 transition-transform ${showAllS3Opportunities ? 'rotate-180' : ''}`} />
+                      <span>{showAllS3Opportunities ? 'Show Less' : `Show ${securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.s3Potential > 0).length - 3} More`}</span>
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -1103,7 +1106,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
               <div className="space-y-1">
                 {securities
                   .filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.fpl > 0)
-                  .slice(0, 3)
+                  .slice(0, showAllFPLAvailability ? securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.fpl > 0).length : 3)
                   .map((security) => (
                     <div 
                       key={`fpl-${security.id}`} 
@@ -1128,16 +1131,18 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
                     </div>
                   ))}
                 
-                {/* Show 2 More Button */}
-                <div className="pt-1 border-t border-gray-200">
-                  <button
-                    onClick={() => setShowAllS3Opportunities(!showAllS3Opportunities)}
-                    className="w-full flex items-center justify-center space-x-1 p-1 text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded transition-colors"
-                  >
-                    <ChevronDown className="w-3 h-3" />
-                    <span>Show 2 More</span>
-                  </button>
-                </div>
+                {/* Show More Button */}
+                {securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.fpl > 0).length > 3 && (
+                  <div className="pt-1 border-t border-gray-200">
+                    <button
+                      onClick={() => setShowAllFPLAvailability(!showAllFPLAvailability)}
+                      className="w-full flex items-center justify-center space-x-1 p-1 text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded transition-colors"
+                    >
+                      <ChevronDown className={`w-3 h-3 transition-transform ${showAllFPLAvailability ? 'rotate-180' : ''}`} />
+                      <span>{showAllFPLAvailability ? 'Show Less' : `Show ${securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.fpl > 0).length - 3} More`}</span>
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
