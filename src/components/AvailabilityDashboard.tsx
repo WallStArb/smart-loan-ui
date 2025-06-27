@@ -25,7 +25,8 @@ import {
   ChevronUp,
   Settings,
   Zap,
-  TrendingDown
+  TrendingDown,
+  Minus
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -838,59 +839,59 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
             </div>
           </div>
 
-          {/* Market Trends */}
+          {/* Availability Trends */}
           <div className="bg-white rounded shadow border border-gray-200 p-2">
-            <h3 className="text-sm font-semibold text-gray-900 mb-2">Market Trends</h3>
+            <h3 className="text-sm font-semibold text-gray-900 mb-2">Availability Trends</h3>
             <div className="space-y-1">
-              <div className="flex items-center justify-between p-2 bg-green-50 rounded border border-green-200">
+              <div className="flex items-center justify-between p-2 bg-gradient-to-r from-green-50 to-green-100 rounded border border-green-200">
                 <div className="flex items-center space-x-2">
-                  <TrendingUp className="w-3 h-3 text-green-600" />
+                  <TrendingDown className="w-3 h-3 text-green-600" />
                   <div>
-                    <div className="text-sm font-medium text-gray-900">Avail Up</div>
+                    <div className="text-sm font-medium text-gray-900">Low Util</div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-bold text-green-600">{Math.abs(metrics.trends.availabilityChange)}</div>
-                  <div className="text-xs text-gray-500">securities</div>
+                  <div className="text-sm font-bold text-green-600">0-25%</div>
+                  <div className="text-xs text-gray-500">{Math.floor(Math.random() * 15) + 12} secs</div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-2 bg-red-50 rounded border border-red-200">
+              <div className="flex items-center justify-between p-2 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded border border-yellow-200">
                 <div className="flex items-center space-x-2">
-                  <TrendingDown className="w-3 h-3 text-red-600" />
+                  <Minus className="w-3 h-3 text-yellow-600" />
                   <div>
-                    <div className="text-sm font-medium text-gray-900">Rate Fall</div>
+                    <div className="text-sm font-medium text-gray-900">Mod Util</div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-bold text-red-600">{formatRate(Math.abs(metrics.trends.rateChange))}</div>
-                  <div className="text-xs text-gray-500">avg</div>
+                  <div className="text-sm font-bold text-yellow-600">25-50%</div>
+                  <div className="text-xs text-gray-500">{Math.floor(Math.random() * 12) + 8} secs</div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-2 bg-blue-50 rounded border border-blue-200">
+              <div className="flex items-center justify-between p-2 bg-gradient-to-r from-orange-50 to-orange-100 rounded border border-orange-200">
                 <div className="flex items-center space-x-2">
-                  <Activity className="w-3 h-3 text-blue-600" />
+                  <TrendingUp className="w-3 h-3 text-orange-600" />
                   <div>
-                    <div className="text-sm font-medium text-gray-900">Util Change</div>
+                    <div className="text-sm font-medium text-gray-900">High Util</div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-bold text-blue-600">{metrics.trends.utilizationChange > 0 ? '+' : ''}{metrics.trends.utilizationChange.toFixed(1)}%</div>
-                  <div className="text-xs text-gray-500">today</div>
+                  <div className="text-sm font-bold text-orange-600">50-75%</div>
+                  <div className="text-xs text-gray-500">{Math.floor(Math.random() * 8) + 5} secs</div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-2 bg-yellow-50 rounded border border-yellow-200">
+              <div className="flex items-center justify-between p-2 bg-gradient-to-r from-red-50 to-red-100 rounded border border-red-200">
                 <div className="flex items-center space-x-2">
-                  <AlertTriangle className="w-3 h-3 text-yellow-600" />
+                  <AlertTriangle className="w-3 h-3 text-red-600" />
                   <div>
-                    <div className="text-sm font-medium text-gray-900">Volatility</div>
+                    <div className="text-sm font-medium text-gray-900">Critical</div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-bold text-yellow-600">{metrics.marketMetrics.highVolatilitySecurities}</div>
-                  <div className="text-xs text-gray-500">high vol</div>
+                  <div className="text-sm font-bold text-red-600">75%+</div>
+                  <div className="text-xs text-gray-500">{Math.floor(Math.random() * 5) + 2} secs</div>
                 </div>
               </div>
             </div>
