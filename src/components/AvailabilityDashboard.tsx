@@ -1003,10 +1003,10 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
 
         {/* Main Content Grid: Left side (Widgets) + Right side (Charts) */}
         <div className="flex flex-col lg:flex-row gap-3 mb-3 px-2">
-          {/* Left Column: Widget Cards */}
-          <div className="flex-1">
-            {/* Breakdown Cards - 2 rows of 2-3 cards each */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
+          {/* Left Column: Widget Cards - Both rows together */}
+          <div className="flex-1 flex flex-col gap-3">
+            {/* Top Row: 3 cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {/* Securities Lending Categories */}
               <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
                 <h3 className="text-sm font-semibold text-gray-900 mb-2">Lending Categories</h3>
@@ -1210,7 +1210,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
               </div>
             </div>
 
-            {/* Second Row of Cards */}
+            {/* Bottom Row: 2 cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {/* Availability Trends */}
               <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
@@ -1321,10 +1321,10 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
             </div>
           </div>
 
-          {/* Right Column: Charts */}
-          <div className="w-80 flex flex-col gap-3">
+          {/* Right Column: Charts - Full Height */}
+          <div className="w-80 flex flex-col">
             {/* Charts Header with Historical Toggle */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-3">
               <div className="flex items-center space-x-2">
                 <BarChart3 className="w-4 h-4 text-gray-600" />
                 <span className="text-sm font-semibold text-gray-900">Analytics</span>
@@ -1340,147 +1340,150 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
               </select>
             </div>
 
-            {/* Industry Utilization Heatmap */}
-            <div className="bg-white rounded shadow border border-gray-200 p-3 h-64">
-              <h4 className="text-xs font-semibold text-gray-900 mb-2">Industry Utilization</h4>
-              <div className="grid grid-cols-4 gap-1 h-52">
-                {getIndustryData().map((industry, idx) => (
-                  <div
-                    key={industry.name}
-                    className={`rounded border border-gray-200 p-1 flex flex-col items-center justify-center cursor-pointer hover:opacity-80 transition-opacity ${getUtilizationColor(industry.utilization)}`}
-                    onClick={() => {
-                      // Filter by industry logic would go here
-                      console.log('Filter by industry:', industry.fullName)
-                    }}
-                    title={`${industry.fullName}: ${industry.utilization}% utilization`}
-                  >
-                    <div className="text-xs font-bold text-white">{industry.name}</div>
-                    <div className="text-xs text-white">{industry.utilization}%</div>
-                    {industry.trend === 'up' && <TrendingUp className="w-2 h-2 text-white" />}
-                    {industry.trend === 'down' && <TrendingDown className="w-2 h-2 text-white" />}
-                    {industry.trend === 'stable' && <Minus className="w-2 h-2 text-white" />}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Asset Class Donut Chart */}
-            <div className="bg-white rounded shadow border border-gray-200 p-3 h-64">
-              <h4 className="text-xs font-semibold text-gray-900 mb-2">Asset Classes</h4>
-              <div className="relative h-52 flex items-center justify-center">
-                {/* SVG Donut Chart */}
-                <svg width="180" height="180" className="transform -rotate-90">
-                  {(() => {
-                    const data = getAssetClassData()
-                    const radius = 70
-                    const strokeWidth = 25
-                    const circumference = 2 * Math.PI * radius
-                    let accumulatedPercentage = 0
-                    
-                    return data.map((item, index) => {
-                      const strokeDasharray = `${(item.percentage / 100) * circumference} ${circumference}`
-                      const strokeDashoffset = -accumulatedPercentage * circumference / 100
-                      accumulatedPercentage += item.percentage
-                      
-                      return (
-                        <circle
-                          key={item.name}
-                          cx="90"
-                          cy="90"
-                          r={radius}
-                          fill="transparent"
-                          stroke={item.color}
-                          strokeWidth={strokeWidth}
-                          strokeDasharray={strokeDasharray}
-                          strokeDashoffset={strokeDashoffset}
-                          className="cursor-pointer hover:opacity-80 transition-opacity"
-                          onClick={() => {
-                            setSelectedFilter(item.name === 'Corp Bond' ? 'Corporate Bond' : 
-                                           item.name === 'Gov Bond' ? 'Government Bond' : item.name)
-                            setSelectedTicker('')
-                            setSearchTerm('')
-                          }}
-                        />
-                      )
-                    })
-                  })()}
-                </svg>
-                
-                {/* Center Content */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div className="text-sm font-bold text-gray-900">
-                    {formatCurrency(metrics?.totalAvailable * 150 || 0)}
-                  </div>
-                  <div className="text-xs text-gray-500">{metrics?.totalSecurities} securities</div>
-                  <div className="text-xs text-gray-500">{metrics?.overallUtilization.toFixed(1)}% util</div>
-                </div>
-                
-                {/* Legend */}
-                <div className="absolute bottom-0 left-0 right-0">
-                  <div className="grid grid-cols-2 gap-1 text-xs">
-                    {getAssetClassData().map((item) => (
-                      <div key={item.name} className="flex items-center space-x-1">
-                        <div 
-                          className="w-2 h-2 rounded" 
-                          style={{ backgroundColor: item.color }}
-                        ></div>
-                        <span className="text-gray-700">{item.name} {item.percentage.toFixed(0)}%</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Top Securities Bar Chart */}
-            <div className="bg-white rounded shadow border border-gray-200 p-3 h-64">
-              <h4 className="text-xs font-semibold text-gray-900 mb-2">Top Securities by Value</h4>
-              <div className="space-y-2 h-52 overflow-hidden">
-                {getTopSecuritiesData().map((security, index) => {
-                  const maxValue = getTopSecuritiesData()[0]?.value || 1
-                  const barWidth = (security.value / maxValue) * 100
-                  
-                  return (
+            {/* Charts Container - Equal height distribution */}
+            <div className="flex flex-col gap-3 flex-1">
+              {/* Industry Utilization Heatmap */}
+              <div className="bg-white rounded shadow border border-gray-200 p-3 flex-1">
+                <h4 className="text-xs font-semibold text-gray-900 mb-2">Industry Utilization</h4>
+                <div className="grid grid-cols-4 gap-1 h-full">
+                  {getIndustryData().map((industry, idx) => (
                     <div
-                      key={security.ticker}
-                      className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors"
+                      key={industry.name}
+                      className={`rounded border border-gray-200 p-1 flex flex-col items-center justify-center cursor-pointer hover:opacity-80 transition-opacity ${getUtilizationColor(industry.utilization)}`}
                       onClick={() => {
-                        setSelectedTicker(security.ticker)
-                        setSelectedFilter('all')
-                        setSearchTerm('')
+                        // Filter by industry logic would go here
+                        console.log('Filter by industry:', industry.fullName)
                       }}
+                      title={`${industry.fullName}: ${industry.utilization}% utilization`}
                     >
-                      <div className="w-12 text-xs font-medium text-gray-900">{security.ticker}</div>
-                      <div className="flex-1 relative">
-                        <div className="h-4 bg-gray-100 rounded-sm overflow-hidden">
-                          <div
-                            className="h-full rounded-sm transition-all duration-300"
-                            style={{ 
-                              width: `${barWidth}%`,
-                              backgroundColor: getDifficultyColorForChart(security.difficulty)
+                      <div className="text-xs font-bold text-white">{industry.name}</div>
+                      <div className="text-xs text-white">{industry.utilization}%</div>
+                      {industry.trend === 'up' && <TrendingUp className="w-2 h-2 text-white" />}
+                      {industry.trend === 'down' && <TrendingDown className="w-2 h-2 text-white" />}
+                      {industry.trend === 'stable' && <Minus className="w-2 h-2 text-white" />}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Asset Class Donut Chart */}
+              <div className="bg-white rounded shadow border border-gray-200 p-3 flex-1">
+                <h4 className="text-xs font-semibold text-gray-900 mb-2">Asset Classes</h4>
+                <div className="relative h-full flex items-center justify-center min-h-[200px]">
+                  {/* SVG Donut Chart */}
+                  <svg width="180" height="180" className="transform -rotate-90">
+                    {(() => {
+                      const data = getAssetClassData()
+                      const radius = 70
+                      const strokeWidth = 25
+                      const circumference = 2 * Math.PI * radius
+                      let accumulatedPercentage = 0
+                      
+                      return data.map((item, index) => {
+                        const strokeDasharray = `${(item.percentage / 100) * circumference} ${circumference}`
+                        const strokeDashoffset = -accumulatedPercentage * circumference / 100
+                        accumulatedPercentage += item.percentage
+                        
+                        return (
+                          <circle
+                            key={item.name}
+                            cx="90"
+                            cy="90"
+                            r={radius}
+                            fill="transparent"
+                            stroke={item.color}
+                            strokeWidth={strokeWidth}
+                            strokeDasharray={strokeDasharray}
+                            strokeDashoffset={strokeDashoffset}
+                            className="cursor-pointer hover:opacity-80 transition-opacity"
+                            onClick={() => {
+                              setSelectedFilter(item.name === 'Corp Bond' ? 'Corporate Bond' : 
+                                             item.name === 'Gov Bond' ? 'Government Bond' : item.name)
+                              setSelectedTicker('')
+                              setSearchTerm('')
                             }}
+                          />
+                        )
+                      })
+                    })()}
+                  </svg>
+                  
+                  {/* Center Content */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <div className="text-sm font-bold text-gray-900">
+                      {formatCurrency(metrics?.totalAvailable * 150 || 0)}
+                    </div>
+                    <div className="text-xs text-gray-500">{metrics?.totalSecurities} securities</div>
+                    <div className="text-xs text-gray-500">{metrics?.overallUtilization.toFixed(1)}% util</div>
+                  </div>
+                  
+                  {/* Legend */}
+                  <div className="absolute bottom-0 left-0 right-0">
+                    <div className="grid grid-cols-2 gap-1 text-xs">
+                      {getAssetClassData().map((item) => (
+                        <div key={item.name} className="flex items-center space-x-1">
+                          <div 
+                            className="w-2 h-2 rounded" 
+                            style={{ backgroundColor: item.color }}
+                          ></div>
+                          <span className="text-gray-700">{item.name} {item.percentage.toFixed(0)}%</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Top Securities Bar Chart */}
+              <div className="bg-white rounded shadow border border-gray-200 p-3 flex-1">
+                <h4 className="text-xs font-semibold text-gray-900 mb-2">Top Securities by Value</h4>
+                <div className="space-y-2 h-full overflow-hidden">
+                  {getTopSecuritiesData().map((security, index) => {
+                    const maxValue = getTopSecuritiesData()[0]?.value || 1
+                    const barWidth = (security.value / maxValue) * 100
+                    
+                    return (
+                      <div
+                        key={security.ticker}
+                        className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors"
+                        onClick={() => {
+                          setSelectedTicker(security.ticker)
+                          setSelectedFilter('all')
+                          setSearchTerm('')
+                        }}
+                      >
+                        <div className="w-12 text-xs font-medium text-gray-900">{security.ticker}</div>
+                        <div className="flex-1 relative">
+                          <div className="h-4 bg-gray-100 rounded-sm overflow-hidden">
+                            <div
+                              className="h-full rounded-sm transition-all duration-300"
+                              style={{ 
+                                width: `${barWidth}%`,
+                                backgroundColor: getDifficultyColorForChart(security.difficulty)
+                              }}
+                            ></div>
+                          </div>
+                        </div>
+                        <div className="w-12 text-right">
+                          <div className="text-xs font-bold text-gray-900">
+                            {formatCurrency(security.value / 1000000)}M
+                          </div>
+                        </div>
+                        <div className="w-6 flex justify-center">
+                          <div
+                            className="w-2 h-2 rounded-full"
+                            style={{ backgroundColor: getDifficultyColorForChart(security.difficulty) }}
                           ></div>
                         </div>
-                      </div>
-                      <div className="w-12 text-right">
-                        <div className="text-xs font-bold text-gray-900">
-                          {formatCurrency(security.value / 1000000)}M
+                        <div className="w-4 flex justify-center">
+                          {security.trend === 'up' && <TrendingUp className="w-3 h-3 text-green-600" />}
+                          {security.trend === 'down' && <TrendingDown className="w-3 h-3 text-red-600" />}
+                          {security.trend === 'stable' && <Minus className="w-3 h-3 text-gray-600" />}
                         </div>
                       </div>
-                      <div className="w-6 flex justify-center">
-                        <div
-                          className="w-2 h-2 rounded-full"
-                          style={{ backgroundColor: getDifficultyColorForChart(security.difficulty) }}
-                        ></div>
-                      </div>
-                      <div className="w-4 flex justify-center">
-                        {security.trend === 'up' && <TrendingUp className="w-3 h-3 text-green-600" />}
-                        {security.trend === 'down' && <TrendingDown className="w-3 h-3 text-red-600" />}
-                        {security.trend === 'stable' && <Minus className="w-3 h-3 text-gray-600" />}
-                      </div>
-                    </div>
-                  )
-                })}
+                    )
+                  })}
+                </div>
               </div>
             </div>
           </div>
