@@ -526,9 +526,9 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
   if (!metrics) return <div>Loading...</div>
 
   return (
-    <div className="fis-page-gradient p-2">
+    <div className="fis-page-gradient">
       {/* Compact Header */}
-      <div className="max-w-full mx-auto mb-2">
+      <div className="max-w-full mx-auto mb-2 px-2">
         <div className="flex items-center justify-between p-2 bg-white rounded shadow-sm border border-gray-200">
           <div className="flex items-center space-x-2">
             <div className="w-6 h-6 bg-gradient-to-br from-[#012834] to-[#012834]/80 rounded flex items-center justify-center">
@@ -557,109 +557,108 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
         </div>
       </div>
 
-      <div className="max-w-full mx-auto">
+      <div className="w-full mx-auto">
         {/* Key Rate Indicators */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 mb-3">
-          <div className="bg-white rounded shadow border border-gray-200 p-2">
-            <div className="flex items-center justify-between mb-1">
-              <h3 className="text-xs font-medium text-gray-500">GC Rate</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 mb-3 px-2">
+          <div className="bg-white rounded shadow border border-gray-200 px-1.5 py-1">
+            <div className="flex items-center space-x-2">
               <CheckCircle2 className="w-3 h-3 text-green-400" />
+              <span className="text-xs font-medium text-gray-500">GC Rate</span>
+              <div className="flex-1 text-center">
+                <span className="text-sm font-bold text-green-600">{formatRate(metrics.marketMetrics.gcRate)}</span>
+              </div>
+              <div className="text-right">
+                <div className="text-xs text-gray-500">{metrics.difficultyBreakdown.gc.count} secs</div>
+              </div>
+              <TrendingUp className="w-3 h-3 text-green-600" />
             </div>
-            <div className="flex items-center space-x-1">
-              <span className="text-lg font-bold text-green-600">{formatRate(metrics.marketMetrics.gcRate)}</span>
-              <TrendingUp className="w-2 h-2 text-green-600" />
-            </div>
-            <p className="text-xs text-gray-500">
-              {metrics.difficultyBreakdown.gc.count} secs
-            </p>
           </div>
 
-          <div className="bg-white rounded shadow border border-gray-200 p-2">
-            <div className="flex items-center justify-between mb-1">
-              <h3 className="text-xs font-medium text-gray-500">HTB Rate</h3>
+          <div className="bg-white rounded shadow border border-gray-200 px-1.5 py-1">
+            <div className="flex items-center space-x-2">
               <XCircle className="w-3 h-3 text-red-400" />
+              <span className="text-xs font-medium text-gray-500">HTB Rate</span>
+              <div className="flex-1 text-center">
+                <span className="text-sm font-bold text-red-600">{formatRate(metrics.marketMetrics.specialRate)}</span>
+              </div>
+              <div className="text-right">
+                <div className="text-xs text-gray-500">{metrics.difficultyBreakdown.hardToBorrow.count} secs</div>
+              </div>
+              <TrendingDown className="w-3 h-3 text-red-600" />
             </div>
-            <div className="flex items-center space-x-1">
-              <span className="text-lg font-bold text-red-600">{formatRate(metrics.marketMetrics.specialRate)}</span>
-              <TrendingDown className="w-2 h-2 text-red-600" />
-            </div>
-            <p className="text-xs text-gray-500">
-              {metrics.difficultyBreakdown.hardToBorrow.count} secs
-            </p>
           </div>
 
-          <div className="bg-white rounded shadow border border-gray-200 p-2">
-            <div className="flex items-center justify-between mb-1">
-              <h3 className="text-xs font-medium text-gray-500">Internal Avail</h3>
+          <div className="bg-white rounded shadow border border-gray-200 px-1.5 py-1">
+            <div className="flex items-center space-x-2">
               <Building className="w-3 h-3 text-blue-400" />
+              <span className="text-xs font-medium text-gray-500">Internal Avail</span>
+              <div className="flex-1 text-center">
+                <span className="text-sm font-bold text-gray-900">{formatNumber(metrics.totalAvailable / 1000)}K</span>
+              </div>
+              <div className="text-right">
+                <div className="text-xs text-gray-500">{formatNumber(metrics.totalUtilized / 1000)}K used</div>
+              </div>
+              <TrendingUp className="w-3 h-3 text-green-600" />
             </div>
-            <div className="flex items-center space-x-1">
-              <span className="text-lg font-bold text-gray-900">{formatNumber(metrics.totalAvailable / 1000)}K</span>
-              <TrendingUp className="w-2 h-2 text-green-600" />
-            </div>
-            <p className="text-xs text-gray-500">
-              {formatNumber(metrics.totalUtilized / 1000)}K used
-            </p>
           </div>
 
-          <div className="bg-white rounded shadow border border-gray-200 p-2">
-            <div className="flex items-center justify-between mb-1">
-              <h3 className="text-xs font-medium text-gray-500">External Avail</h3>
+          <div className="bg-white rounded shadow border border-gray-200 px-1.5 py-1">
+            <div className="flex items-center space-x-2">
               <Users className="w-3 h-3 text-purple-400" />
+              <span className="text-xs font-medium text-gray-500">External Avail</span>
+              <div className="flex-1 text-center">
+                <span className="text-sm font-bold text-gray-900">
+                  {formatNumber(metrics.sourceBreakdown.reduce((sum, s) => sum + s.totalAvailable, 0) / 1000)}K
+                </span>
+              </div>
+              <div className="text-right">
+                <div className="text-xs text-gray-500">{metrics.sourceBreakdown.length} sources</div>
+              </div>
+              <BarChart3 className="w-3 h-3 text-purple-600" />
             </div>
-            <div className="flex items-center space-x-1">
-              <span className="text-lg font-bold text-gray-900">
-                {formatNumber(metrics.sourceBreakdown.reduce((sum, s) => sum + s.totalAvailable, 0) / 1000)}K
-              </span>
-              <BarChart3 className="w-2 h-2 text-purple-600" />
-            </div>
-            <p className="text-xs text-gray-500">
-              {metrics.sourceBreakdown.length} sources
-            </p>
           </div>
 
-          <div className="bg-white rounded shadow border border-gray-200 p-2">
-            <div className="flex items-center justify-between mb-1">
-              <h3 className="text-xs font-medium text-gray-500">Utilization</h3>
+          <div className="bg-white rounded shadow border border-gray-200 px-1.5 py-1">
+            <div className="flex items-center space-x-2">
               <Activity className="w-3 h-3 text-orange-400" />
-            </div>
-            <div className="flex items-center space-x-1">
-              <span className="text-lg font-bold text-gray-900">{metrics.overallUtilization.toFixed(1)}%</span>
+              <span className="text-xs font-medium text-gray-500">Utilization</span>
+              <div className="flex-1 text-center">
+                <span className="text-sm font-bold text-gray-900">{metrics.overallUtilization.toFixed(1)}%</span>
+              </div>
+              <div className="text-right">
+                <div className="text-xs text-gray-500">{metrics.marketMetrics.tightestSecurities} tight</div>
+              </div>
               {metrics.trends.utilizationChange >= 0 ? (
-                <TrendingUp className="w-2 h-2 text-green-600" />
+                <TrendingUp className="w-3 h-3 text-green-600" />
               ) : (
-                <TrendingDown className="w-2 h-2 text-red-600" />
+                <TrendingDown className="w-3 h-3 text-red-600" />
               )}
             </div>
-            <p className="text-xs text-gray-500">
-              {metrics.marketMetrics.tightestSecurities} tight
-            </p>
           </div>
 
-          {/* Add Total Securities card */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2">
-            <div className="flex items-center justify-between mb-1">
-              <h3 className="text-xs font-medium text-gray-500">Total Secs</h3>
+          <div className="bg-white rounded shadow border border-gray-200 px-1.5 py-1">
+            <div className="flex items-center space-x-2">
               <BarChart3 className="w-3 h-3 text-gray-400" />
+              <span className="text-xs font-medium text-gray-500">Total Secs</span>
+              <div className="flex-1 text-center">
+                <span className="text-sm font-bold text-gray-900">{metrics.totalSecurities}</span>
+              </div>
+              <div className="text-right">
+                <div className="text-xs text-gray-500">monitored</div>
+              </div>
+              <Target className="w-3 h-3 text-gray-600" />
             </div>
-            <div className="flex items-center space-x-1">
-              <span className="text-lg font-bold text-gray-900">{metrics.totalSecurities}</span>
-              <Target className="w-2 h-2 text-gray-600" />
-            </div>
-            <p className="text-xs text-gray-500">
-              monitored
-            </p>
           </div>
         </div>
 
         {/* Breakdown Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 mb-3">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 mb-3 items-stretch w-full px-2">
           {/* Securities Lending Categories */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2">
+          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full w-full">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">Lending Categories</h3>
             <div className="space-y-1">
               <div 
-                className="flex items-center justify-between p-2 bg-green-50 rounded border border-green-200 cursor-pointer hover:bg-green-100 transition-colors"
+                className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200 cursor-pointer hover:bg-green-100 transition-colors"
                 onClick={() => {
                   setSelectedFilter('GC')
                   setSelectedTicker('')
@@ -669,18 +668,16 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
               >
                 <div className="flex items-center space-x-2">
                   <CheckCircle2 className="w-3 h-3 text-green-600" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">GC</div>
-                  </div>
+                  <span className="text-xs font-medium text-gray-900">GC</span>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm font-bold text-green-600">{metrics.difficultyBreakdown.gc.count}</div>
+                <div className="flex items-center space-x-2">
+                  <div className="text-xs font-bold text-green-600">{metrics.difficultyBreakdown.gc.count}</div>
                   <div className="text-xs text-gray-500">{formatRate(metrics.difficultyBreakdown.gc.avgRate)}</div>
                 </div>
               </div>
 
               <div 
-                className="flex items-center justify-between p-2 bg-gray-50 rounded border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors"
+                className="flex items-center justify-between px-1.5 py-1 bg-gray-50 rounded border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors"
                 onClick={() => {
                   setSelectedFilter('Non-Interesting')
                   setSelectedTicker('')
@@ -690,18 +687,16 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
               >
                 <div className="flex items-center space-x-2">
                   <Target className="w-3 h-3 text-gray-600" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">Non-Int</div>
-                  </div>
+                  <span className="text-xs font-medium text-gray-900">Non-Int</span>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm font-bold text-gray-600">{metrics.difficultyBreakdown.nonInteresting.count}</div>
+                <div className="flex items-center space-x-2">
+                  <div className="text-xs font-bold text-gray-600">{metrics.difficultyBreakdown.nonInteresting.count}</div>
                   <div className="text-xs text-gray-500">{formatRate(metrics.difficultyBreakdown.nonInteresting.avgRate)}</div>
                 </div>
               </div>
 
               <div 
-                className="flex items-center justify-between p-2 bg-orange-50 rounded border border-orange-200 cursor-pointer hover:bg-orange-100 transition-colors"
+                className="flex items-center justify-between px-1.5 py-1 bg-orange-50 rounded border border-orange-200 cursor-pointer hover:bg-orange-100 transition-colors"
                 onClick={() => {
                   setSelectedFilter('Warm')
                   setSelectedTicker('')
@@ -711,18 +706,16 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
               >
                 <div className="flex items-center space-x-2">
                   <AlertTriangle className="w-3 h-3 text-orange-600" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">Warm</div>
-                  </div>
+                  <span className="text-xs font-medium text-gray-900">Warm</span>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm font-bold text-orange-600">{metrics.difficultyBreakdown.warm.count}</div>
+                <div className="flex items-center space-x-2">
+                  <div className="text-xs font-bold text-orange-600">{metrics.difficultyBreakdown.warm.count}</div>
                   <div className="text-xs text-gray-500">{formatRate(metrics.difficultyBreakdown.warm.avgRate)}</div>
                 </div>
               </div>
 
               <div 
-                className="flex items-center justify-between p-2 bg-red-50 rounded border border-red-200 cursor-pointer hover:bg-red-100 transition-colors"
+                className="flex items-center justify-between px-1.5 py-1 bg-red-50 rounded border border-red-200 cursor-pointer hover:bg-red-100 transition-colors"
                 onClick={() => {
                   setSelectedFilter('Hard-to-Borrow')
                   setSelectedTicker('')
@@ -732,12 +725,10 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
               >
                 <div className="flex items-center space-x-2">
                   <XCircle className="w-3 h-3 text-red-600" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">HTB</div>
-                  </div>
+                  <span className="text-xs font-medium text-gray-900">HTB</span>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm font-bold text-red-600">{metrics.difficultyBreakdown.hardToBorrow.count}</div>
+                <div className="flex items-center space-x-2">
+                  <div className="text-xs font-bold text-red-600">{metrics.difficultyBreakdown.hardToBorrow.count}</div>
                   <div className="text-xs text-gray-500">{formatRate(metrics.difficultyBreakdown.hardToBorrow.avgRate)}</div>
                 </div>
               </div>
@@ -745,11 +736,11 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
           </div>
 
           {/* Asset Class Breakdown */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2">
+          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full w-full">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">Asset Classes</h3>
             <div className="space-y-1">
               <div 
-                className="flex items-center justify-between p-2 bg-blue-50 rounded border border-blue-200 cursor-pointer hover:bg-blue-100 transition-colors"
+                className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200 cursor-pointer hover:bg-blue-100 transition-colors"
                 onClick={() => {
                   setSelectedFilter('Equity')
                   setSelectedTicker('')
@@ -759,18 +750,16 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
               >
                 <div className="flex items-center space-x-2">
                   <BarChart3 className="w-3 h-3 text-blue-600" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">Equity</div>
-                  </div>
+                  <span className="text-xs font-medium text-gray-900">Equity</span>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm font-bold text-blue-600">{metrics.assetClassBreakdown.equity.count}</div>
+                <div className="flex items-center space-x-2">
+                  <div className="text-xs font-bold text-blue-600">{metrics.assetClassBreakdown.equity.count}</div>
                   <div className="text-xs text-gray-500">{formatRate(metrics.assetClassBreakdown.equity.avgRate)}</div>
                 </div>
               </div>
 
               <div 
-                className="flex items-center justify-between p-2 bg-purple-50 rounded border border-purple-200 cursor-pointer hover:bg-purple-100 transition-colors"
+                className="flex items-center justify-between px-1.5 py-1 bg-purple-50 rounded border border-purple-200 cursor-pointer hover:bg-purple-100 transition-colors"
                 onClick={() => {
                   setSelectedFilter('ETF')
                   setSelectedTicker('')
@@ -780,38 +769,32 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
               >
                 <div className="flex items-center space-x-2">
                   <Building className="w-3 h-3 text-purple-600" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">ETF</div>
-                  </div>
+                  <span className="text-xs font-medium text-gray-900">ETF</span>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm font-bold text-purple-600">{metrics.assetClassBreakdown.etf.count}</div>
+                <div className="flex items-center space-x-2">
+                  <div className="text-xs font-bold text-purple-600">{metrics.assetClassBreakdown.etf.count}</div>
                   <div className="text-xs text-gray-500">{formatRate(metrics.assetClassBreakdown.etf.avgRate)}</div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-2 bg-green-50 rounded border border-green-200">
+              <div className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200">
                 <div className="flex items-center space-x-2">
                   <Shield className="w-3 h-3 text-green-600" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">Corp Bond</div>
-                  </div>
+                  <span className="text-xs font-medium text-gray-900">Corp Bond</span>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm font-bold text-green-600">{metrics.assetClassBreakdown.corporateBond.count}</div>
+                <div className="flex items-center space-x-2">
+                  <div className="text-xs font-bold text-green-600">{metrics.assetClassBreakdown.corporateBond.count}</div>
                   <div className="text-xs text-gray-500">{formatRate(metrics.assetClassBreakdown.corporateBond.avgRate)}</div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-2 bg-yellow-50 rounded border border-yellow-200">
+              <div className="flex items-center justify-between px-1.5 py-1 bg-yellow-50 rounded border border-yellow-200">
                 <div className="flex items-center space-x-2">
                   <FileText className="w-3 h-3 text-yellow-600" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">Gov Bond</div>
-                  </div>
+                  <span className="text-xs font-medium text-gray-900">Gov Bond</span>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm font-bold text-yellow-600">{metrics.assetClassBreakdown.governmentBond.count}</div>
+                <div className="flex items-center space-x-2">
+                  <div className="text-xs font-bold text-yellow-600">{metrics.assetClassBreakdown.governmentBond.count}</div>
                   <div className="text-xs text-gray-500">{formatRate(metrics.assetClassBreakdown.governmentBond.avgRate)}</div>
                 </div>
               </div>
@@ -819,7 +802,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
           </div>
 
           {/* Top Counterparties */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full w-full">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">Top Counterparties</h3>
             <div className="space-y-1">
               {metrics.sourceBreakdown.slice(0, 4).map((source, idx) => (
@@ -841,7 +824,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
           </div>
 
           {/* Availability Trends */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full w-full">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">Availability Trends</h3>
             <div className="space-y-1">
               <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-green-50 to-green-100 rounded border border-green-200">
@@ -880,9 +863,9 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
         </div>
 
         {/* Smart Loan Availability Types */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-2 mb-3 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-2 mb-3 items-stretch w-full px-2">
           {/* Internal Availability Breakdown */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full w-full">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">Internal Availability</h3>
             <div className="space-y-1">
               <div className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200">
@@ -932,7 +915,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
           </div>
 
           {/* External Counterparty Availability */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full w-full">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">External Sources</h3>
             <div className="space-y-1">
               {metrics.sourceBreakdown.slice(0, 3).map((source, idx) => (
@@ -969,7 +952,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
           </div>
 
           {/* S3 Substitution Opportunities */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full w-full">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-semibold text-gray-900">S3 Substitution</h3>
               <Zap className="w-3 h-3 text-yellow-500" />
@@ -1010,7 +993,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
 
 
           {/* Hard Securities with S3 Widget */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full w-full">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-semibold text-gray-900">HTB S3 Opportunities</h3>
               <div className="flex items-center space-x-1">
@@ -1080,7 +1063,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
         </div>
 
         {/* Securities Table */}
-        <div className="bg-white rounded shadow border border-gray-200">
+        <div className="bg-white rounded shadow border border-gray-200 mx-2">
           <div className="border-b border-gray-200 px-3 py-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
