@@ -198,6 +198,9 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
   const [expandedShorts, setExpandedShorts] = useState(false)
+  const [showFirstRow, setShowFirstRow] = useState(true)
+  const [showSecondRow, setShowSecondRow] = useState(true)
+  const [showThirdRow, setShowThirdRow] = useState(true)
   
   // New UX improvements - Enhanced view modes and filtering
   const [viewMode, setViewMode] = useState<'critical-only' | 'overview' | 'detailed'>('overview')
@@ -909,6 +912,43 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                 <Settings className="w-4 h-4 mr-2" />
                 Parameters
               </Button>
+              
+              <div className="flex items-center space-x-1 border-l pl-3 ml-3">
+                <span className="text-xs text-gray-500">Rows:</span>
+                <button
+                  onClick={() => setShowFirstRow(!showFirstRow)}
+                  className={`h-6 px-2 text-xs rounded border transition-colors ${
+                    showFirstRow 
+                      ? 'bg-blue-100 text-blue-700 border-blue-300' 
+                      : 'bg-gray-100 text-gray-500 border-gray-300'
+                  }`}
+                  title="Toggle Row 1 (Need Types Breakdown)"
+                >
+                  1
+                </button>
+                <button
+                  onClick={() => setShowSecondRow(!showSecondRow)}
+                  className={`h-6 px-2 text-xs rounded border transition-colors ${
+                    showSecondRow 
+                      ? 'bg-green-100 text-green-700 border-green-300' 
+                      : 'bg-gray-100 text-gray-500 border-gray-300'
+                  }`}
+                  title="Toggle Row 2 (Progress & Priority Metrics)"
+                >
+                  2
+                </button>
+                <button
+                  onClick={() => setShowThirdRow(!showThirdRow)}
+                  className={`h-6 px-2 text-xs rounded border transition-colors ${
+                    showThirdRow 
+                      ? 'bg-purple-100 text-purple-700 border-purple-300' 
+                      : 'bg-gray-100 text-gray-500 border-gray-300'
+                  }`}
+                  title="Toggle Row 3 (Advanced Analytics)"
+                >
+                  3
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -919,7 +959,8 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
         <div className="p-2">
 
 
-          {/* Need Types Breakdown - Compact with Progress */}
+          {/* First Row - Need Types Breakdown */}
+          {showFirstRow && (
           <div className="fis-dashboard-section rounded-md shadow-lg mb-3">
             <div className="px-3 py-1.5 border-b border-gray-200 fis-table-header rounded-t-md">
               <div className="flex items-center justify-between">
@@ -1376,8 +1417,10 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
             </div>
             )}
           </div>
+          )}
 
-          {/* Ultra-Compact Progress and Priority */}
+          {/* Second Row - Ultra-Compact Progress and Priority */}
+          {showSecondRow && (
           <div className="bg-white rounded-md shadow border border-gray-200 mb-3">
             <div className="px-3 py-1 border-b border-gray-200 bg-gray-50 rounded-t-md">
               <div className="flex items-center justify-between">
@@ -1562,9 +1605,10 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
         </div>
       )}
     </div>
+          )}
 
-          {/* Ultra-Compact Advanced Analytics - Collapsible */}
-          {advancedMetrics && (
+          {/* Third Row - Ultra-Compact Advanced Analytics - Collapsible */}
+          {showThirdRow && advancedMetrics && (
             <div className="bg-white rounded-md shadow border border-gray-200 mb-4">
               <div className="px-3 py-1.5 border-b border-gray-200 bg-gray-50 rounded-t-md">
                 <div className="flex items-center justify-between">

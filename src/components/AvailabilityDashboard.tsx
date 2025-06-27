@@ -18,7 +18,9 @@ import {
   ChevronDown,
   Settings,
   TrendingDown,
-  Minus
+  Minus,
+  User,
+  Globe
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -123,6 +125,14 @@ interface AvailabilityMetrics {
     rateChange: number
     utilizationChange: number
   }
+  industryBreakdown: Array<{
+    industry: string
+    totalAvailable: number
+    totalValue: number
+    percentage: number
+    securities: number
+    avgRate: number
+  }>
 }
 
 interface AvailabilityDashboardProps {
@@ -137,6 +147,10 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
   const [securities, setSecurities] = useState<SecurityAvailability[]>([])
   const [metrics, setMetrics] = useState<AvailabilityMetrics | null>(null)
   const [showAllS3Opportunities, setShowAllS3Opportunities] = useState(false)
+  const [showAllIndustries, setShowAllIndustries] = useState(false)
+  const [showFirstRow, setShowFirstRow] = useState(true)
+  const [showSecondRow, setShowSecondRow] = useState(true)
+  const [showThirdRow, setShowThirdRow] = useState(true)
 
   const generateMockData = (): { securities: SecurityAvailability[], metrics: AvailabilityMetrics } => {
     const tickers = ['AAPL', 'MSFT', 'UNH', 'GS', 'HD', 'CAT', 'CRM', 'V', 'BA', 'MCD', 'AXP', 'AMGN', 'IBM', 'TRV', 'JPM', 'HON', 'NKE', 'JNJ', 'WMT', 'PG', 'NVDA', 'TSLA', 'META', 'GOOGL', 'AMZN', 'SPY', 'QQQ', 'IWM', 'XLF', 'XLE']
@@ -148,7 +162,7 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
       'NVIDIA CORP', 'TESLA INC', 'META PLATFORMS INC', 'ALPHABET INC-CL A', 'AMAZON.COM INC',
       'SPDR S&P 500 ETF', 'INVESCO QQQ TRUST', 'ISHARES RUSSELL 2000 ETF', 'FINANCIAL SELECT SECTOR SPDR', 'ENERGY SELECT SECTOR SPDR'
     ]
-    const sectors = ['Technology', 'Healthcare', 'Financial Services', 'Consumer Discretionary', 'Industrials']
+    const sectors = ['Technology', 'Healthcare', 'Financial Services', 'Consumer Discretionary', 'Industrials', 'Consumer Staples', 'Energy', 'Utilities', 'Real Estate', 'Materials', 'Communication Services']
     const counterparties = ['Goldman Sachs', 'Morgan Stanley', 'JPMorgan', 'Bank of America', 'Citi']
     const assetClasses: Array<'Equity' | 'Corporate Bond' | 'Government Bond' | 'ETF' | 'Other'> = ['Equity', 'Corporate Bond', 'Government Bond', 'ETF', 'Other']
     const marketCaps: Array<'Large' | 'Mid' | 'Small' | 'Micro'> = ['Large', 'Mid', 'Small', 'Micro']
@@ -376,6 +390,29 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
       warmSecuritiesWithS3
     }
 
+    // Calculate industry breakdown
+    const industryMap = new Map<string, { totalAvailable: number, totalValue: number, securities: number, totalRate: number }>()
+    securities.forEach(sec => {
+      if (!industryMap.has(sec.sector)) {
+        industryMap.set(sec.sector, { totalAvailable: 0, totalValue: 0, securities: 0, totalRate: 0 })
+      }
+      const industryData = industryMap.get(sec.sector)!
+      industryData.totalAvailable += sec.totalAvailable
+      industryData.totalValue += sec.totalAvailable * sec.currentPrice
+      industryData.securities += 1
+      industryData.totalRate += sec.averageRate
+    })
+
+    const totalAvailableAcrossIndustries = securities.reduce((sum, sec) => sum + sec.totalAvailable, 0)
+    const industryBreakdown = Array.from(industryMap.entries()).map(([industry, data]) => ({
+      industry,
+      totalAvailable: data.totalAvailable,
+      totalValue: data.totalValue,
+      percentage: (data.totalAvailable / totalAvailableAcrossIndustries) * 100,
+      securities: data.securities,
+      avgRate: data.totalRate / data.securities
+    })).sort((a, b) => b.totalAvailable - a.totalAvailable)
+
     const metrics: AvailabilityMetrics = {
       totalSecurities: securities.length,
       totalAvailable: securities.reduce((sum, sec) => sum + sec.totalAvailable, 0),
@@ -399,7 +436,8 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
         availabilityChange: (Math.random() - 0.5) * 10,
         rateChange: (Math.random() - 0.5) * 0.5,
         utilizationChange: (Math.random() - 0.5) * 5
-      }
+      },
+      industryBreakdown
     }
 
     return { securities, metrics }
@@ -536,6 +574,43 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
               <Settings className="w-3 h-3 mr-1" />
               Config
             </Button>
+            
+            <div className="flex items-center space-x-1 border-l pl-2 ml-2">
+              <span className="text-xs text-gray-500">Rows:</span>
+              <button
+                onClick={() => setShowFirstRow(!showFirstRow)}
+                className={`h-6 px-2 text-xs rounded border transition-colors ${
+                  showFirstRow 
+                    ? 'bg-blue-100 text-blue-700 border-blue-300' 
+                    : 'bg-gray-100 text-gray-500 border-gray-300'
+                }`}
+                title="Toggle Row 1 (Internal/External Availability, Categories, Asset Classes)"
+              >
+                1
+              </button>
+              <button
+                onClick={() => setShowSecondRow(!showSecondRow)}
+                className={`h-6 px-2 text-xs rounded border transition-colors ${
+                  showSecondRow 
+                    ? 'bg-green-100 text-green-700 border-green-300' 
+                    : 'bg-gray-100 text-gray-500 border-gray-300'
+                }`}
+                title="Toggle Row 2 (S3 Substitution, HTB S3 Opportunities, FPL, Market Summary)"
+              >
+                2
+              </button>
+              <button
+                onClick={() => setShowThirdRow(!showThirdRow)}
+                className={`h-6 px-2 text-xs rounded border transition-colors ${
+                  showThirdRow 
+                    ? 'bg-purple-100 text-purple-700 border-purple-300' 
+                    : 'bg-gray-100 text-gray-500 border-gray-300'
+                }`}
+                title="Toggle Row 3 (Availability Trends, Anticipated Availability, Industry Breakdown)"
+              >
+                3
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -630,7 +705,117 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
 
 
                   <div className="flex flex-col gap-3 mb-3 w-full px-2">
+            {/* First Row */}
+            {showFirstRow && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            
+            {/* Internal Availability Widget - First */}
+            <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+              <h3 className="text-sm font-semibold text-gray-900 mb-2">Internal Availability</h3>
+              <div className="space-y-1">
+                {/* Customer */}
+                <div className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200">
+                  <div className="flex items-center space-x-2">
+                    <User className="w-3 h-3 text-blue-600" />
+                    <span className="text-xs font-medium text-gray-900">Customer</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-blue-600">6,049.99K</div>
+                    <div className="text-xs text-gray-500">$1,231M</div>
+                  </div>
+                </div>
+
+                {/* Firm */}
+                <div className="flex items-center justify-between px-1.5 py-1 bg-purple-50 rounded border border-purple-200">
+                  <div className="flex items-center space-x-2">
+                    <Building className="w-3 h-3 text-purple-600" />
+                    <span className="text-xs font-medium text-gray-900">Firm</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-purple-600">3,235.403K</div>
+                    <div className="text-xs text-gray-500">$678M</div>
+                  </div>
+                </div>
+
+                {/* Non-Cust */}
+                <div className="flex items-center justify-between px-1.5 py-1 bg-orange-50 rounded border border-orange-200">
+                  <div className="flex items-center space-x-2">
+                    <Globe className="w-3 h-3 text-orange-600" />
+                    <span className="text-xs font-medium text-gray-900">Non-Cust</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-orange-600">4,526.649K</div>
+                    <div className="text-xs text-gray-500">$957M</div>
+                  </div>
+                </div>
+
+                {/* FPL */}
+                <div className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200">
+                  <div className="flex items-center space-x-2">
+                    <Shield className="w-3 h-3 text-green-600" />
+                    <span className="text-xs font-medium text-gray-900">FPL</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-green-600">1,990.717K</div>
+                    <div className="text-xs text-gray-500">$409M</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* External CP Avail Widget - Second */}
+            <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+              <h3 className="text-sm font-semibold text-gray-900 mb-2">External CP Avail</h3>
+              <div className="space-y-1">
+                {/* Morgan Stanley */}
+                <div className="flex items-center justify-between px-1.5 py-1 bg-yellow-50 rounded border border-yellow-200">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                    <span className="text-xs font-medium text-gray-900">Morgan Stanley</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-yellow-600">5,025.091K</div>
+                    <div className="text-xs text-gray-500">$754M</div>
+                  </div>
+                </div>
+
+                {/* Goldman Sachs */}
+                <div className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                    <span className="text-xs font-medium text-gray-900">Goldman Sachs</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-green-600">4,973.444K</div>
+                    <div className="text-xs text-gray-500">$746M</div>
+                  </div>
+                </div>
+
+                {/* JPMorgan */}
+                <div className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                    <span className="text-xs font-medium text-gray-900">JPMorgan</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-blue-600">4,435.759K</div>
+                    <div className="text-xs text-gray-500">$665M</div>
+                  </div>
+                </div>
+
+                {/* Total External */}
+                <div className="flex items-center justify-between px-1.5 py-1 bg-gray-100 rounded border border-gray-300 mt-1 pt-1 border-t-2">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs font-bold text-gray-900">Total External</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-gray-700">23,580.575K</div>
+                    <div className="text-xs font-medium text-gray-600">$3,537M</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
               <h3 className="text-sm font-semibold text-gray-900 mb-2">Lending Categories</h3>
               <div className="space-y-1">
@@ -795,151 +980,68 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
             </div>
 
 
-            <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
-              <h3 className="text-sm font-semibold text-gray-900 mb-2">Anticipated Availability</h3>
-              <div className="space-y-1">
-                {/* Recalls Pending */}
-                <div className="flex items-center justify-between px-1.5 py-1 bg-red-50 rounded border border-red-200">
-                  <div className="flex items-center space-x-2">
-                    <ArrowLeft className="w-3 h-3 text-red-600" />
-                    <span className="text-xs font-medium text-gray-900">Recalls Pending</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="text-xs font-bold text-red-600">-292K</div>
-                    <div className="text-xs text-red-500">Today</div>
-                  </div>
-                </div>
-
-                {/* Anticipated Receives */}
-                <div className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200">
-                  <div className="flex items-center space-x-2">
-                    <ArrowRight className="w-3 h-3 text-green-600" />
-                    <span className="text-xs font-medium text-gray-900">Anticipated Receives</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="text-xs font-bold text-green-600">+479K</div>
-                    <div className="text-xs text-green-500">T+1</div>
-                  </div>
-                </div>
-
-                {/* Pledge Recalls */}
-                <div className="flex items-center justify-between px-1.5 py-1 bg-orange-50 rounded border border-orange-200">
-                  <div className="flex items-center space-x-2">
-                    <Shield className="w-3 h-3 text-orange-600" />
-                    <span className="text-xs font-medium text-gray-900">Pledge Recalls</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="text-xs font-bold text-orange-600">-386K</div>
-                    <div className="text-xs text-orange-500">T+2</div>
-                  </div>
-                </div>
-
-                {/* Net Change Summary */}
-                <div className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200">
-                  <div className="flex items-center space-x-2">
-                    <TrendingUp className="w-3 h-3 text-blue-600" />
-                    <span className="text-xs font-medium text-gray-900">Net Change</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="text-xs font-bold text-blue-600">+182K</div>
-                    <div className="text-xs text-blue-500">3D</div>
-                  </div>
-                </div>
-              </div>
-            </div>
 
 
-            <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
-              <h3 className="text-sm font-semibold text-gray-900 mb-2">Availability Trends</h3>
-              <div className="space-y-1">
-                <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-green-50 to-green-100 rounded border border-green-200">
-                  <div className="flex items-center space-x-2">
-                    <TrendingDown className="w-3 h-3 text-green-600" />
-                    <span className="text-xs font-medium text-gray-900">Low Util (0-25%)</span>
-                  </div>
-                  <div className="text-xs font-bold text-green-600">7 secs</div>
-                </div>
-
-                <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded border border-yellow-200">
-                  <div className="flex items-center space-x-2">
-                    <Minus className="w-3 h-3 text-yellow-600" />
-                    <span className="text-xs font-medium text-gray-900">Mod Util (25-50%)</span>
-                  </div>
-                  <div className="text-xs font-bold text-yellow-600">21 secs</div>
-                </div>
-
-                <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-orange-50 to-orange-100 rounded border border-orange-200">
-                  <div className="flex items-center space-x-2">
-                    <TrendingUp className="w-3 h-3 text-orange-600" />
-                    <span className="text-xs font-medium text-gray-900">High Util (50-75%)</span>
-                  </div>
-                  <div className="text-xs font-bold text-orange-600">26 secs</div>
-                </div>
-
-                <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-red-50 to-red-100 rounded border border-red-200">
-                  <div className="flex items-center space-x-2">
-                    <AlertTriangle className="w-3 h-3 text-red-600" />
-                    <span className="text-xs font-medium text-gray-900">Critical (75%+)</span>
-                  </div>
-                  <div className="text-xs font-bold text-red-600">6 secs</div>
-                </div>
-              </div>
-            </div>
           </div>
+            )}
 
-          
+          {/* Second Row */}
+          {showSecondRow && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
 
+            {/* S3 Substitution Widget - Far Left */}
             <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-semibold text-gray-900">HTB FPL Availability</h3>
+                <h3 className="text-sm font-semibold text-gray-900">S3 Substitution</h3>
                 <div className="flex items-center space-x-1">
-                  <Shield className="w-3 h-3 text-blue-500" />
-                  <span className="text-xs text-gray-600">5</span>
+                  <Target className="w-3 h-3 text-yellow-500" />
+                  <span className="text-xs text-gray-600 font-bold">📌</span>
                 </div>
               </div>
               <div className="space-y-1">
-                {securities
-                  .filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.fpl > 0)
-                  .slice(0, 3)
-                  .map((security) => (
-                    <div 
-                      key={`fpl-${security.id}`} 
-                      className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200 hover:bg-blue-100 transition-colors cursor-pointer"
-                      onClick={() => {
-                        setSelectedTicker(security.ticker)
-                        setSelectedFilter('all')
-                        setSearchTerm('')
-                      }}
-                      title={`Click to filter by ${security.ticker}`}
-                    >
-                      <div className="flex items-center space-x-2">
-                        <span className="text-xs font-medium text-gray-900">{security.ticker}</span>
-                        <span className="text-xs text-gray-600">{formatRate(security.averageRate)}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <div className="text-xs font-bold text-blue-600">
-                          {formatNumber(security.availabilityBreakdown.fpl / 1000)}K
-                        </div>
-                        <span className="text-xs text-gray-500">FPL</span>
-                      </div>
-                    </div>
-                  ))}
-                
-                {/* Show 2 More Button */}
-                <div className="pt-1 border-t border-gray-200">
-                  <button
-                    onClick={() => setShowAllS3Opportunities(!showAllS3Opportunities)}
-                    className="w-full flex items-center justify-center space-x-1 p-1 text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded transition-colors"
-                  >
-                    <ChevronDown className="w-3 h-3" />
-                    <span>Show 2 More</span>
-                  </button>
+                {/* S3 Potential */}
+                <div className="flex items-center justify-between px-1.5 py-1 bg-yellow-50 rounded border border-yellow-200">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs font-medium text-gray-900">S3 Potential</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-yellow-600">1,805.668K</div>
+                    <div className="text-xs text-gray-500">$306M</div>
+                  </div>
+                </div>
+
+                {/* HTB vs S3 */}
+                <div className="flex items-center justify-between px-1.5 py-1 bg-red-50 rounded border border-red-200">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs font-medium text-gray-900">HTB+S3</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-red-600">12</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between px-1.5 py-1 bg-orange-50 rounded border border-orange-200">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs font-medium text-gray-900">Warm+S3</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-orange-600">14</div>
+                  </div>
+                </div>
+
+                {/* Daily Revenue */}
+                <div className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs font-medium text-gray-900">Daily Revenue</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-green-600">$36K</div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            
+            {/* S3 Opportunities Widget - Second */}
             <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-semibold text-gray-900">HTB S3 Opportunities</h3>
@@ -989,30 +1091,57 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
               </div>
             </div>
 
-            
+            {/* FPL Widget - Third */}
             <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
-              <h3 className="text-sm font-semibold text-gray-900 mb-2">Top Counterparties</h3>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-semibold text-gray-900">HTB FPL Availability</h3>
+                <div className="flex items-center space-x-1">
+                  <Shield className="w-3 h-3 text-blue-500" />
+                  <span className="text-xs text-gray-600">5</span>
+                </div>
+              </div>
               <div className="space-y-1">
-                {metrics.sourceBreakdown.slice(0, 4).map((source, index) => {
-                  const colors = ['yellow', 'green', 'blue', 'purple'];
-                  const color = colors[index % colors.length];
-                  return (
-                    <div key={source.counterparty} className={`flex items-center justify-between px-1.5 py-1 bg-${color}-50 rounded border border-${color}-200`}>
+                {securities
+                  .filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.fpl > 0)
+                  .slice(0, 3)
+                  .map((security) => (
+                    <div 
+                      key={`fpl-${security.id}`} 
+                      className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200 hover:bg-blue-100 transition-colors cursor-pointer"
+                      onClick={() => {
+                        setSelectedTicker(security.ticker)
+                        setSelectedFilter('all')
+                        setSearchTerm('')
+                      }}
+                      title={`Click to filter by ${security.ticker}`}
+                    >
                       <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 rounded-full bg-${color}-500`}></div>
-                        <span className="text-xs font-medium text-gray-900">{source.counterparty}</span>
+                        <span className="text-xs font-medium text-gray-900">{security.ticker}</span>
+                        <span className="text-xs text-gray-600">{formatRate(security.averageRate)}</span>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <div className={`text-xs font-bold text-${color}-600`}>{source.activeSecurities}</div>
-                        <div className="text-xs text-gray-500">{source.reliability.toFixed(0)}%</div>
+                      <div className="flex items-center space-x-1">
+                        <div className="text-xs font-bold text-blue-600">
+                          {formatNumber(security.availabilityBreakdown.fpl / 1000)}K
+                        </div>
+                        <span className="text-xs text-gray-500">FPL</span>
                       </div>
                     </div>
-                  );
-                })}
+                  ))}
+                
+                {/* Show 2 More Button */}
+                <div className="pt-1 border-t border-gray-200">
+                  <button
+                    onClick={() => setShowAllS3Opportunities(!showAllS3Opportunities)}
+                    className="w-full flex items-center justify-center space-x-1 p-1 text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded transition-colors"
+                  >
+                    <ChevronDown className="w-3 h-3" />
+                    <span>Show 2 More</span>
+                  </button>
+                </div>
               </div>
             </div>
 
-            
+            {/* Market Summary Widget - Fourth */}
             <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
               <h3 className="text-sm font-semibold text-gray-900 mb-2">Market Summary</h3>
               <div className="space-y-1">
@@ -1050,12 +1179,171 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
               </div>
             </div>
           </div>
+            )}
+
+          {/* Third Row */}
+          {showThirdRow && (
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3">
+            {/* Availability Trends Widget */}
+            <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+              <h3 className="text-sm font-semibold text-gray-900 mb-2">Availability Trends</h3>
+              <div className="space-y-1">
+                <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-green-50 to-green-100 rounded border border-green-200">
+                  <div className="flex items-center space-x-2">
+                    <TrendingDown className="w-3 h-3 text-green-600" />
+                    <span className="text-xs font-medium text-gray-900">Low Util (0-25%)</span>
+                  </div>
+                  <div className="text-xs font-bold text-green-600">7 secs</div>
+                </div>
+
+                <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded border border-yellow-200">
+                  <div className="flex items-center space-x-2">
+                    <Minus className="w-3 h-3 text-yellow-600" />
+                    <span className="text-xs font-medium text-gray-900">Mod Util (25-50%)</span>
+                  </div>
+                  <div className="text-xs font-bold text-yellow-600">21 secs</div>
+                </div>
+
+                <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-orange-50 to-orange-100 rounded border border-orange-200">
+                  <div className="flex items-center space-x-2">
+                    <TrendingUp className="w-3 h-3 text-orange-600" />
+                    <span className="text-xs font-medium text-gray-900">High Util (50-75%)</span>
+                  </div>
+                  <div className="text-xs font-bold text-orange-600">26 secs</div>
+                </div>
+
+                <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-red-50 to-red-100 rounded border border-red-200">
+                  <div className="flex items-center space-x-2">
+                    <AlertTriangle className="w-3 h-3 text-red-600" />
+                    <span className="text-xs font-medium text-gray-900">Critical (75%+)</span>
+                  </div>
+                  <div className="text-xs font-bold text-red-600">6 secs</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Anticipated Availability Widget */}
+            <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+              <h3 className="text-sm font-semibold text-gray-900 mb-2">Anticipated Availability</h3>
+              <div className="space-y-1">
+                {/* Anticipated Receives - First */}
+                <div className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200">
+                  <div className="flex items-center space-x-2">
+                    <ArrowRight className="w-3 h-3 text-green-600" />
+                    <span className="text-xs font-medium text-gray-900">Anticipated Receives</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-green-600">+479K</div>
+                    <div className="text-xs text-green-500">Incoming</div>
+                  </div>
+                </div>
+
+                {/* Recalls Pending - Returns availability */}
+                <div className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200">
+                  <div className="flex items-center space-x-2">
+                    <ArrowLeft className="w-3 h-3 text-blue-600" />
+                    <span className="text-xs font-medium text-gray-900">Recalls Pending</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-blue-600">+292K</div>
+                    <div className="text-xs text-blue-500">Returning</div>
+                  </div>
+                </div>
+
+                {/* Pledge Recalls */}
+                <div className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200">
+                  <div className="flex items-center space-x-2">
+                    <Shield className="w-3 h-3 text-green-600" />
+                    <span className="text-xs font-medium text-gray-900">Pledge Recalls</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-green-600">+386K</div>
+                    <div className="text-xs text-green-500">Returning</div>
+                  </div>
+                </div>
+
+                {/* Net Change Summary */}
+                <div className="flex items-center justify-between px-1.5 py-1 bg-purple-50 rounded border border-purple-200">
+                  <div className="flex items-center space-x-2">
+                    <TrendingUp className="w-3 h-3 text-purple-600" />
+                    <span className="text-xs font-medium text-gray-900">Net Change</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs font-bold text-purple-600">+1,157K</div>
+                    <div className="text-xs text-purple-500">Total Gain</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Availability by Industry Widget */}
+            <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-semibold text-gray-900">Availability by Industry</h3>
+                <div className="flex items-center space-x-1">
+                  <Building className="w-3 h-3 text-purple-500" />
+                  <span className="text-xs text-gray-600">{metrics.industryBreakdown.length}</span>
+                </div>
+              </div>
+              <div className="space-y-0.5">
+                {metrics.industryBreakdown
+                  .slice(0, showAllIndustries ? metrics.industryBreakdown.length : 4)
+                  .map((industry, index) => (
+                    <div 
+                      key={industry.industry} 
+                      className={`flex items-center justify-between px-1 py-0.5 rounded border cursor-pointer hover:opacity-80 transition-colors ${
+                        index === 0 ? 'bg-blue-50 border-blue-200' :
+                        index === 1 ? 'bg-green-50 border-green-200' :
+                        index === 2 ? 'bg-purple-50 border-purple-200' :
+                        index === 3 ? 'bg-orange-50 border-orange-200' :
+                        index === 4 ? 'bg-yellow-50 border-yellow-200' :
+                        'bg-gray-50 border-gray-200'
+                      }`}
+                      onClick={() => {
+                        // Could filter by sector/industry if needed
+                        setSearchTerm('')
+                        setSelectedFilter('all')
+                        setSelectedTicker('')
+                      }}
+                      title={`${industry.industry}: ${formatNumber(industry.securities)} securities, ${formatRate(industry.avgRate)} avg rate`}
+                    >
+                      <div className="flex items-center">
+                        <span className="text-xs font-medium text-gray-900 truncate">{industry.industry}</span>
+                      </div>
+                      <div className="flex items-center space-x-2 flex-shrink-0">
+                        <div className={`text-xs font-bold ${
+                          index === 0 ? 'text-blue-600' :
+                          index === 1 ? 'text-green-600' :
+                          index === 2 ? 'text-purple-600' :
+                          index === 3 ? 'text-orange-600' :
+                          index === 4 ? 'text-yellow-600' :
+                          'text-gray-600'
+                        }`}>
+                          {formatCurrency(industry.totalValue / 1000000)}M
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {industry.percentage.toFixed(1)}%
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                
+                {metrics.industryBreakdown.length > 4 && (
+                  <div className="pt-0.5 border-t border-gray-200">
+                    <button
+                      onClick={() => setShowAllIndustries(!showAllIndustries)}
+                      className="w-full flex items-center justify-center space-x-1 p-0.5 text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded transition-colors"
+                    >
+                      <ChevronDown className={`w-3 h-3 transition-transform ${showAllIndustries ? 'rotate-180' : ''}`} />
+                      <span>{showAllIndustries ? 'Show Less' : `Show ${metrics.industryBreakdown.length - 4} More`}</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+            )}
         </div>
-
-
-
-
-
 
         <div className="bg-white rounded shadow border border-gray-200 mx-2">
           <div className="border-b border-gray-200 px-3 py-2">
