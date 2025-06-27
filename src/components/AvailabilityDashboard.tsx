@@ -999,215 +999,336 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
           </div>
         </div>
 
-        {/* Smart Loan Availability Types */}
-        <div className="flex flex-col lg:flex-row gap-2 mb-3 w-full px-2">
-          {/* Internal Availability Breakdown */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full flex-1">
-            <h3 className="text-sm font-semibold text-gray-900 mb-2">Internal Availability</h3>
-            <div className="space-y-1">
-              <div className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200">
-                <div className="flex items-center space-x-1">
-                  <Users className="w-3 h-3 text-blue-600" />
-                  <span className="text-xs font-medium text-gray-900">Customer</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="text-xs font-bold text-blue-600">{formatNumber(metrics.availabilityTypeBreakdown.customer.total / 1000)}K</div>
-                  <div className="text-xs text-blue-700">{formatCurrency(metrics.availabilityTypeBreakdown.customer.totalValue / 1000000)}M</div>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between px-1.5 py-1 bg-purple-50 rounded border border-purple-200">
-                <div className="flex items-center space-x-1">
-                  <Building className="w-3 h-3 text-purple-600" />
-                  <span className="text-xs font-medium text-gray-900">Firm</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="text-xs font-bold text-purple-600">{formatNumber(metrics.availabilityTypeBreakdown.firm.total / 1000)}K</div>
-                  <div className="text-xs text-purple-700">{formatCurrency(metrics.availabilityTypeBreakdown.firm.totalValue / 1000000)}M</div>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between px-1.5 py-1 bg-orange-50 rounded border border-orange-200">
-                <div className="flex items-center space-x-1">
-                  <Target className="w-3 h-3 text-orange-600" />
-                  <span className="text-xs font-medium text-gray-900">Non-Cust</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="text-xs font-bold text-orange-600">{formatNumber(metrics.availabilityTypeBreakdown.nonCustomer.total / 1000)}K</div>
-                  <div className="text-xs text-orange-700">{formatCurrency(metrics.availabilityTypeBreakdown.nonCustomer.totalValue / 1000000)}M</div>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200">
-                <div className="flex items-center space-x-1">
-                  <CheckCircle2 className="w-3 h-3 text-green-600" />
-                  <span className="text-xs font-medium text-gray-900">FPL</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="text-xs font-bold text-green-600">{formatNumber(metrics.availabilityTypeBreakdown.fpl.total / 1000)}K</div>
-                  <div className="text-xs text-green-700">{formatCurrency(metrics.availabilityTypeBreakdown.fpl.totalValue / 1000000)}M</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* External Counterparty Availability */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full flex-1">
-            <h3 className="text-sm font-semibold text-gray-900 mb-2">External Sources</h3>
-            <div className="space-y-1">
-              {metrics.sourceBreakdown.slice(0, 3).map((source, idx) => (
-                <div key={source.counterparty} className="flex items-center justify-between px-1.5 py-1 bg-gray-50 rounded border border-gray-200">
-                  <div className="flex items-center space-x-1">
-                    <div className={`w-2 h-2 rounded-full ${
-                      source.reliability > 95 ? 'bg-green-500' : 
-                      source.reliability > 90 ? 'bg-yellow-500' : 'bg-red-500'
-                    }`}></div>
-                    <span className="text-xs font-medium text-gray-900">{source.counterparty}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="text-xs font-bold text-gray-700">{formatNumber(source.totalAvailable / 1000)}K</div>
-                    <div className="text-xs text-gray-600">{formatCurrency(source.totalAvailable * 150 / 1000000)}M</div>
-                  </div>
-                </div>
-              ))}
-              
-              {/* Total External Summary */}
-              <div className="mt-2 pt-1 border-t border-gray-200">
-                <div className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded">
-                  <span className="text-xs font-medium text-gray-900">Total External</span>
-                  <div className="flex items-center space-x-2">
-                    <div className="text-xs font-bold text-blue-700">
-                      {formatNumber(metrics.sourceBreakdown.reduce((sum, s) => sum + s.totalAvailable, 0) / 1000)}K
-                    </div>
-                    <div className="text-xs text-blue-600">
-                      {formatCurrency(metrics.sourceBreakdown.reduce((sum, s) => sum + s.totalAvailable, 0) * 150 / 1000000)}M
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* S3 Substitution Opportunities */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full flex-1">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold text-gray-900">S3 Substitution</h3>
-              <Zap className="w-3 h-3 text-yellow-500" />
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-center justify-between px-2 py-1 bg-yellow-50 rounded border border-yellow-200">
-                <span className="text-xs font-medium text-gray-900">S3 Potential</span>
-                <div className="flex items-center space-x-2">
-                  <div className="text-xs font-bold text-yellow-600">
-                    {formatNumber(metrics.availabilityTypeBreakdown.s3Potential.total / 1000)}K
-                  </div>
-                  <div className="text-xs text-yellow-700">
-                    {formatCurrency(metrics.availabilityTypeBreakdown.s3Potential.totalValue / 1000000)}M
-                  </div>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-1">
-                <div className="flex items-center justify-between px-1.5 py-1 bg-red-50 rounded border border-red-200">
-                  <span className="text-xs text-gray-600">HTB+S3</span>
-                  <div className="text-xs font-bold text-red-600">{metrics.s3Metrics.hardSecuritiesWithS3}</div>
-                </div>
-                <div className="flex items-center justify-between px-1.5 py-1 bg-orange-50 rounded border border-orange-200">
-                  <span className="text-xs text-gray-600">Warm+S3</span>
-                  <div className="text-xs font-bold text-orange-600">{metrics.s3Metrics.warmSecuritiesWithS3}</div>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200">
-                <span className="text-xs text-gray-600">Daily Revenue</span>
-                <div className="text-xs font-bold text-green-600">
-                  {formatCurrency(metrics.s3Metrics.potentialRevenue / 1000)}K
-                </div>
-              </div>
-            </div>
-          </div>
 
 
-
-          {/* Hard Securities with S3 Widget */}
-          <div className="bg-white rounded shadow border border-gray-200 p-2 h-full flex-1">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold text-gray-900">HTB S3 Opportunities</h3>
-              <div className="flex items-center space-x-1">
-                <AlertTriangle className="w-3 h-3 text-red-500" />
-                <span className="text-xs text-gray-600">
-                  {securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.s3Potential > 0).length}
-                </span>
-              </div>
-            </div>
-            <div className="space-y-1">
-              {securities
-                .filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.s3Potential > 0)
-                .slice(0, showAllS3Opportunities ? undefined : 3)
-                .map((security) => (
+        {/* Main Content Grid: Left side (Widgets) + Right side (Charts) */}
+        <div className="flex flex-col lg:flex-row gap-3 mb-3 px-2">
+          {/* Left Column: Widget Cards */}
+          <div className="flex-1">
+            {/* Breakdown Cards - 2 rows of 2-3 cards each */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
+              {/* Securities Lending Categories */}
+              <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+                <h3 className="text-sm font-semibold text-gray-900 mb-2">Lending Categories</h3>
+                <div className="space-y-1">
                   <div 
-                    key={security.id} 
-                    className="flex items-center justify-between px-1.5 py-1 bg-red-50 rounded border border-red-200 hover:bg-red-100 transition-colors cursor-pointer"
+                    className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200 cursor-pointer hover:bg-green-100 transition-colors"
                     onClick={() => {
-                      setSelectedTicker(security.ticker)
-                      setSelectedFilter('all')
+                      setSelectedFilter('GC')
+                      setSelectedTicker('')
                       setSearchTerm('')
                     }}
-                    title={`Click to filter by ${security.ticker}`}
+                    title="Click to filter by GC securities"
                   >
                     <div className="flex items-center space-x-2">
-                      <span className="text-xs font-medium text-gray-900">{security.ticker}</span>
-                      <span className="text-xs text-gray-600">{formatRate(security.averageRate)}</span>
-                      {showAllS3Opportunities && (
-                        <span className="text-xs text-gray-500">
-                          {(security.availabilityBreakdown.s3Potential * (security.currentPrice || 50) / 1000000).toFixed(1)}M
-                        </span>
-                      )}
+                      <CheckCircle2 className="w-3 h-3 text-green-600" />
+                      <span className="text-xs font-medium text-gray-900">GC</span>
                     </div>
-                    <div className="flex items-center space-x-1">
-                      <div className="text-xs font-bold text-red-600">
-                        {formatNumber(security.availabilityBreakdown.s3Potential / 1000)}K
-                      </div>
-                      <span className="text-xs text-gray-500">S3</span>
-                      {showAllS3Opportunities && (
-                        <span className="text-xs text-gray-400">
-                          ({security.availabilityBreakdown.s3Potential})
-                        </span>
-                      )}
+                    <div className="flex items-center space-x-2">
+                      <div className="text-xs font-bold text-green-600">{metrics.difficultyBreakdown.gc.count}</div>
+                      <div className="text-xs text-gray-500">{formatRate(metrics.difficultyBreakdown.gc.avgRate)}</div>
                     </div>
                   </div>
-                ))}
-              
-              {/* Show More/Less Button */}
-              {securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.s3Potential > 0).length > 3 && (
-                <div className="pt-1 border-t border-gray-200">
-                  <button
-                    onClick={() => setShowAllS3Opportunities(!showAllS3Opportunities)}
-                    className="w-full flex items-center justify-center space-x-1 p-1 text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded transition-colors"
+
+                  <div 
+                    className="flex items-center justify-between px-1.5 py-1 bg-gray-50 rounded border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => {
+                      setSelectedFilter('Non-Interesting')
+                      setSelectedTicker('')
+                      setSearchTerm('')
+                    }}
+                    title="Click to filter by Non-Interesting securities"
                   >
-                    <ChevronDown className={`w-3 h-3 transition-transform ${showAllS3Opportunities ? 'rotate-180' : ''}`} />
-                    <span>
-                      {showAllS3Opportunities 
-                        ? 'Show Less' 
-                        : `Show ${securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.s3Potential > 0).length - 3} More`
-                      }
-                    </span>
-                  </button>
+                    <div className="flex items-center space-x-2">
+                      <Target className="w-3 h-3 text-gray-600" />
+                      <span className="text-xs font-medium text-gray-900">Non-Int</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="text-xs font-bold text-gray-600">{metrics.difficultyBreakdown.nonInteresting.count}</div>
+                      <div className="text-xs text-gray-500">{formatRate(metrics.difficultyBreakdown.nonInteresting.avgRate)}</div>
+                    </div>
+                  </div>
+
+                  <div 
+                    className="flex items-center justify-between px-1.5 py-1 bg-orange-50 rounded border border-orange-200 cursor-pointer hover:bg-orange-100 transition-colors"
+                    onClick={() => {
+                      setSelectedFilter('Warm')
+                      setSelectedTicker('')
+                      setSearchTerm('')
+                    }}
+                    title="Click to filter by Warm securities"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <AlertTriangle className="w-3 h-3 text-orange-600" />
+                      <span className="text-xs font-medium text-gray-900">Warm</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="text-xs font-bold text-orange-600">{metrics.difficultyBreakdown.warm.count}</div>
+                      <div className="text-xs text-gray-500">{formatRate(metrics.difficultyBreakdown.warm.avgRate)}</div>
+                    </div>
+                  </div>
+
+                  <div 
+                    className="flex items-center justify-between px-1.5 py-1 bg-red-50 rounded border border-red-200 cursor-pointer hover:bg-red-100 transition-colors"
+                    onClick={() => {
+                      setSelectedFilter('Hard-to-Borrow')
+                      setSelectedTicker('')
+                      setSearchTerm('')
+                    }}
+                    title="Click to filter by HTB securities"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <XCircle className="w-3 h-3 text-red-600" />
+                      <span className="text-xs font-medium text-gray-900">HTB</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="text-xs font-bold text-red-600">{metrics.difficultyBreakdown.hardToBorrow.count}</div>
+                      <div className="text-xs text-gray-500">{formatRate(metrics.difficultyBreakdown.hardToBorrow.avgRate)}</div>
+                    </div>
+                  </div>
                 </div>
-              )}
+              </div>
+
+              {/* Asset Class Breakdown */}
+              <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+                <h3 className="text-sm font-semibold text-gray-900 mb-2">Asset Classes</h3>
+                <div className="space-y-1">
+                  <div 
+                    className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200 cursor-pointer hover:bg-blue-100 transition-colors"
+                    onClick={() => {
+                      setSelectedFilter('Equity')
+                      setSelectedTicker('')
+                      setSearchTerm('')
+                    }}
+                    title="Click to filter by Equity securities"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <BarChart3 className="w-3 h-3 text-blue-600" />
+                      <span className="text-xs font-medium text-gray-900">Equity</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="text-xs font-bold text-blue-600">{metrics.assetClassBreakdown.equity.count}</div>
+                      <div className="text-xs text-gray-500">{formatRate(metrics.assetClassBreakdown.equity.avgRate)}</div>
+                    </div>
+                  </div>
+
+                  <div 
+                    className="flex items-center justify-between px-1.5 py-1 bg-purple-50 rounded border border-purple-200 cursor-pointer hover:bg-purple-100 transition-colors"
+                    onClick={() => {
+                      setSelectedFilter('ETF')
+                      setSelectedTicker('')
+                      setSearchTerm('')
+                    }}
+                    title="Click to filter by ETF securities"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <Building className="w-3 h-3 text-purple-600" />
+                      <span className="text-xs font-medium text-gray-900">ETF</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="text-xs font-bold text-purple-600">{metrics.assetClassBreakdown.etf.count}</div>
+                      <div className="text-xs text-gray-500">{formatRate(metrics.assetClassBreakdown.etf.avgRate)}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200">
+                    <div className="flex items-center space-x-2">
+                      <Shield className="w-3 h-3 text-green-600" />
+                      <span className="text-xs font-medium text-gray-900">Corp Bond</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="text-xs font-bold text-green-600">{metrics.assetClassBreakdown.corporateBond.count}</div>
+                      <div className="text-xs text-gray-500">{formatRate(metrics.assetClassBreakdown.corporateBond.avgRate)}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between px-1.5 py-1 bg-yellow-50 rounded border border-yellow-200">
+                    <div className="flex items-center space-x-2">
+                      <FileText className="w-3 h-3 text-yellow-600" />
+                      <span className="text-xs font-medium text-gray-900">Gov Bond</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="text-xs font-bold text-yellow-600">{metrics.assetClassBreakdown.governmentBond.count}</div>
+                      <div className="text-xs text-gray-500">{formatRate(metrics.assetClassBreakdown.governmentBond.avgRate)}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Anticipated Availability */}
+              <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+                <h3 className="text-sm font-semibold text-gray-900 mb-2">Anticipated Availability</h3>
+                <div className="space-y-1">
+                  {/* Recalls Pending */}
+                  <div className="flex items-center justify-between px-1.5 py-1 bg-red-50 rounded border border-red-200">
+                    <div className="flex items-center space-x-2">
+                      <ArrowLeft className="w-3 h-3 text-red-600" />
+                      <span className="text-xs font-medium text-gray-900">Recalls Pending</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="text-xs font-bold text-red-600">-{formatNumber(Math.floor(Math.random() * 500 + 200))}K</div>
+                      <div className="text-xs text-red-500">Today</div>
+                    </div>
+                  </div>
+
+                  {/* Anticipated Receives */}
+                  <div className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200">
+                    <div className="flex items-center space-x-2">
+                      <ArrowRight className="w-3 h-3 text-green-600" />
+                      <span className="text-xs font-medium text-gray-900">Anticipated Receives</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="text-xs font-bold text-green-600">+{formatNumber(Math.floor(Math.random() * 800 + 300))}K</div>
+                      <div className="text-xs text-green-500">T+1</div>
+                    </div>
+                  </div>
+
+                  {/* Pledge Recalls */}
+                  <div className="flex items-center justify-between px-1.5 py-1 bg-orange-50 rounded border border-orange-200">
+                    <div className="flex items-center space-x-2">
+                      <Shield className="w-3 h-3 text-orange-600" />
+                      <span className="text-xs font-medium text-gray-900">Pledge Recalls</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="text-xs font-bold text-orange-600">-{formatNumber(Math.floor(Math.random() * 300 + 100))}K</div>
+                      <div className="text-xs text-orange-500">T+2</div>
+                    </div>
+                  </div>
+
+                  {/* Net Change Summary */}
+                  <div className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200">
+                    <div className="flex items-center space-x-2">
+                      <TrendingUp className="w-3 h-3 text-blue-600" />
+                      <span className="text-xs font-medium text-gray-900">Net Change</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="text-xs font-bold text-blue-600">+{formatNumber(Math.floor(Math.random() * 200 + 50))}K</div>
+                      <div className="text-xs text-blue-500">3D</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Second Row of Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {/* Availability Trends */}
+              <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+                <h3 className="text-sm font-semibold text-gray-900 mb-2">Availability Trends</h3>
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-green-50 to-green-100 rounded border border-green-200">
+                    <div className="flex items-center space-x-2">
+                      <TrendingDown className="w-3 h-3 text-green-600" />
+                      <span className="text-xs font-medium text-gray-900">Low Util (0-25%)</span>
+                    </div>
+                    <div className="text-xs font-bold text-green-600">{securities.filter(s => s.utilizationRate <= 25).length} secs</div>
+                  </div>
+
+                  <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded border border-yellow-200">
+                    <div className="flex items-center space-x-2">
+                      <Minus className="w-3 h-3 text-yellow-600" />
+                      <span className="text-xs font-medium text-gray-900">Mod Util (25-50%)</span>
+                    </div>
+                    <div className="text-xs font-bold text-yellow-600">{securities.filter(s => s.utilizationRate > 25 && s.utilizationRate <= 50).length} secs</div>
+                  </div>
+
+                  <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-orange-50 to-orange-100 rounded border border-orange-200">
+                    <div className="flex items-center space-x-2">
+                      <TrendingUp className="w-3 h-3 text-orange-600" />
+                      <span className="text-xs font-medium text-gray-900">High Util (50-75%)</span>
+                    </div>
+                    <div className="text-xs font-bold text-orange-600">{securities.filter(s => s.utilizationRate > 50 && s.utilizationRate <= 75).length} secs</div>
+                  </div>
+
+                  <div className="flex items-center justify-between px-2 py-1 bg-gradient-to-r from-red-50 to-red-100 rounded border border-red-200">
+                    <div className="flex items-center space-x-2">
+                      <AlertTriangle className="w-3 h-3 text-red-600" />
+                      <span className="text-xs font-medium text-gray-900">Critical (75%+)</span>
+                    </div>
+                    <div className="text-xs font-bold text-red-600">{securities.filter(s => s.utilizationRate > 75).length} secs</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* HTB S3 Opportunities */}
+              <div className="bg-white rounded shadow border border-gray-200 p-2 h-full">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-semibold text-gray-900">HTB S3 Opportunities</h3>
+                  <div className="flex items-center space-x-1">
+                    <AlertTriangle className="w-3 h-3 text-red-500" />
+                    <span className="text-xs text-gray-600">
+                      {securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.s3Potential > 0).length}
+                    </span>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  {securities
+                    .filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.s3Potential > 0)
+                    .slice(0, showAllS3Opportunities ? undefined : 3)
+                    .map((security) => (
+                      <div 
+                        key={security.id} 
+                        className="flex items-center justify-between px-1.5 py-1 bg-red-50 rounded border border-red-200 hover:bg-red-100 transition-colors cursor-pointer"
+                        onClick={() => {
+                          setSelectedTicker(security.ticker)
+                          setSelectedFilter('all')
+                          setSearchTerm('')
+                        }}
+                        title={`Click to filter by ${security.ticker}`}
+                      >
+                        <div className="flex items-center space-x-2">
+                          <span className="text-xs font-medium text-gray-900">{security.ticker}</span>
+                          <span className="text-xs text-gray-600">{formatRate(security.averageRate)}</span>
+                          {showAllS3Opportunities && (
+                            <span className="text-xs text-gray-500">
+                              {(security.availabilityBreakdown.s3Potential * (security.currentPrice || 50) / 1000000).toFixed(1)}M
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <div className="text-xs font-bold text-red-600">
+                            {formatNumber(security.availabilityBreakdown.s3Potential / 1000)}K
+                          </div>
+                          <span className="text-xs text-gray-500">S3</span>
+                          {showAllS3Opportunities && (
+                            <span className="text-xs text-gray-400">
+                              ({security.availabilityBreakdown.s3Potential})
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  
+                  {/* Show More/Less Button */}
+                  {securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.s3Potential > 0).length > 3 && (
+                    <div className="pt-1 border-t border-gray-200">
+                      <button
+                        onClick={() => setShowAllS3Opportunities(!showAllS3Opportunities)}
+                        className="w-full flex items-center justify-center space-x-1 p-1 text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded transition-colors"
+                      >
+                        <ChevronDown className={`w-3 h-3 transition-transform ${showAllS3Opportunities ? 'rotate-180' : ''}`} />
+                        <span>
+                          {showAllS3Opportunities 
+                            ? 'Show Less' 
+                            : `Show ${securities.filter(sec => sec.difficulty === 'Hard-to-Borrow' && sec.availabilityBreakdown.s3Potential > 0).length - 3} More`
+                          }
+                        </span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Charts Section */}
-        <div className="mb-3 px-2">
-          {/* Historical Toggle */}
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center space-x-2">
-              <BarChart3 className="w-4 h-4 text-gray-600" />
-              <span className="text-sm font-semibold text-gray-900">Analytics</span>
-            </div>
-            <div className="flex items-center space-x-1">
+          {/* Right Column: Charts */}
+          <div className="w-80 flex flex-col gap-3">
+            {/* Charts Header with Historical Toggle */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <BarChart3 className="w-4 h-4 text-gray-600" />
+                <span className="text-sm font-semibold text-gray-900">Analytics</span>
+              </div>
               <select
                 value={historicalView}
                 onChange={(e) => setHistoricalView(e.target.value as 'current' | 'yesterday' | 'lastWeek')}
@@ -1218,14 +1339,11 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
                 <option value="lastWeek">vs Last Week</option>
               </select>
             </div>
-          </div>
 
-          {/* Charts Row */}
-          <div className="flex flex-col lg:flex-row gap-3">
             {/* Industry Utilization Heatmap */}
-            <div className="bg-white rounded shadow border border-gray-200 p-3" style={{ width: '300px', height: '250px' }}>
+            <div className="bg-white rounded shadow border border-gray-200 p-3 h-64">
               <h4 className="text-xs font-semibold text-gray-900 mb-2">Industry Utilization</h4>
-              <div className="grid grid-cols-4 gap-1 h-48">
+              <div className="grid grid-cols-4 gap-1 h-52">
                 {getIndustryData().map((industry, idx) => (
                   <div
                     key={industry.name}
@@ -1247,9 +1365,9 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
             </div>
 
             {/* Asset Class Donut Chart */}
-            <div className="bg-white rounded shadow border border-gray-200 p-3" style={{ width: '250px', height: '250px' }}>
+            <div className="bg-white rounded shadow border border-gray-200 p-3 h-64">
               <h4 className="text-xs font-semibold text-gray-900 mb-2">Asset Classes</h4>
-              <div className="relative h-48 flex items-center justify-center">
+              <div className="relative h-52 flex items-center justify-center">
                 {/* SVG Donut Chart */}
                 <svg width="180" height="180" className="transform -rotate-90">
                   {(() => {
@@ -1315,9 +1433,9 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
             </div>
 
             {/* Top Securities Bar Chart */}
-            <div className="bg-white rounded shadow border border-gray-200 p-3" style={{ width: '350px', height: '250px' }}>
+            <div className="bg-white rounded shadow border border-gray-200 p-3 h-64">
               <h4 className="text-xs font-semibold text-gray-900 mb-2">Top Securities by Value</h4>
-              <div className="space-y-2 h-48 overflow-hidden">
+              <div className="space-y-2 h-52 overflow-hidden">
                 {getTopSecuritiesData().map((security, index) => {
                   const maxValue = getTopSecuritiesData()[0]?.value || 1
                   const barWidth = (security.value / maxValue) * 100
@@ -1344,18 +1462,18 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
                           ></div>
                         </div>
                       </div>
-                      <div className="w-16 text-right">
+                      <div className="w-12 text-right">
                         <div className="text-xs font-bold text-gray-900">
                           {formatCurrency(security.value / 1000000)}M
                         </div>
                       </div>
-                      <div className="w-8 flex justify-center">
+                      <div className="w-6 flex justify-center">
                         <div
                           className="w-2 h-2 rounded-full"
                           style={{ backgroundColor: getDifficultyColorForChart(security.difficulty) }}
                         ></div>
                       </div>
-                      <div className="w-6 flex justify-center">
+                      <div className="w-4 flex justify-center">
                         {security.trend === 'up' && <TrendingUp className="w-3 h-3 text-green-600" />}
                         {security.trend === 'down' && <TrendingDown className="w-3 h-3 text-red-600" />}
                         {security.trend === 'stable' && <Minus className="w-3 h-3 text-gray-600" />}
