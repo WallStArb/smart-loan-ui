@@ -1296,30 +1296,48 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                 <CheckCircle2 className="w-4 h-4 text-green-500" />
                 <h3 className="text-sm font-semibold text-gray-900">Cure Methods</h3>
               </div>
-              <Badge className="bg-green-100 text-green-800 text-xs">Today</Badge>
+              <Badge className="bg-green-100 text-green-800 text-xs">Total Today</Badge>
             </div>
             <div className="space-y-1">
-              <div className="flex justify-between items-center py-0.5">
-                <span className="text-xs text-gray-600">Receives:</span>
-                <span className="text-sm font-bold text-green-600">{metrics.cureMethods.receives}</span>
+              {/* Total Today */}
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-600">Total Today:</span>
+                <span className="text-lg font-bold text-green-600">{metrics.cureMethods.receives + metrics.cureMethods.recalls + metrics.cureMethods.returns + metrics.cureMethods.borrows}</span>
               </div>
-              <div className="flex justify-between items-center py-0.5">
-                <span className="text-xs text-gray-600">Recalls:</span>
-                <span className="text-sm font-bold text-blue-600">{metrics.cureMethods.recalls}</span>
-              </div>
-              <div className="flex justify-between items-center py-0.5">
-                <span className="text-xs text-gray-600">Returns:</span>
-                <span className="text-sm font-bold text-purple-600">{metrics.cureMethods.returns}</span>
-              </div>
-              <div className="flex justify-between items-center py-0.5">
-                <span className="text-xs text-gray-600">Borrows:</span>
-                <span className="text-sm font-bold text-orange-600">{metrics.cureMethods.borrows}</span>
-              </div>
-              <div className="pt-1 border-t border-gray-200">
-                <div className="text-xs text-center text-gray-900 font-medium">
-                  Total: {metrics.cureMethods.receives + metrics.cureMethods.recalls + metrics.cureMethods.returns + metrics.cureMethods.borrows}
+              
+              {/* Top Row */}
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <div className="text-center">
+                  <div className="text-sm font-bold text-green-600">{metrics.cureMethods.receives}</div>
+                  <div className="text-xs text-gray-500">Receives</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm font-bold text-blue-600">{metrics.cureMethods.recalls}</div>
+                  <div className="text-xs text-gray-500">Recalls</div>
                 </div>
               </div>
+
+              {/* Bottom Row */}
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <div className="text-center">
+                  <div className="text-sm font-bold text-purple-600">{metrics.cureMethods.returns}</div>
+                  <div className="text-xs text-gray-500">Returns</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm font-bold text-orange-600">{metrics.cureMethods.borrows}</div>
+                  <div className="text-xs text-gray-500">Borrows</div>
+                </div>
+              </div>
+
+              {/* Releases - if available */}
+              {metrics.cureMethods.releases && (
+                <div className="pt-1 border-t border-gray-200">
+                  <div className="text-center">
+                    <div className="text-sm font-bold text-gray-600">{metrics.cureMethods.releases}</div>
+                    <div className="text-xs text-gray-500">Releases</div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -1327,30 +1345,57 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
           <div className="bg-white rounded-lg shadow border border-gray-200 p-3">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center space-x-2">
-                <Activity className="w-4 h-4 text-blue-500" />
-                <h3 className="text-sm font-semibold text-gray-900">Activity</h3>
+                <TrendingUp className="w-4 h-4 text-blue-500" />
+                <h3 className="text-sm font-semibold text-gray-900">Borrow & Recall Activity</h3>
               </div>
-              <Badge className="bg-blue-100 text-blue-800 text-xs">Made</Badge>
+              <Badge className="bg-blue-100 text-blue-800 text-xs">Made Today</Badge>
             </div>
             <div className="space-y-1">
-              <div className="flex justify-between items-center py-0.5">
-                <span className="text-xs text-gray-600">Borrows:</span>
-                <div className="text-right">
+              {/* Made Today Numbers */}
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-600">Made Today:</span>
+                <span className="text-lg font-bold text-blue-600">{metrics.borrowRecallActivity.borrowsMade + metrics.borrowRecallActivity.recallsMade}</span>
+              </div>
+              
+              {/* Borrows Section */}
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <div className="text-center">
                   <div className="text-sm font-bold text-blue-600">{metrics.borrowRecallActivity.borrowsMade}</div>
-                  <div className="text-xs text-gray-500">{metrics.borrowRecallActivity.borrowsSuccessRate}% success</div>
+                  <div className="text-xs text-blue-500">Borrows</div>
+                  <div className="text-xs text-gray-500">Made</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm font-bold text-orange-600">{metrics.borrowRecallActivity.recallsMade}</div>
+                  <div className="text-xs text-orange-500">Recalls</div>
+                  <div className="text-xs text-gray-500">Made</div>
                 </div>
               </div>
-              <div className="flex justify-between items-center py-0.5">
-                <span className="text-xs text-gray-600">Recalls:</span>
-                <div className="text-right">
-                  <div className="text-sm font-bold text-green-600">{metrics.borrowRecallActivity.recallsMade}</div>
-                  <div className="text-xs text-gray-500">{metrics.borrowRecallActivity.recallsSuccessRate}% success</div>
-                </div>
-              </div>
+
+              {/* Pending Section */}
               <div className="pt-1 border-t border-gray-200">
-                <div className="flex justify-between text-xs">
-                  <span className="text-gray-600">Pending:</span>
-                  <span className="text-yellow-600 font-medium">{metrics.borrowRecallActivity.borrowsPending + metrics.borrowRecallActivity.recallsPending}</span>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="text-center">
+                    <div className="text-sm font-bold text-purple-600">{metrics.borrowRecallActivity.borrowsPending}</div>
+                    <div className="text-xs text-gray-500">Borrows Pending</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-sm font-bold text-purple-600">{metrics.borrowRecallActivity.recallsPending}</div>
+                    <div className="text-xs text-gray-500">Recalls Pending</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Success Rates */}
+              <div className="pt-1 border-t border-gray-200">
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="text-center">
+                    <div className="text-sm font-bold text-green-600">{metrics.borrowRecallActivity.borrowsSuccessRate}%</div>
+                    <div className="text-xs text-gray-500">Borrow Success</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-sm font-bold text-green-600">{metrics.borrowRecallActivity.recallsSuccessRate}%</div>
+                    <div className="text-xs text-gray-500">Recall Success</div>
+                  </div>
                 </div>
               </div>
             </div>
