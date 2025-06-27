@@ -21,6 +21,8 @@ import {
   EyeOff,
   ArrowUp,
   ArrowDown,
+  ArrowLeft,
+  ArrowRight,
   ChevronDown,
   ChevronUp,
   Settings,
@@ -801,25 +803,57 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
             </div>
           </div>
 
-          {/* Top Counterparties */}
+          {/* Anticipated Availability */}
           <div className="bg-white rounded shadow border border-gray-200 p-2 h-full flex-1">
-            <h3 className="text-sm font-semibold text-gray-900 mb-2">Top Counterparties</h3>
+            <h3 className="text-sm font-semibold text-gray-900 mb-2">Anticipated Availability</h3>
             <div className="space-y-1">
-              {metrics.sourceBreakdown.slice(0, 4).map((source, idx) => (
-                <div key={source.counterparty} className="flex items-center justify-between px-1.5 py-1 bg-gray-50 rounded border border-gray-200 hover:bg-gray-100 transition-colors cursor-pointer">
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-2 h-2 rounded-full ${
-                      source.reliability > 95 ? 'bg-green-500' : 
-                      source.reliability > 90 ? 'bg-yellow-500' : 'bg-red-500'
-                    }`}></div>
-                    <span className="text-xs font-medium text-gray-900">{source.counterparty.split(' ')[0]}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="text-xs font-bold text-gray-700">{source.activeSecurities}</div>
-                    <div className="text-xs text-gray-500">{source.reliability.toFixed(0)}%</div>
-                  </div>
+              {/* Recalls Pending */}
+              <div className="flex items-center justify-between px-1.5 py-1 bg-red-50 rounded border border-red-200">
+                <div className="flex items-center space-x-2">
+                  <ArrowLeft className="w-3 h-3 text-red-600" />
+                  <span className="text-xs font-medium text-gray-900">Recalls Pending</span>
                 </div>
-              ))}
+                <div className="flex items-center space-x-2">
+                  <div className="text-xs font-bold text-red-600">-{formatNumber(Math.floor(Math.random() * 500 + 200))}K</div>
+                  <div className="text-xs text-red-500">Today</div>
+                </div>
+              </div>
+
+              {/* Anticipated Receives */}
+              <div className="flex items-center justify-between px-1.5 py-1 bg-green-50 rounded border border-green-200">
+                <div className="flex items-center space-x-2">
+                  <ArrowRight className="w-3 h-3 text-green-600" />
+                  <span className="text-xs font-medium text-gray-900">Anticipated Receives</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="text-xs font-bold text-green-600">+{formatNumber(Math.floor(Math.random() * 800 + 300))}K</div>
+                  <div className="text-xs text-green-500">T+1</div>
+                </div>
+              </div>
+
+              {/* Pledge Recalls */}
+              <div className="flex items-center justify-between px-1.5 py-1 bg-orange-50 rounded border border-orange-200">
+                <div className="flex items-center space-x-2">
+                  <Shield className="w-3 h-3 text-orange-600" />
+                  <span className="text-xs font-medium text-gray-900">Pledge Recalls</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="text-xs font-bold text-orange-600">-{formatNumber(Math.floor(Math.random() * 300 + 100))}K</div>
+                  <div className="text-xs text-orange-500">T+2</div>
+                </div>
+              </div>
+
+              {/* Net Change Summary */}
+              <div className="flex items-center justify-between px-1.5 py-1 bg-blue-50 rounded border border-blue-200">
+                <div className="flex items-center space-x-2">
+                  <TrendingUp className="w-3 h-3 text-blue-600" />
+                  <span className="text-xs font-medium text-gray-900">Net Change</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="text-xs font-bold text-blue-600">+{formatNumber(Math.floor(Math.random() * 200 + 50))}K</div>
+                  <div className="text-xs text-blue-500">3D</div>
+                </div>
+              </div>
             </div>
           </div>
 
