@@ -15,7 +15,7 @@ import { DateTimeDisplay } from './components/ui/date-time-display'
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
-  const [activePage, setActivePage] = useState('collateral')
+  const [activePage, setActivePage] = useState('needs')
 
   const renderActivePage = () => {
     switch (activePage) {
