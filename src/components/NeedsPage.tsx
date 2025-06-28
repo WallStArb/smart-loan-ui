@@ -29,7 +29,8 @@ import {
   Shield,
   Building,
   Users,
-  FileText
+  FileText,
+  Columns
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -206,6 +207,21 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
   const [viewMode, setViewMode] = useState<'critical-only' | 'overview' | 'detailed'>('overview')
   const [selectedSecurities, setSelectedSecurities] = useState<Set<string>>(new Set())
   const [isLoading, setIsLoading] = useState(false)
+  
+  // Column visibility controls
+  const [showColumnControls, setShowColumnControls] = useState(false)
+  const [columnVisibility, setColumnVisibility] = useState({
+    symbol: true,
+    cusip: false,
+    description: false,
+    startOfDay: true,
+    cured: true,
+    remaining: true,
+    amount: true,
+    needReasons: true,
+    priority: true,
+    borrowRate: false
+  })
 
   // Apply view mode filtering
   const getFilteredNeeds = () => {
@@ -2653,6 +2669,67 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                       </div>
                     )}
                   </div>
+                  {/* Column Visibility Controls */}
+                  <div className="relative">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setShowColumnControls(!showColumnControls)}
+                      className="h-8 mr-2"
+                      title="Configure visible columns"
+                    >
+                      <Columns className="w-4 h-4 mr-2" />
+                      Columns
+                    </Button>
+                    {showColumnControls && (
+                      <div className="absolute right-0 top-full mt-1 w-64 bg-white rounded-lg shadow-lg border border-gray-200 p-3 z-50">
+                        <div className="text-xs font-semibold text-gray-700 mb-2">Visible Columns</div>
+                        <div className="grid grid-cols-2 gap-2">
+                          {Object.entries(columnVisibility).map(([key, visible]) => {
+                            const labels = {
+                              symbol: 'Symbol',
+                              cusip: 'CUSIP',
+                              description: 'Description',
+                              startOfDay: 'Start of Day',
+                              cured: 'Cured',
+                              remaining: 'Remaining',
+                              amount: 'Amount',
+                              needReasons: 'Need Reasons',
+                              priority: 'Priority',
+                              borrowRate: 'Borrow Rate'
+                            }
+                            return (
+                              <label key={key} className="flex items-center space-x-2 text-xs cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                <input
+                                  type="checkbox"
+                                  checked={visible}
+                                  onChange={(e) => setColumnVisibility(prev => ({
+                                    ...prev,
+                                    [key]: e.target.checked
+                                  }))}
+                                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span className="text-gray-700">{labels[key as keyof typeof labels]}</span>
+                              </label>
+                            )
+                          })}
+                        </div>
+                        <div className="mt-3 pt-2 border-t border-gray-200">
+                          <button
+                            onClick={() => setColumnVisibility({
+                              symbol: true, cusip: false, description: false,
+                              startOfDay: true, cured: true, remaining: true,
+                              amount: true, needReasons: true, priority: true, borrowRate: false
+                            })}
+                            className="text-xs text-blue-600 hover:text-blue-800"
+                          >
+                            Reset to defaults
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   <Button 
                     variant="outline"
                     size="sm"
@@ -2670,31 +2747,7 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                 </div>
               </div>
               
-              {/* Quick Filters Row */}
-              <div className="px-4 py-2 bg-gray-50 border-t border-gray-200">
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs font-medium text-gray-600">Quick Filters:</span>
-                  <div className="flex space-x-2">
-                    {filterPresets.map(preset => (
-                      <Button
-                        key={preset.id}
-                        variant="outline"
-                        size="sm"
-                        className="h-7 text-xs"
-                        onClick={() => {
-                          const filtered = securityNeeds.filter(preset.filter)
-                          setSelectedSecurities(new Set(filtered.map(n => n.id)))
-                        }}
-                      >
-                        {preset.label}
-                        <Badge variant="secondary" className="ml-1 px-1.5 py-0.5 text-xs bg-gray-100 text-gray-600">
-                          {preset.count}
-                        </Badge>
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </div>
+
             </div>
 
             {/* Enhanced Table */}
@@ -2702,7 +2755,7 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
               <table className="min-w-full">
                 <thead className="fis-table-header">
                   <tr>
-                    <th className="px-2 py-0.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-8">
+                    <th className="px-1 py-0.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-8">
                       <input
                         type="checkbox"
                         checked={selectedSecurities.size === filteredAndSortedNeeds.length && filteredAndSortedNeeds.length > 0}
@@ -2716,62 +2769,97 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                         className="rounded border-gray-300 text-fis-green focus:ring-fis-green"
                       />
                     </th>
-                    <th className="px-2 py-0.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-8">
-                      
-                    </th>
-                    <th 
-                      className="px-2 py-0.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-                      onClick={() => handleSort('ticker')}
-                    >
-                      <div className="flex items-center space-x-1">
-                        <span>TICKER</span>
-                        {sortColumn === 'ticker' && (
-                          sortDirection === 'asc' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />
-                        )}
-                      </div>
-                    </th>
-                    <th className="px-2 py-0.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      DESC
-                    </th>
-                    <th 
-                      className="px-2 py-0.5 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-                      onClick={() => handleSort('quantity')}
-                    >
-                      <div className="flex items-center justify-end space-x-1">
-                        <span>QUANTITY</span>
-                        {sortColumn === 'quantity' && (
-                          sortDirection === 'asc' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />
-                        )}
-                      </div>
-                    </th>
-                    <th 
-                      className="px-2 py-0.5 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-                      onClick={() => handleSort('marketValue')}
-                    >
-                      <div className="flex items-center justify-end space-x-1">
-                        <span>AMOUNT</span>
-                        {sortColumn === 'marketValue' && (
-                          sortDirection === 'asc' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />
-                        )}
-                      </div>
-                    </th>
-                    <th className="px-2 py-0.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      NEED REASONS
-                    </th>
-                    <th 
-                      className="px-2 py-0.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-                      onClick={() => handleSort('priority')}
-                    >
-                      <div className="flex items-center justify-center space-x-1">
-                        <span>PRIORITY</span>
-                        {sortColumn === 'priority' && (
-                          sortDirection === 'asc' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />
-                        )}
-                      </div>
-                    </th>
-                    <th className="px-2 py-0.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      BORROW RATE
-                    </th>
+                    <th className="px-1 py-0.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-8"></th>
+                    {columnVisibility.symbol && (
+                      <th 
+                        className="px-1 py-0.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                        onClick={() => handleSort('ticker')}
+                      >
+                        <div className="flex items-center space-x-1">
+                          <span>SYMBOL</span>
+                          {sortColumn === 'ticker' && (
+                            sortDirection === 'asc' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />
+                          )}
+                        </div>
+                      </th>
+                    )}
+                    {columnVisibility.cusip && (
+                      <th className="px-1 py-0.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CUSIP</th>
+                    )}
+                    {columnVisibility.description && (
+                      <th className="px-1 py-0.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DESC</th>
+                    )}
+                    {columnVisibility.startOfDay && (
+                      <th 
+                        className="px-1 py-0.5 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                        onClick={() => handleSort('sodQuantity')}
+                      >
+                        <div className="flex items-center justify-end space-x-1">
+                          <span>SOD</span>
+                          {sortColumn === 'sodQuantity' && (
+                            sortDirection === 'asc' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />
+                          )}
+                        </div>
+                      </th>
+                    )}
+                    {columnVisibility.cured && (
+                      <th 
+                        className="px-1 py-0.5 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                        onClick={() => handleSort('curedQuantity')}
+                      >
+                        <div className="flex items-center justify-end space-x-1">
+                          <span>CURED</span>
+                          {sortColumn === 'curedQuantity' && (
+                            sortDirection === 'asc' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />
+                          )}
+                        </div>
+                      </th>
+                    )}
+                    {columnVisibility.remaining && (
+                      <th 
+                        className="px-1 py-0.5 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                        onClick={() => handleSort('remainingQuantity')}
+                      >
+                        <div className="flex items-center justify-end space-x-1">
+                          <span>REMAINING</span>
+                          {sortColumn === 'remainingQuantity' && (
+                            sortDirection === 'asc' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />
+                          )}
+                        </div>
+                      </th>
+                    )}
+                    {columnVisibility.amount && (
+                      <th 
+                        className="px-1 py-0.5 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                        onClick={() => handleSort('marketValue')}
+                      >
+                        <div className="flex items-center justify-end space-x-1">
+                          <span>AMOUNT</span>
+                          {sortColumn === 'marketValue' && (
+                            sortDirection === 'asc' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />
+                          )}
+                        </div>
+                      </th>
+                    )}
+                    {columnVisibility.needReasons && (
+                      <th className="px-1 py-0.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NEED REASONS</th>
+                    )}
+                    {columnVisibility.priority && (
+                      <th 
+                        className="px-1 py-0.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                        onClick={() => handleSort('priority')}
+                      >
+                        <div className="flex items-center justify-center space-x-1">
+                          <span>PRIORITY</span>
+                          {sortColumn === 'priority' && (
+                            sortDirection === 'asc' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />
+                          )}
+                        </div>
+                      </th>
+                    )}
+                    {columnVisibility.borrowRate && (
+                      <th className="px-1 py-0.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">BORROW RATE</th>
+                    )}
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -2807,15 +2895,17 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                       <React.Fragment key={need.id}>
                         <tr className={cn(
                           "hover:bg-gray-50 transition-colors border-b border-gray-100",
-                          selectedSecurities.has(need.id) && "bg-blue-50"
+                          selectedSecurities.has(need.id) && "bg-blue-50",
+                          need.priority === 'Critical' && need.is204CNS && "bg-red-50",
+                          need.priority === 'Critical' && !need.is204CNS && "bg-orange-50"
                         )}>
-                          <td className="px-2 py-1">
+                          <td className="px-1 py-0.5">
                             <Checkbox
                               checked={selectedSecurities.has(need.id)}
                               onCheckedChange={() => toggleSecuritySelection(need.id)}
                             />
                           </td>
-                          <td className="px-2 py-1 text-center">
+                          <td className="px-1 py-0.5 text-center">
                             <button
                               onClick={() => toggleRowExpansion(need.id)}
                               className="p-1 hover:bg-gray-100 rounded transition-colors"
@@ -2827,62 +2917,79 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                               )}
                             </button>
                           </td>
-                          <td className="px-2 py-1">
-                            <div className="flex items-center space-x-2">
-                              <span className="font-semibold text-gray-900 text-sm">{need.ticker}</span>
-                              <span className="text-xs text-gray-500">{need.cusip}</span>
-                              {need.is204CNS && (
-                                <div className="relative">
-                                  <span className="badge-204 animate-bounce-alert">
-                                    204
-                                  </span>
-                                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                                </div>
-                              )}
-                              {need.isRegulatory && (
-                                <Badge className="bg-red-100 text-red-800 text-xs px-1.5 py-0">REG</Badge>
-                              )}
-                              {need.agingDays > 3 && (
-                                <Badge className="bg-orange-100 text-orange-800 text-xs px-1.5 py-0">
-                                  {need.agingDays}d
-                                </Badge>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-2 py-1">
-                            <div className="text-sm text-gray-900 truncate max-w-48">
-                              {need.description}
-                            </div>
-                          </td>
-                          <td className="px-2 py-1 text-right">
-                            <div className="text-sm font-medium text-gray-900">
-                              {formatNumber(need.quantity)} / {formatNumber(need.remainingQuantity)}
-                            </div>
-                          </td>
-                          <td className="px-2 py-1 text-right">
-                            <div className="text-sm font-medium text-gray-900">
-                              {formatCurrency(need.marketValue)}
-                            </div>
-                          </td>
-                          <td className="px-2 py-1">
-                            {renderNeedReasons()}
-                          </td>
-                          <td className="px-2 py-1 text-center">
-                            <Badge className={cn("text-xs font-medium px-2 py-1", getPriorityColor(need.priority))}>
-                              {need.priority}
-                            </Badge>
-                          </td>
-                          <td className="px-2 py-1 text-center">
-                            <div className="text-sm font-medium text-gray-900">
-                              {need.borrowRate.toFixed(2)}%
-                            </div>
-                          </td>
+                          {columnVisibility.symbol && (
+                            <td className="px-1 py-0.5">
+                              <div className="flex items-center space-x-1">
+                                <span className="font-semibold text-gray-900 text-sm">{need.ticker}</span>
+                                {need.is204CNS && (
+                                  <span className="inline-flex items-center px-1 py-0.5 rounded text-xs font-bold bg-red-100 text-red-800 animate-pulse">204</span>
+                                )}
+                                {need.isRegulatory && (
+                                  <Badge className="bg-red-100 text-red-800 text-xs px-1 py-0">REG</Badge>
+                                )}
+                                {need.agingDays > 3 && (
+                                  <Badge className="bg-orange-100 text-orange-800 text-xs px-1 py-0">{need.agingDays}d</Badge>
+                                )}
+                              </div>
+                            </td>
+                          )}
+                          {columnVisibility.cusip && (
+                            <td className="px-1 py-0.5">
+                              <span className="text-xs text-gray-600 font-mono">{need.cusip}</span>
+                            </td>
+                          )}
+                          {columnVisibility.description && (
+                            <td className="px-1 py-0.5">
+                              <div className="text-sm text-gray-900 truncate max-w-32">{need.description}</div>
+                            </td>
+                          )}
+                          {columnVisibility.startOfDay && (
+                            <td className="px-1 py-0.5 text-right">
+                              <div className="text-sm font-medium text-gray-900">{formatNumber(need.sodQuantity)}</div>
+                            </td>
+                          )}
+                          {columnVisibility.cured && (
+                            <td className="px-1 py-0.5 text-right">
+                              <div className={`text-sm font-medium ${need.curedQuantity === need.sodQuantity ? 'text-green-600' : need.curedQuantity > 0 ? 'text-orange-600' : 'text-gray-900'}`}>
+                                {formatNumber(need.curedQuantity)}
+                              </div>
+                            </td>
+                          )}
+                          {columnVisibility.remaining && (
+                            <td className="px-1 py-0.5 text-right">
+                              <div className={`text-sm font-medium ${need.remainingQuantity === 0 ? 'text-green-600' : need.remainingQuantity > need.sodQuantity * 0.5 ? 'text-red-600' : 'text-orange-600'}`}>
+                                {formatNumber(need.remainingQuantity)}
+                              </div>
+                            </td>
+                          )}
+                          {columnVisibility.amount && (
+                            <td className="px-1 py-0.5 text-right">
+                              <div className="text-sm font-medium text-gray-900">{formatCurrency(need.marketValue)}</div>
+                            </td>
+                          )}
+                          {columnVisibility.needReasons && (
+                            <td className="px-1 py-0.5">
+                              {renderNeedReasons()}
+                            </td>
+                          )}
+                          {columnVisibility.priority && (
+                            <td className="px-1 py-0.5 text-center">
+                              <Badge className={cn("text-xs font-medium px-1 py-0.5", getPriorityColor(need.priority))}>
+                                {need.priority}
+                              </Badge>
+                            </td>
+                          )}
+                          {columnVisibility.borrowRate && (
+                            <td className="px-1 py-0.5 text-center">
+                              <div className="text-sm font-medium text-gray-900">{need.borrowRate.toFixed(2)}%</div>
+                            </td>
+                          )}
                         </tr>
                       
-                      {/* Expandable Details Row */}
-                                              {expandedRows.has(need.id) && (
-                          <tr className="bg-gray-50">
-                                                        <td colSpan={9} className="px-4 py-3">
+                                             {/* Expandable Details Row */}
+                                               {expandedRows.has(need.id) && (
+                           <tr className="bg-gray-50">
+                                                         <td colSpan={2 + Object.values(columnVisibility).filter(Boolean).length} className="px-4 py-3">
                               <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
                                 {/* Need Breakdown & Progress */}
                                 <div className="lg:col-span-1">
