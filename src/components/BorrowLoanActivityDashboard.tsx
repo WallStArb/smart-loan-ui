@@ -19,14 +19,9 @@ import {
   Shield,
   ArrowUp,
   ArrowDown,
-  ChevronDown,
-  ChevronUp,
   Settings,
   Zap,
-  TrendingDown,
-  ArrowRightLeft,
-  MessageCircle,
-  Timer
+  TrendingDown
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

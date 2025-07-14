@@ -18,10 +18,7 @@ import {
   XCircle,
   Minus,
   Plus,
-  Eye,
-  EyeOff,
   Download,
-  Upload,
   ArrowUp,
   ArrowDown,
   AlertCircle,
@@ -319,292 +316,9 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
     showFilterPanel: false
   })
 
-  // Generate realistic mock data
-  const generateMockData = (): { needs: SecurityNeed[], metrics: DashboardMetrics, advancedMetrics: AdvancedMetrics } => {
-    const tickers = ['AAPL', 'MSFT', 'UNH', 'GS', 'HD', 'CAT', 'CRM', 'V', 'BA', 'MCD', 'AXP', 'AMGN', 'IBM', 'TRV', 'JPM', 'HON', 'NKE', 'JNJ', 'WMT', 'PG', 'CVX', 'KO', 'MRK', 'CSCO', 'DIS', 'DOW', 'INTC', 'MMM', 'VZ', 'WBA']
-    const descriptions = [
-      'APPLE INC', 'MICROSOFT CORP', 'UNITEDHEALTH GROUP INC', 'GOLDMAN SACHS GROUP INC', 'HOME DEPOT INC',
-      'CATERPILLAR INC', 'SALESFORCE INC', 'VISA INC-CLASS A', 'BOEING CO', 'MCDONALDS CORP',
-      'AMERICAN EXPRESS CO', 'AMGEN INC', 'INTL BUSINESS MACHINES CORP', 'TRAVELERS COS INC', 'JPMORGAN CHASE & CO',
-      'HONEYWELL INTERNATIONAL INC', 'NIKE INC-CLASS B', 'JOHNSON & JOHNSON', 'WALMART INC', 'PROCTER & GAMBLE CO',
-      'CHEVRON CORP', 'COCA-COLA CO', 'MERCK & CO INC', 'CISCO SYSTEMS INC', 'WALT DISNEY CO',
-      'DOW INC', 'INTEL CORP', '3M CO', 'VERIZON COMMUNICATIONS INC', 'WALGREENS BOOTS ALLIANCE INC'
-    ]
-    const sectors = ['Technology', 'Technology', 'Healthcare', 'Financial Services', 'Consumer Discretionary', 
-                    'Industrials', 'Technology', 'Financial Services', 'Industrials', 'Consumer Discretionary',
-                    'Financial Services', 'Healthcare', 'Technology', 'Financial Services', 'Financial Services',
-                    'Industrials', 'Consumer Discretionary', 'Healthcare', 'Consumer Staples', 'Consumer Staples',
-                    'Energy', 'Consumer Staples', 'Healthcare', 'Technology', 'Communication Services',
-                    'Materials', 'Technology', 'Industrials', 'Communication Services', 'Consumer Staples']
-    const cureMethods: Array<'Borrow' | 'Recall' | 'Pledge' | 'Auto'> = ['Borrow', 'Recall', 'Pledge', 'Auto']
-    
-    const needs: SecurityNeed[] = []
-    let totalNeeds = 0
-    let totalMarketValue = 0
-    let agingNeeds = 0
-    let regShoCount = 0
-    const priorityCount = { critical: 0, high: 0, medium: 0, low: 0 }
-
-    for (let i = 0; i < 30; i++) {
-      const ticker = tickers[i % tickers.length]
-      const description = descriptions[i % descriptions.length]
-      const quantity = Math.floor(Math.random() * 5000) + 100
-      const price = Math.random() * 300 + 50
-      const marketValue = quantity * price
-      const agingDays = Math.floor(Math.random() * 10)
-      const isRegulatory = Math.random() > 0.7
-      
-      // Generate need reasons
-      const needReasons: any = {}
-      const needTypes = ['cnsDelivery', 'dvpDelivery', 'deficit', 'customerShorts', 'nonCustomerShorts', 'firmShorts']
-      const activeNeeds = needTypes.filter(() => Math.random() > 0.6)
-      
-      activeNeeds.forEach(type => {
-        needReasons[type] = Math.floor(Math.random() * quantity * 0.5) + 50
-      })
-
-      // Critical 204 CNS delivery failure (prior day CNS delivery not met)
-      const is204CNS = needReasons.cnsDelivery && Math.random() < 0.15 // 15% of CNS deliveries are 204s
-      
-      // Determine priority based on need types and regulatory status
-      let priority: 'Critical' | 'High' | 'Medium' | 'Low' = 'Low'
-      if (is204CNS) priority = 'Critical' // 204 CNS always gets highest priority
-      else if (needReasons.cnsDelivery || needReasons.dvpDelivery) priority = 'Critical'
-      else if (needReasons.deficit || isRegulatory) priority = 'High'
-      else if (needReasons.customerShorts) priority = 'Medium'
-
-      const sodQuantity = quantity + Math.floor(Math.random() * 1000)
-      const curedQuantity = Math.floor(Math.random() * sodQuantity * 0.4)
-      const remainingQuantity = sodQuantity - curedQuantity
-
-      const borrowRate = Math.random() * 8 + 0.5
-      const sector = sectors[i % sectors.length]
-      const cureMethod = curedQuantity > 0 ? cureMethods[Math.floor(Math.random() * cureMethods.length)] : null
-      const borrowCost = (curedQuantity * price * borrowRate) / 365 // Daily cost
-      
-      // Generate realistic outstanding positions
-      const hasOutstandingLoan = Math.random() > 0.6 // 40% chance of having an outstanding loan
-      const hasOutstandingPledge = Math.random() > 0.7 // 30% chance of having an outstanding pledge
-      const outstandingLoan = hasOutstandingLoan ? Math.floor(quantity * (0.1 + Math.random() * 0.4)) : 0
-      const outstandingPledge = hasOutstandingPledge ? Math.floor(quantity * (0.05 + Math.random() * 0.3)) : 0
-
-      const need: SecurityNeed = {
-        id: `NEED${(i + 1).toString().padStart(3, '0')}`,
-        ticker: ticker,
-        cusip: `${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-        description: description,
-        quantity,
-        marketValue,
-        priority,
-        needReasons,
-        is204CNS,
-        borrowRate,
-        sodQuantity,
-        curedQuantity,
-        remainingQuantity,
-        cureOptions: ['Borrow', 'Recall', 'Pledge Release'].filter(() => Math.random() > 0.3),
-        isRegulatory,
-        agingDays,
-        lastUpdate: new Date().toLocaleTimeString(),
-        sector,
-        borrowCost,
-        cureMethod,
-        failedAttempts: Math.floor(Math.random() * 3),
-        outstandingLoan: outstandingLoan > 0 ? outstandingLoan : undefined,
-        outstandingPledge: outstandingPledge > 0 ? outstandingPledge : undefined,
-        // Generate enhanced trade activity data
-        tradeActivity: {
-          // Shorts/Covers
-          customerShortCovers: needReasons.customerShorts ? Math.floor(needReasons.customerShorts * (0.1 + Math.random() * 0.4)) : 0,
-          nonCustomerShortCovers: needReasons.nonCustomerShorts ? Math.floor(needReasons.nonCustomerShorts * (0.1 + Math.random() * 0.4)) : 0,
-          firmShortCovers: needReasons.firmShorts ? Math.floor(needReasons.firmShorts * (0.1 + Math.random() * 0.4)) : 0,
-          // Customer trading
-          customerCashBuys: Math.floor(Math.random() * quantity * 0.3),
-          customerCashSells: Math.floor(Math.random() * quantity * 0.25),
-          customerMarginBuys: Math.floor(Math.random() * quantity * 0.2),
-          customerMarginSells: Math.floor(Math.random() * quantity * 0.15),
-          // Non-Customer trading
-          nonCustomerCashBuys: Math.floor(Math.random() * quantity * 0.15),
-          nonCustomerCashSells: Math.floor(Math.random() * quantity * 0.1),
-          nonCustomerMarginBuys: Math.floor(Math.random() * quantity * 0.1),
-          nonCustomerMarginSells: Math.floor(Math.random() * quantity * 0.08),
-          // Firm trading
-          firmBuys: Math.floor(Math.random() * quantity * 0.12),
-          firmSells: Math.floor(Math.random() * quantity * 0.1)
-        }
-      }
-
-      needs.push(need)
-      totalNeeds += remainingQuantity
-      totalMarketValue += marketValue
-      if (agingDays > 3) agingNeeds++
-      if (isRegulatory) regShoCount++
-      priorityCount[priority.toLowerCase() as keyof typeof priorityCount]++
-    }
-
-    const metrics: DashboardMetrics = {
-      totalNeeds,
-      totalNeedsChange: Math.floor(Math.random() * 10) - 5,
-      totalMarketValue,
-      totalMarketValueChange: (Math.random() - 0.5) * 2000000,
-      agingNeeds,
-      agingNeedsChange: Math.floor(Math.random() * 6) - 3,
-      regShoSecurities: regShoCount,
-      regShoChange: 0,
-      rule204Securities: needs.filter(need => need.is204CNS).length,
-      dailyProgress: {
-        target: Math.floor(totalNeeds * 1.4),
-        completed: Math.floor(totalNeeds * 0.4),
-        remaining: totalNeeds
-      },
-      priorityBreakdown: priorityCount,
-      trendingNeeds: {
-        trendingUp: Math.floor(Math.random() * 5) + 2,
-        trendingDown: Math.floor(Math.random() * 4) + 1,
-        stable: Math.floor(Math.random() * 6) + 3
-      },
-      cureMethods: {
-        receives: Math.floor(Math.random() * 150) + 50,
-        recalls: Math.floor(Math.random() * 120) + 30,
-        returns: Math.floor(Math.random() * 80) + 20,
-        borrows: Math.floor(Math.random() * 200) + 100,
-        releases: Math.floor(Math.random() * 60) + 15
-      },
-      borrowRecallActivity: {
-        borrowsMade: Math.floor(Math.random() * 80) + 40,
-        borrowsPending: Math.floor(Math.random() * 25) + 10,
-        recallsMade: Math.floor(Math.random() * 60) + 20,
-        recallsPending: Math.floor(Math.random() * 15) + 5,
-        borrowsSuccessRate: Math.floor(Math.random() * 15) + 85, // 85-100%
-        recallsSuccessRate: Math.floor(Math.random() * 10) + 90  // 90-100%
-      }
-    }
-
-    // Generate advanced metrics
-    const totalBorrowCost = needs.reduce((sum, need) => sum + (need.borrowCost || 0), 0)
-    const averageRate = needs.reduce((sum, need) => sum + need.borrowRate, 0) / needs.length
-    const automatedCures = needs.filter(need => need.cureMethod === 'Auto').length
-    const automationRate = (automatedCures / needs.filter(need => need.curedQuantity > 0).length) * 100
-    
-    const sectorBreakdown = sectors.map(sector => {
-      const sectorNeeds = needs.filter(need => need.sector === sector)
-      return {
-        sector,
-        averageRate: sectorNeeds.reduce((sum, need) => sum + need.borrowRate, 0) / sectorNeeds.length || 0,
-        volume: sectorNeeds.reduce((sum, need) => sum + need.curedQuantity, 0),
-        cost: sectorNeeds.reduce((sum, need) => sum + (need.borrowCost || 0), 0)
-      }
-    })
-
-    const advancedMetrics: AdvancedMetrics = {
-      borrowingCosts: {
-        averageRate,
-        totalCost: totalBorrowCost,
-        costChange: (Math.random() - 0.5) * 10000,
-        highCostSecurities: needs.filter(need => need.borrowRate > 5).length,
-        counterpartyBreakdown: [
-          { 
-            counterparty: 'GSCO', 
-            borrowCount: Math.floor(Math.random() * 25) + 15, 
-            totalBorrowAmount: (Math.random() * 8000000) + 5000000, 
-            weightedAverageRate: (Math.random() * 3) + 4.5, 
-            dailyCost: (Math.random() * 15000) + 8000 
-          },
-          { 
-            counterparty: 'MSWM', 
-            borrowCount: Math.floor(Math.random() * 20) + 12, 
-            totalBorrowAmount: (Math.random() * 7000000) + 4000000, 
-            weightedAverageRate: (Math.random() * 2.8) + 4.2, 
-            dailyCost: (Math.random() * 12000) + 7000 
-          },
-          { 
-            counterparty: 'JPMC', 
-            borrowCount: Math.floor(Math.random() * 30) + 18, 
-            totalBorrowAmount: (Math.random() * 9000000) + 6000000, 
-            weightedAverageRate: (Math.random() * 3.5) + 4.8, 
-            dailyCost: (Math.random() * 18000) + 10000 
-          },
-          { 
-            counterparty: 'RBC', 
-            borrowCount: Math.floor(Math.random() * 15) + 8, 
-            totalBorrowAmount: (Math.random() * 4000000) + 2500000, 
-            weightedAverageRate: (Math.random() * 2.5) + 4.0, 
-            dailyCost: (Math.random() * 8000) + 4500 
-          },
-          { 
-            counterparty: 'CS', 
-            borrowCount: Math.floor(Math.random() * 18) + 10, 
-            totalBorrowAmount: (Math.random() * 5500000) + 3000000, 
-            weightedAverageRate: (Math.random() * 3.2) + 4.6, 
-            dailyCost: (Math.random() * 11000) + 6000 
-          },
-          { 
-            counterparty: 'BAC', 
-            borrowCount: Math.floor(Math.random() * 22) + 14, 
-            totalBorrowAmount: (Math.random() * 6500000) + 4500000, 
-            weightedAverageRate: (Math.random() * 2.9) + 4.3, 
-            dailyCost: (Math.random() * 13000) + 7500 
-          },
-          { 
-            counterparty: 'UBS', 
-            borrowCount: Math.floor(Math.random() * 12) + 6, 
-            totalBorrowAmount: (Math.random() * 3500000) + 2000000, 
-            weightedAverageRate: (Math.random() * 2.7) + 4.1, 
-            dailyCost: (Math.random() * 7500) + 4000 
-          },
-          { 
-            counterparty: 'BARC', 
-            borrowCount: Math.floor(Math.random() * 16) + 9, 
-            totalBorrowAmount: (Math.random() * 4800000) + 2800000, 
-            weightedAverageRate: (Math.random() * 3.1) + 4.4, 
-            dailyCost: (Math.random() * 9500) + 5500 
-          }
-        ]
-      },
-      operationalEfficiency: {
-        automationRate,
-        averageTimeTocure: 2.3,
-        cureSuccessRate: 94.2,
-        failureReasons: [
-          { reason: 'No availability', count: 12 },
-          { reason: 'Rate too high', count: 8 },
-          { reason: 'Counterparty limit', count: 5 }
-        ]
-      },
-      riskMetrics: {
-        concentrationRisk: 23.5,
-        regulatoryDeadlines: [
-          { type: 'T+4 Settlement', count: 8, urgency: 'High' },
-          { type: 'RegSHO Close-out', count: 3, urgency: 'Critical' },
-          { type: 'Dividend Record', count: 12, urgency: 'Medium' }
-        ],
-        counterpartyExposure: [
-          { counterparty: 'Goldman Sachs', exposure: 15.2, limit: 25.0 },
-          { counterparty: 'Morgan Stanley', exposure: 12.8, limit: 20.0 },
-          { counterparty: 'JPMorgan', exposure: 18.5, limit: 30.0 }
-        ]
-      },
-      marketIntelligence: {
-        htbSecurities: needs.filter(need => need.borrowRate > 3).length,
-        rateVolatility: 15.3,
-        marketComparison: {
-          yourAvgRate: averageRate,
-          marketAvgRate: averageRate * 1.05,
-          performance: averageRate < averageRate * 1.05 ? 'Better' : 'Worse'
-        }
-      }
-    }
-
-    return { needs, metrics, advancedMetrics }
-  }
-
   // Initialize data
-  useEffect(() => {
-    const { needs, metrics: newMetrics, advancedMetrics: newAdvancedMetrics } = generateMockData()
-    setSecurityNeeds(needs)
-    setMetrics(newMetrics)
-    setAdvancedMetrics(newAdvancedMetrics)
-  }, [])
+  // Remove useEffect(() => { const { needs, metrics, advancedMetrics } = generateMockData(); ... }, [])
+  // Replace with a placeholder for real data fetching if needed
 
   // Close filter panel when clicking outside
   useEffect(() => {
@@ -3288,16 +3002,157 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
                         </tr>
                       )}
                     </React.Fragment>
-                    )
-                  })}
+                  )
+                })}
                 </tbody>
               </table>
             </div>
           </div>
           </>
         </div>
+      </div>
+
+      {/* System Description */}
+      <div className="bg-white border-t border-gray-200 p-6 mt-8">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6 text-center">Securities Needs Management System</h2>
+          
+          {/* Executive Summary */}
+          <div className="bg-blue-50 p-6 rounded-lg mb-8">
+            <h3 className="text-lg font-semibold text-blue-900 mb-3">System Purpose & Business Value</h3>
+            <p className="text-blue-800 leading-relaxed">
+              The Securities Needs Management System provides real-time monitoring and resolution of securities delivery obligations, 
+              regulatory failures, and short covering requirements. It aggregates needs from multiple sources including CNS deliveries, 
+              DVP settlements, customer shorts, and regulatory deficits, providing traders with comprehensive visibility and automated 
+              cure options to ensure timely settlement and regulatory compliance.
+            </p>
+          </div>
+
+          {/* Key Features */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-red-50 p-5 rounded-lg">
+              <h3 className="font-semibold text-red-900 mb-3">Critical Need Detection</h3>
+              <p className="text-sm text-red-800 mb-3">
+                Automatically identifies and prioritizes critical needs including 204 CNS failures, aged deficits, and regulatory violations 
+                requiring immediate attention.
+              </p>
+              <div className="text-xs text-red-700 space-y-1">
+                <div><strong>204 CNS Failures:</strong> Prior day CNS delivery failures requiring immediate resolution</div>
+                <div><strong>Aged Deficits:</strong> Multi-day fails approaching regulatory limits</div>
+                <div><strong>Regulatory Shorts:</strong> Reg SHO close-out requirements</div>
+              </div>
+            </div>
+            
+            <div className="bg-green-50 p-5 rounded-lg">
+              <h3 className="font-semibold text-green-900 mb-3">Automated Cure Options</h3>
+              <p className="text-sm text-green-800 mb-3">
+                Provides multiple cure mechanisms including borrows, recalls, pledges, and anticipated receives with real-time 
+                availability and cost analysis.
+              </p>
+              <div className="text-xs text-green-700 space-y-1">
+                <div><strong>Smart Borrowing:</strong> Automated counterparty selection based on rates and availability</div>
+                <div><strong>Recall Management:</strong> Efficient recall of existing loans with optimal timing</div>
+                <div><strong>Pledge Optimization:</strong> Strategic use of pledged securities for settlement</div>
+              </div>
+            </div>
+            
+            <div className="bg-purple-50 p-5 rounded-lg">
+              <h3 className="font-semibold text-purple-900 mb-3">Real-Time Analytics</h3>
+              <p className="text-sm text-purple-800 mb-3">
+                Comprehensive metrics including borrowing costs, counterparty performance, operational efficiency, and risk exposure 
+                to support informed decision-making.
+              </p>
+              <div className="text-xs text-purple-700 space-y-1">
+                <div><strong>Cost Analysis:</strong> Real-time borrowing costs and rate trends</div>
+                <div><strong>Performance Metrics:</strong> Cure success rates and efficiency measures</div>
+                <div><strong>Risk Monitoring:</strong> Concentration risk and regulatory deadline tracking</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Workflow Process */}
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Typical Daily Workflow</h3>
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              <div className="bg-gradient-to-b from-red-50 to-red-100 p-4 rounded-lg text-center">
+                <div className="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-sm font-bold">1</div>
+                <h4 className="font-semibold text-red-900 mb-2">Morning Review</h4>
+                <p className="text-xs text-red-800">Review overnight fails, 204 CNS issues, and critical needs requiring immediate attention</p>
+              </div>
+              <div className="bg-gradient-to-b from-orange-50 to-orange-100 p-4 rounded-lg text-center">
+                <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-sm font-bold">2</div>
+                <h4 className="font-semibold text-orange-900 mb-2">Prioritization</h4>
+                <p className="text-xs text-orange-800">System automatically prioritizes needs by regulatory requirements, aging, and market value</p>
+              </div>
+              <div className="bg-gradient-to-b from-yellow-50 to-yellow-100 p-4 rounded-lg text-center">
+                <div className="w-8 h-8 bg-yellow-500 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-sm font-bold">3</div>
+                <h4 className="font-semibold text-yellow-900 mb-2">Cure Execution</h4>
+                <p className="text-xs text-yellow-800">Execute cures through borrowing, recalls, or pledges based on cost and availability</p>
+              </div>
+              <div className="bg-gradient-to-b from-green-50 to-green-100 p-4 rounded-lg text-center">
+                <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-sm font-bold">4</div>
+                <h4 className="font-semibold text-green-900 mb-2">Monitoring</h4>
+                <p className="text-xs text-green-800">Track cure progress, settlement confirmations, and new needs throughout the day</p>
+              </div>
+              <div className="bg-gradient-to-b from-blue-50 to-blue-100 p-4 rounded-lg text-center">
+                <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-sm font-bold">5</div>
+                <h4 className="font-semibold text-blue-900 mb-2">Reporting</h4>
+                <p className="text-xs text-blue-800">Generate end-of-day reports on cure success, costs, and outstanding needs</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Integration Benefits */}
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-lg mb-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Operational Benefits</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h4 className="font-semibold text-green-900 mb-2">Risk Mitigation</h4>
+                <ul className="text-sm text-green-800 space-y-1">
+                  <li>• <strong>Regulatory Compliance:</strong> Automated tracking of Reg SHO close-out requirements</li>
+                  <li>• <strong>Settlement Risk:</strong> Early identification and resolution of potential fails</li>
+                  <li>• <strong>Cost Control:</strong> Optimal cure selection based on real-time market rates</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-semibold text-blue-900 mb-2">Operational Efficiency</h4>
+                <ul className="text-sm text-blue-800 space-y-1">
+                  <li>• <strong>Automated Workflows:</strong> Streamlined cure processes with minimal manual intervention</li>
+                  <li>• <strong>Real-Time Visibility:</strong> Comprehensive dashboard with drill-down capabilities</li>
+                  <li>• <strong>Performance Analytics:</strong> Detailed metrics for continuous process improvement</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Data Sources */}
+          <div className="bg-gray-50 p-6 rounded-lg">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">System Integration & Data Sources</h3>
+            <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-4">
+              <div className="bg-blue-100 p-3 rounded-lg text-center flex-1">
+                <div className="font-semibold text-blue-900">CNS/DVP Systems</div>
+                <div className="text-xs text-blue-800">Delivery obligations & settlement instructions</div>
+              </div>
+              <div className="text-2xl text-gray-400">→</div>
+              <div className="bg-green-100 p-3 rounded-lg text-center flex-1">
+                <div className="font-semibold text-green-900">Trade Systems</div>
+                <div className="text-xs text-green-800">Short positions & customer activity</div>
+              </div>
+              <div className="text-2xl text-gray-400">→</div>
+              <div className="bg-purple-100 p-3 rounded-lg text-center flex-1">
+                <div className="font-semibold text-purple-900">Needs Engine</div>
+                <div className="text-xs text-purple-800">Aggregation & prioritization</div>
+              </div>
+              <div className="text-2xl text-gray-400">→</div>
+              <div className="bg-orange-100 p-3 rounded-lg text-center flex-1">
+                <div className="font-semibold text-orange-900">Cure Execution</div>
+                <div className="text-xs text-orange-800">Automated resolution workflows</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
   )
 }
 

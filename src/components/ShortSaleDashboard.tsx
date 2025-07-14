@@ -18,12 +18,8 @@ import {
   Building,
   FileText,
   Shield,
-  Eye,
-  EyeOff,
   ArrowUp,
   ArrowDown,
-  ChevronDown,
-  ChevronUp,
   Settings
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'

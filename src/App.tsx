@@ -1,21 +1,20 @@
-import { useState } from 'react'
-import './App.css'
-import { Toaster } from 'sonner'
-import Header from './components/Header'
+import React, { useState } from 'react'
 import Sidebar from './components/Sidebar'
-import CollateralManager from './components/CollateralManager'
-import NeedsPage from './components/NeedsPage'
-import ParametersPage from './components/ParametersPage'
+import Header from './components/Header'
 import ShortSaleDashboard from './components/ShortSaleDashboard'
 import AvailabilityDashboard from './components/AvailabilityDashboard'
 import BorrowLoanActivityDashboard from './components/BorrowLoanActivityDashboard'
 import AutomationsDashboard from './components/AutomationsDashboard'
-import { DensityDemo } from './components/ui/density-demo'
-import { DateTimeDisplay } from './components/ui/date-time-display'
+import CollateralManager from './components/CollateralManager'
+import NeedsPage from './components/NeedsPage'
+import ParametersPage from './components/ParametersPage'
+import AutoLoanDecisionEngine from './components/AutoLoanParameterSystem'
+import BusinessLogicEngine from './components/BusinessLogicEngine'
+import './App.css'
 
 function App() {
+  const [activePage, setActivePage] = useState('business-logic-engine')
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
-  const [activePage, setActivePage] = useState('needs')
 
   const renderActivePage = () => {
     switch (activePage) {
@@ -57,6 +56,14 @@ function App() {
             onNavigateToParameters={() => setActivePage('parameters')}
           />
         )
+      case 'auto-loan-parameters':
+        return (
+          <AutoLoanDecisionEngine />
+        )
+      case 'business-logic-engine':
+        return (
+          <BusinessLogicEngine />
+        )
       default:
         return (
           <div className="h-full w-full p-8">
@@ -69,26 +76,22 @@ function App() {
     }
   }
 
-  return (
-    <div className="flex h-screen w-screen bg-gradient-to-br from-slate-50 to-slate-100 overflow-hidden">
-      <Sidebar 
-        isOpen={isSidebarOpen} 
-        setIsOpen={setIsSidebarOpen}
-        activePage={activePage}
-        setActivePage={setActivePage}
-      />
-      <div className="flex-1 flex flex-col min-h-0">
-        <Header />
-        <main className="flex-1 overflow-auto">
-          <div className="h-full w-full">
+      return (
+      <div className="flex h-screen bg-gray-100">
+        <Sidebar 
+          isOpen={isSidebarOpen}
+          setIsOpen={setIsSidebarOpen}
+          activePage={activePage}
+          setActivePage={setActivePage}
+        />
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <Header />
+          <main className="flex-1 overflow-y-auto">
             {renderActivePage()}
-          </div>
-        </main>
-        <Toaster richColors position="top-right" />
-        <DensityDemo />
+          </main>
+        </div>
       </div>
-    </div>
-  )
+    )
 }
 
 export default App 

@@ -8,7 +8,8 @@ import {
   TrendingDown,
   BarChart3,
   Activity,
-  Zap
+  Zap,
+  Users
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -35,7 +36,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activePage, setAct
     { id: 'parameters', label: 'Parameters', icon: Settings, color: 'text-fis-orange' },
   ];
 
-  const NavLink: React.FC<{ item: any; isActive: boolean }> = ({ item, isActive }) => (
+  // New: Auto-Loan Rules group
+  const autoLoanRulesGroup = [
+    { id: 'auto-loan-parameters', label: 'Auto-Loan Decision Engine', icon: Settings, color: 'text-fis-orange' },
+    { id: 'business-logic-engine', label: 'Business Logic Engine', icon: BarChart3, color: 'text-purple-500' },
+  ];
+
+  const NavLink: React.FC<{ item: any; isActive: boolean; indent?: boolean }> = ({ item, isActive, indent }) => (
     <Button
       variant="ghost"
       onClick={() => setActivePage(item.id)}
@@ -45,7 +52,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activePage, setAct
         isActive 
           ? "bg-white/20 text-white hover:bg-white/30 border border-white/30" 
           : "text-white/80 hover:text-white hover:bg-white/10",
-        density === 'compact' && "py-2 px-2"
+        density === 'compact' && "py-2 px-2",
+        indent && isOpen && "pl-8"
       )}
     >
       <div className="flex items-center w-full">
@@ -157,6 +165,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activePage, setAct
           {menuItems.map((item) => (
             <NavLink key={item.id} item={item} isActive={activePage === item.id} />
           ))}
+          {/* Auto-Loan Rules Group */}
+          <div className={cn("mt-4 mb-2", isOpen ? "pl-2" : "")}> {/* Section header */}
+            {isOpen && <div className="uppercase text-xs text-white/60 tracking-wider mb-1">Auto-Loan Rules</div>}
+            {autoLoanRulesGroup.map((item) => (
+              <NavLink key={item.id} item={item} isActive={activePage === item.id} indent />
+            ))}
+          </div>
         </div>
         
         {/* Footer */}

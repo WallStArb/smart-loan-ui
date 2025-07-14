@@ -1551,6 +1551,195 @@ const AvailabilityDashboard: React.FC<AvailabilityDashboardProps> = ({ onNavigat
           </div>
         </div>
       </div>
+
+      {/* System Description */}
+      <div className="bg-white border-t border-gray-200 p-6 mt-8">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6 text-center">Securities Availability Management System</h2>
+          
+          {/* Executive Summary */}
+          <div className="bg-blue-50 p-6 rounded-lg mb-8">
+            <h3 className="text-lg font-semibold text-blue-900 mb-3">System Purpose & Business Value</h3>
+            <p className="text-blue-800 leading-relaxed">
+              The Securities Availability Management System provides real-time visibility into securities lending inventory across all 
+              availability types and counterparty sources. It aggregates availability from customer positions, firm inventory, 
+              non-customer holdings, full paid lending (FPL), and S3 substitution opportunities, enabling traders to maximize 
+              revenue while efficiently managing inventory utilization and counterparty relationships.
+            </p>
+          </div>
+
+          {/* Key Features */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-green-50 p-5 rounded-lg">
+              <h3 className="font-semibold text-green-900 mb-3">Multi-Source Inventory</h3>
+              <p className="text-sm text-green-800 mb-3">
+                Comprehensive view of all available securities across different inventory types including customer, firm, 
+                non-customer, FPL, and S3 substitution opportunities with real-time updates.
+              </p>
+              <div className="text-xs text-green-700 space-y-1">
+                <div><strong>Customer Positions:</strong> Securities held in customer accounts available for lending</div>
+                <div><strong>Firm Inventory:</strong> Proprietary holdings available for loan programs</div>
+                <div><strong>FPL Programs:</strong> Full paid lending arrangements with institutional clients</div>
+                <div><strong>S3 Substitution:</strong> Alternative securities for hard-to-borrow situations</div>
+              </div>
+            </div>
+            
+            <div className="bg-purple-50 p-5 rounded-lg">
+              <h3 className="font-semibold text-purple-900 mb-3">Real-Time Rate Intelligence</h3>
+              <p className="text-sm text-purple-800 mb-3">
+                Live market rates and trends across all difficulty categories from GC to hard-to-borrow, with 
+                counterparty-specific pricing and availability windows.
+              </p>
+              <div className="text-xs text-purple-700 space-y-1">
+                <div><strong>GC Securities:</strong> General collateral with standard rates and high availability</div>
+                <div><strong>Warm Securities:</strong> Moderate demand with slightly elevated rates</div>
+                <div><strong>Hard-to-Borrow:</strong> High demand securities with premium rates</div>
+                <div><strong>Rate Trends:</strong> Historical and predictive rate movement analysis</div>
+              </div>
+            </div>
+            
+            <div className="bg-orange-50 p-5 rounded-lg">
+              <h3 className="font-semibold text-orange-900 mb-3">Utilization Optimization</h3>
+              <p className="text-sm text-orange-800 mb-3">
+                Advanced utilization tracking and optimization tools to maximize revenue per security while 
+                maintaining appropriate risk levels and counterparty diversification.
+              </p>
+              <div className="text-xs text-orange-700 space-y-1">
+                <div><strong>Utilization Metrics:</strong> Real-time tracking of inventory usage across all sources</div>
+                <div><strong>Revenue Optimization:</strong> Intelligent allocation to highest-paying counterparties</div>
+                <div><strong>Risk Management:</strong> Concentration limits and counterparty exposure monitoring</div>
+                <div><strong>Performance Analytics:</strong> Historical utilization and revenue trend analysis</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Availability Types Breakdown */}
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Availability Type Classifications</h3>
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              <div className="bg-gradient-to-b from-blue-50 to-blue-100 p-4 rounded-lg text-center">
+                <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-sm font-bold">C</div>
+                <h4 className="font-semibold text-blue-900 mb-2">Customer</h4>
+                <p className="text-xs text-blue-800">Securities held in customer accounts available for lending programs</p>
+              </div>
+              <div className="bg-gradient-to-b from-purple-50 to-purple-100 p-4 rounded-lg text-center">
+                <div className="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-sm font-bold">F</div>
+                <h4 className="font-semibold text-purple-900 mb-2">Firm</h4>
+                <p className="text-xs text-purple-800">Proprietary firm inventory available for external lending</p>
+              </div>
+              <div className="bg-gradient-to-b from-orange-50 to-orange-100 p-4 rounded-lg text-center">
+                <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-sm font-bold">NC</div>
+                <h4 className="font-semibold text-orange-900 mb-2">Non-Customer</h4>
+                <p className="text-xs text-orange-800">Non-customer holdings available through lending arrangements</p>
+              </div>
+              <div className="bg-gradient-to-b from-green-50 to-green-100 p-4 rounded-lg text-center">
+                <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-sm font-bold">FPL</div>
+                <h4 className="font-semibold text-green-900 mb-2">Full Paid Lending</h4>
+                <p className="text-xs text-green-800">Institutional client securities in full paid lending programs</p>
+              </div>
+              <div className="bg-gradient-to-b from-yellow-50 to-yellow-100 p-4 rounded-lg text-center">
+                <div className="w-8 h-8 bg-yellow-500 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-sm font-bold">S3</div>
+                <h4 className="font-semibold text-yellow-900 mb-2">S3 Substitution</h4>
+                <p className="text-xs text-yellow-800">Alternative securities for hard-to-borrow substitution opportunities</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Operational Workflow */}
+          <div className="bg-gray-50 p-6 rounded-lg mb-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Daily Availability Management Workflow</h3>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="bg-white p-4 rounded-lg border-l-4 border-blue-500">
+                <h4 className="font-semibold text-blue-900 mb-2">Morning Inventory Review</h4>
+                <ul className="text-sm text-blue-800 space-y-1">
+                  <li>• Review overnight availability changes</li>
+                  <li>• Assess new securities and rate movements</li>
+                  <li>• Identify hard-to-borrow opportunities</li>
+                  <li>• Check S3 substitution potential</li>
+                </ul>
+              </div>
+              <div className="bg-white p-4 rounded-lg border-l-4 border-green-500">
+                <h4 className="font-semibold text-green-900 mb-2">Real-Time Monitoring</h4>
+                <ul className="text-sm text-green-800 space-y-1">
+                  <li>• Track utilization rates across all types</li>
+                  <li>• Monitor counterparty demand patterns</li>
+                  <li>• Identify revenue optimization opportunities</li>
+                  <li>• Manage concentration risk exposure</li>
+                </ul>
+              </div>
+              <div className="bg-white p-4 rounded-lg border-l-4 border-purple-500">
+                <h4 className="font-semibold text-purple-900 mb-2">Strategic Allocation</h4>
+                <ul className="text-sm text-purple-800 space-y-1">
+                  <li>• Optimize allocation to highest-paying counterparties</li>
+                  <li>• Balance relationship and revenue priorities</li>
+                  <li>• Manage inventory across multiple programs</li>
+                  <li>• Execute S3 substitution strategies</li>
+                </ul>
+              </div>
+              <div className="bg-white p-4 rounded-lg border-l-4 border-orange-500">
+                <h4 className="font-semibold text-orange-900 mb-2">Performance Analysis</h4>
+                <ul className="text-sm text-orange-800 space-y-1">
+                  <li>• Analyze utilization efficiency metrics</li>
+                  <li>• Review revenue per security performance</li>
+                  <li>• Assess counterparty relationship value</li>
+                  <li>• Plan next-day inventory strategies</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Integration Benefits */}
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-lg mb-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Strategic Business Benefits</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h4 className="font-semibold text-green-900 mb-2">Revenue Maximization</h4>
+                <ul className="text-sm text-green-800 space-y-1">
+                  <li>• <strong>Optimal Pricing:</strong> Real-time rate intelligence for competitive advantage</li>
+                  <li>• <strong>Utilization Efficiency:</strong> Maximize revenue per share of available inventory</li>
+                  <li>• <strong>S3 Opportunities:</strong> Capture premium rates through substitution strategies</li>
+                  <li>• <strong>Counterparty Optimization:</strong> Intelligent allocation to highest-value relationships</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-semibold text-blue-900 mb-2">Risk Management</h4>
+                <ul className="text-sm text-blue-800 space-y-1">
+                  <li>• <strong>Concentration Monitoring:</strong> Real-time tracking of counterparty exposure limits</li>
+                  <li>• <strong>Inventory Diversification:</strong> Balanced allocation across multiple availability types</li>
+                  <li>• <strong>Rate Volatility Management:</strong> Proactive response to market rate movements</li>
+                  <li>• <strong>Operational Efficiency:</strong> Automated monitoring and alert systems</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* System Integration */}
+          <div className="bg-gray-50 p-6 rounded-lg">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Integration with Smart Loan Ecosystem</h3>
+            <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-4">
+              <div className="bg-blue-100 p-3 rounded-lg text-center flex-1">
+                <div className="font-semibold text-blue-900">Inventory Systems</div>
+                <div className="text-xs text-blue-800">Position management & availability feeds</div>
+              </div>
+              <div className="text-2xl text-gray-400">→</div>
+              <div className="bg-green-100 p-3 rounded-lg text-center flex-1">
+                <div className="font-semibold text-green-900">Availability Dashboard</div>
+                <div className="text-xs text-green-800">Real-time inventory & rate intelligence</div>
+              </div>
+              <div className="text-2xl text-gray-400">→</div>
+              <div className="bg-purple-100 p-3 rounded-lg text-center flex-1">
+                <div className="font-semibold text-purple-900">Decision Engine</div>
+                <div className="text-xs text-purple-800">Automated lending decisions</div>
+              </div>
+              <div className="text-2xl text-gray-400">→</div>
+              <div className="bg-orange-100 p-3 rounded-lg text-center flex-1">
+                <div className="font-semibold text-orange-900">Revenue Optimization</div>
+                <div className="text-xs text-orange-800">Maximized lending revenue</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
