@@ -317,8 +317,175 @@ const NeedsPage: React.FC<NeedsPageProps> = ({ onNavigateToParameters }) => {
   })
 
   // Initialize data
-  // Remove useEffect(() => { const { needs, metrics, advancedMetrics } = generateMockData(); ... }, [])
-  // Replace with a placeholder for real data fetching if needed
+  useEffect(() => {
+    const generateMockData = () => {
+      const mockNeeds: SecurityNeed[] = [
+        // Technology Sector
+        { id: '1', ticker: 'AAPL', cusip: '037833100', description: 'Apple Inc.', quantity: 50000, marketValue: 8500000, priority: 'Critical', needReasons: { cnsDelivery: 50000, dvpDelivery: 0, deficit: 0, customerShorts: 0, nonCustomerShorts: 0, firmShorts: 0 }, is204CNS: true, borrowRate: -2.5, sodQuantity: 50000, curedQuantity: 15000, remainingQuantity: 35000, cureOptions: ['Borrow', 'Recall'], isRegulatory: true, agingDays: 1, lastUpdate: new Date().toLocaleTimeString(), sector: 'Technology', borrowCost: 212500, cureMethod: 'Borrow', failedAttempts: 0, outstandingLoan: 20000, outstandingPledge: 0 },
+        { id: '2', ticker: 'MSFT', cusip: '594918104', description: 'Microsoft Corporation', quantity: 40000, marketValue: 12000000, priority: 'High', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 40000, customerShorts: 0, nonCustomerShorts: 0, firmShorts: 0 }, is204CNS: false, borrowRate: -1.8, sodQuantity: 40000, curedQuantity: 18000, remainingQuantity: 22000, cureOptions: ['Recall', 'Borrow'], isRegulatory: true, agingDays: 3, lastUpdate: new Date().toLocaleTimeString(), sector: 'Technology', borrowCost: 396000, cureMethod: 'Recall', failedAttempts: 0, outstandingLoan: 25000, outstandingPledge: 5000 },
+        { id: '3', ticker: 'NVDA', cusip: '67066G104', description: 'NVIDIA Corporation', quantity: 25000, marketValue: 8750000, priority: 'Critical', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 0, customerShorts: 25000, nonCustomerShorts: 0, firmShorts: 0 }, is204CNS: false, borrowRate: -3.2, sodQuantity: 25000, curedQuantity: 5000, remainingQuantity: 20000, cureOptions: ['Borrow', 'Pledge'], isRegulatory: false, agingDays: 1, lastUpdate: new Date().toLocaleTimeString(), sector: 'Technology', borrowCost: 280000, cureMethod: 'Borrow', failedAttempts: 2, outstandingLoan: 0, outstandingPledge: 8000 },
+        { id: '4', ticker: 'GOOGL', cusip: '02079K305', description: 'Alphabet Inc.', quantity: 35000, marketValue: 10500000, priority: 'High', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 0, customerShorts: 0, nonCustomerShorts: 35000, firmShorts: 0 }, is204CNS: false, borrowRate: -1.2, sodQuantity: 35000, curedQuantity: 12000, remainingQuantity: 23000, cureOptions: ['Borrow', 'Recall'], isRegulatory: false, agingDays: 2, lastUpdate: new Date().toLocaleTimeString(), sector: 'Technology', borrowCost: 126000, cureMethod: 'Borrow', failedAttempts: 0, outstandingLoan: 18000, outstandingPledge: 0 },
+        { id: '5', ticker: 'CRM', cusip: '79466L302', description: 'Salesforce Inc.', quantity: 30000, marketValue: 6000000, priority: 'Medium', needReasons: { cnsDelivery: 0, dvpDelivery: 30000, deficit: 0, customerShorts: 0, nonCustomerShorts: 0, firmShorts: 0 }, is204CNS: false, borrowRate: -0.8, sodQuantity: 30000, curedQuantity: 18000, remainingQuantity: 12000, cureOptions: ['Borrow', 'Anticipatory'], isRegulatory: false, agingDays: 1, lastUpdate: new Date().toLocaleTimeString(), sector: 'Technology', borrowCost: 48000, cureMethod: 'Borrow', failedAttempts: 0, outstandingLoan: 10000, outstandingPledge: 0 },
+        { id: '6', ticker: 'INTC', cusip: '458140100', description: 'Intel Corporation', quantity: 45000, marketValue: 1800000, priority: 'Low', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 45000, customerShorts: 0, nonCustomerShorts: 0, firmShorts: 0 }, is204CNS: false, borrowRate: 0.2, sodQuantity: 45000, curedQuantity: 27000, remainingQuantity: 18000, cureOptions: ['Recall', 'Borrow'], isRegulatory: false, agingDays: 1, lastUpdate: new Date().toLocaleTimeString(), sector: 'Technology', borrowCost: 3600, cureMethod: 'Recall', failedAttempts: 0, outstandingLoan: 30000, outstandingPledge: 0 },
+        { id: '7', ticker: 'V', cusip: '92826C839', description: 'Visa Inc.', quantity: 20000, marketValue: 4000000, priority: 'Medium', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 0, customerShorts: 0, nonCustomerShorts: 20000, firmShorts: 0 }, is204CNS: false, borrowRate: -0.5, sodQuantity: 20000, curedQuantity: 8000, remainingQuantity: 12000, cureOptions: ['Borrow', 'Recall'], isRegulatory: false, agingDays: 2, lastUpdate: new Date().toLocaleTimeString(), sector: 'Financial Services', borrowCost: 60000, cureMethod: 'Borrow', failedAttempts: 1, outstandingLoan: 15000, outstandingPledge: 0 },
+        
+        // Healthcare Sector
+        { id: '8', ticker: 'JNJ', cusip: '477160101', description: 'Johnson & Johnson', quantity: 35000, marketValue: 5600000, priority: 'Low', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 35000, customerShorts: 0, nonCustomerShorts: 0, firmShorts: 0 }, is204CNS: false, borrowRate: 0.1, sodQuantity: 35000, curedQuantity: 28000, remainingQuantity: 7000, cureOptions: ['Recall', 'Borrow'], isRegulatory: false, agingDays: 1, lastUpdate: new Date().toLocaleTimeString(), sector: 'Healthcare', borrowCost: 700, cureMethod: 'Recall', failedAttempts: 0, outstandingLoan: 25000, outstandingPledge: 0 },
+        { id: '9', ticker: 'UNH', cusip: '91324P102', description: 'UnitedHealth Group Inc.', quantity: 25000, marketValue: 12500000, priority: 'High', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 0, customerShorts: 25000, nonCustomerShorts: 0, firmShorts: 0 }, is204CNS: false, borrowRate: -1.5, sodQuantity: 25000, curedQuantity: 10000, remainingQuantity: 15000, cureOptions: ['Borrow', 'Pledge'], isRegulatory: false, agingDays: 2, lastUpdate: new Date().toLocaleTimeString(), sector: 'Healthcare', borrowCost: 187500, cureMethod: 'Borrow', failedAttempts: 0, outstandingLoan: 0, outstandingPledge: 8000 },
+        { id: '10', ticker: 'PFE', cusip: '717081103', description: 'Pfizer Inc.', quantity: 60000, marketValue: 1800000, priority: 'Low', needReasons: { cnsDelivery: 0, dvpDelivery: 60000, deficit: 0, customerShorts: 0, nonCustomerShorts: 0, firmShorts: 0 }, is204CNS: false, borrowRate: 0.3, sodQuantity: 60000, curedQuantity: 42000, remainingQuantity: 18000, cureOptions: ['Borrow', 'Anticipatory'], isRegulatory: false, agingDays: 1, lastUpdate: new Date().toLocaleTimeString(), sector: 'Healthcare', borrowCost: 5400, cureMethod: 'Borrow', failedAttempts: 0, outstandingLoan: 35000, outstandingPledge: 0 },
+        
+        // Financial Services
+        { id: '11', ticker: 'JPM', cusip: '46625H100', description: 'JPMorgan Chase & Co.', quantity: 40000, marketValue: 6000000, priority: 'Medium', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 0, customerShorts: 0, nonCustomerShorts: 40000, firmShorts: 0 }, is204CNS: false, borrowRate: -0.8, sodQuantity: 40000, curedQuantity: 24000, remainingQuantity: 16000, cureOptions: ['Borrow', 'Recall'], isRegulatory: false, agingDays: 2, lastUpdate: new Date().toLocaleTimeString(), sector: 'Financial Services', borrowCost: 128000, cureMethod: 'Borrow', failedAttempts: 0, outstandingLoan: 20000, outstandingPledge: 0 },
+        { id: '12', ticker: 'BAC', cusip: '060505104', description: 'Bank of America Corp.', quantity: 50000, marketValue: 1500000, priority: 'Low', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 50000, customerShorts: 0, nonCustomerShorts: 0, firmShorts: 0 }, is204CNS: false, borrowRate: 0.2, sodQuantity: 50000, curedQuantity: 35000, remainingQuantity: 15000, cureOptions: ['Recall', 'Borrow'], isRegulatory: false, agingDays: 1, lastUpdate: new Date().toLocaleTimeString(), sector: 'Financial Services', borrowCost: 3000, cureMethod: 'Recall', failedAttempts: 0, outstandingLoan: 40000, outstandingPledge: 0 },
+        { id: '13', ticker: 'GS', cusip: '38141G104', description: 'Goldman Sachs Group Inc.', quantity: 15000, marketValue: 6000000, priority: 'High', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 0, customerShorts: 15000, nonCustomerShorts: 0, firmShorts: 0 }, is204CNS: false, borrowRate: -1.8, sodQuantity: 15000, curedQuantity: 6000, remainingQuantity: 9000, cureOptions: ['Borrow', 'Pledge'], isRegulatory: false, agingDays: 3, lastUpdate: new Date().toLocaleTimeString(), sector: 'Financial Services', borrowCost: 162000, cureMethod: 'Borrow', failedAttempts: 1, outstandingLoan: 0, outstandingPledge: 5000 },
+        { id: '14', ticker: 'AXP', cusip: '025816109', description: 'American Express Co.', quantity: 25000, marketValue: 4000000, priority: 'Medium', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 0, customerShorts: 0, nonCustomerShorts: 25000, firmShorts: 0 }, is204CNS: false, borrowRate: -0.6, sodQuantity: 25000, curedQuantity: 15000, remainingQuantity: 10000, cureOptions: ['Borrow', 'Recall'], isRegulatory: false, agingDays: 2, lastUpdate: new Date().toLocaleTimeString(), sector: 'Financial Services', borrowCost: 60000, cureMethod: 'Borrow', failedAttempts: 0, outstandingLoan: 18000, outstandingPledge: 0 },
+        
+        // Consumer Discretionary
+        { id: '15', ticker: 'AMZN', cusip: '023135106', description: 'Amazon.com Inc.', quantity: 30000, marketValue: 4500000, priority: 'Medium', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 0, customerShorts: 0, nonCustomerShorts: 30000, firmShorts: 0 }, is204CNS: false, borrowRate: -0.9, sodQuantity: 30000, curedQuantity: 18000, remainingQuantity: 12000, cureOptions: ['Borrow', 'Recall'], isRegulatory: false, agingDays: 2, lastUpdate: new Date().toLocaleTimeString(), sector: 'Consumer Discretionary', borrowCost: 108000, cureMethod: 'Borrow', failedAttempts: 0, outstandingLoan: 20000, outstandingPledge: 0 },
+        { id: '16', ticker: 'HD', cusip: '437076102', description: 'Home Depot Inc.', quantity: 35000, marketValue: 14000000, priority: 'High', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 0, customerShorts: 35000, nonCustomerShorts: 0, firmShorts: 0 }, is204CNS: false, borrowRate: -1.4, sodQuantity: 35000, curedQuantity: 14000, remainingQuantity: 21000, cureOptions: ['Borrow', 'Pledge'], isRegulatory: false, agingDays: 2, lastUpdate: new Date().toLocaleTimeString(), sector: 'Consumer Discretionary', borrowCost: 294000, cureMethod: 'Borrow', failedAttempts: 0, outstandingLoan: 0, outstandingPledge: 10000 },
+        { id: '17', ticker: 'MCD', cusip: '580135101', description: 'McDonald\'s Corp.', quantity: 20000, marketValue: 5000000, priority: 'Medium', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 0, customerShorts: 0, nonCustomerShorts: 20000, firmShorts: 0 }, is204CNS: false, borrowRate: -0.7, sodQuantity: 20000, curedQuantity: 12000, remainingQuantity: 8000, cureOptions: ['Borrow', 'Recall'], isRegulatory: false, agingDays: 1, lastUpdate: new Date().toLocaleTimeString(), sector: 'Consumer Discretionary', borrowCost: 56000, cureMethod: 'Borrow', failedAttempts: 0, outstandingLoan: 15000, outstandingPledge: 0 },
+        { id: '18', ticker: 'NKE', cusip: '654106103', description: 'Nike Inc.', quantity: 25000, marketValue: 2500000, priority: 'Low', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 25000, customerShorts: 0, nonCustomerShorts: 0, firmShorts: 0 }, is204CNS: false, borrowRate: 0.1, sodQuantity: 25000, curedQuantity: 17500, remainingQuantity: 7500, cureOptions: ['Recall', 'Borrow'], isRegulatory: false, agingDays: 1, lastUpdate: new Date().toLocaleTimeString(), sector: 'Consumer Discretionary', borrowCost: 750, cureMethod: 'Recall', failedAttempts: 0, outstandingLoan: 20000, outstandingPledge: 0 },
+        
+        // Industrials
+        { id: '19', ticker: 'BA', cusip: '097023105', description: 'Boeing Co.', quantity: 30000, marketValue: 6000000, priority: 'Critical', needReasons: { cnsDelivery: 30000, dvpDelivery: 0, deficit: 0, customerShorts: 0, nonCustomerShorts: 0, firmShorts: 0 }, is204CNS: true, borrowRate: -2.8, sodQuantity: 30000, curedQuantity: 9000, remainingQuantity: 21000, cureOptions: ['Borrow', 'Recall'], isRegulatory: true, agingDays: 1, lastUpdate: new Date().toLocaleTimeString(), sector: 'Industrials', borrowCost: 588000, cureMethod: 'Borrow', failedAttempts: 1, outstandingLoan: 15000, outstandingPledge: 0 },
+        { id: '20', ticker: 'CAT', cusip: '141017105', description: 'Caterpillar Inc.', quantity: 40000, marketValue: 8000000, priority: 'High', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 0, customerShorts: 40000, nonCustomerShorts: 0, firmShorts: 0 }, is204CNS: false, borrowRate: -1.6, sodQuantity: 40000, curedQuantity: 16000, remainingQuantity: 24000, cureOptions: ['Borrow', 'Pledge'], isRegulatory: false, agingDays: 2, lastUpdate: new Date().toLocaleTimeString(), sector: 'Industrials', borrowCost: 384000, cureMethod: 'Borrow', failedAttempts: 0, outstandingLoan: 0, outstandingPledge: 12000 },
+        { id: '21', ticker: 'MMM', cusip: '88579Y101', description: '3M Co.', quantity: 35000, marketValue: 3500000, priority: 'Medium', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 0, customerShorts: 0, nonCustomerShorts: 35000, firmShorts: 0 }, is204CNS: false, borrowRate: -0.5, sodQuantity: 35000, curedQuantity: 21000, remainingQuantity: 14000, cureOptions: ['Borrow', 'Recall'], isRegulatory: false, agingDays: 2, lastUpdate: new Date().toLocaleTimeString(), sector: 'Industrials', borrowCost: 70000, cureMethod: 'Borrow', failedAttempts: 0, outstandingLoan: 25000, outstandingPledge: 0 },
+        { id: '22', ticker: 'UNP', cusip: '907818108', description: 'Union Pacific Corp.', quantity: 20000, marketValue: 4000000, priority: 'Low', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 20000, customerShorts: 0, nonCustomerShorts: 0, firmShorts: 0 }, is204CNS: false, borrowRate: 0.2, sodQuantity: 20000, curedQuantity: 14000, remainingQuantity: 6000, cureOptions: ['Recall', 'Borrow'], isRegulatory: false, agingDays: 1, lastUpdate: new Date().toLocaleTimeString(), sector: 'Industrials', borrowCost: 1200, cureMethod: 'Recall', failedAttempts: 0, outstandingLoan: 15000, outstandingPledge: 0 },
+        
+        // Energy
+        { id: '23', ticker: 'CVX', cusip: '166764100', description: 'Chevron Corp.', quantity: 25000, marketValue: 3750000, priority: 'Medium', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 0, customerShorts: 0, nonCustomerShorts: 25000, firmShorts: 0 }, is204CNS: false, borrowRate: -0.6, sodQuantity: 25000, curedQuantity: 15000, remainingQuantity: 10000, cureOptions: ['Borrow', 'Recall'], isRegulatory: false, agingDays: 2, lastUpdate: new Date().toLocaleTimeString(), sector: 'Energy', borrowCost: 60000, cureMethod: 'Borrow', failedAttempts: 0, outstandingLoan: 18000, outstandingPledge: 0 },
+        { id: '24', ticker: 'XOM', cusip: '30231G102', description: 'Exxon Mobil Corp.', quantity: 30000, marketValue: 3000000, priority: 'Low', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 30000, customerShorts: 0, nonCustomerShorts: 0, firmShorts: 0 }, is204CNS: false, borrowRate: 0.1, sodQuantity: 30000, curedQuantity: 21000, remainingQuantity: 9000, cureOptions: ['Recall', 'Borrow'], isRegulatory: false, agingDays: 1, lastUpdate: new Date().toLocaleTimeString(), sector: 'Energy', borrowCost: 900, cureMethod: 'Recall', failedAttempts: 0, outstandingLoan: 25000, outstandingPledge: 0 },
+        
+        // Consumer Staples
+        { id: '25', ticker: 'PG', cusip: '742718109', description: 'Procter & Gamble Co.', quantity: 40000, marketValue: 6000000, priority: 'Medium', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 0, customerShorts: 0, nonCustomerShorts: 40000, firmShorts: 0 }, is204CNS: false, borrowRate: -0.8, sodQuantity: 40000, curedQuantity: 24000, remainingQuantity: 16000, cureOptions: ['Borrow', 'Recall'], isRegulatory: false, agingDays: 2, lastUpdate: new Date().toLocaleTimeString(), sector: 'Consumer Staples', borrowCost: 128000, cureMethod: 'Borrow', failedAttempts: 0, outstandingLoan: 28000, outstandingPledge: 0 },
+        { id: '26', ticker: 'KO', cusip: '191216100', description: 'Coca-Cola Co.', quantity: 45000, marketValue: 2250000, priority: 'Low', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 45000, customerShorts: 0, nonCustomerShorts: 0, firmShorts: 0 }, is204CNS: false, borrowRate: 0.2, sodQuantity: 45000, curedQuantity: 31500, remainingQuantity: 13500, cureOptions: ['Recall', 'Borrow'], isRegulatory: false, agingDays: 1, lastUpdate: new Date().toLocaleTimeString(), sector: 'Consumer Staples', borrowCost: 2700, cureMethod: 'Recall', failedAttempts: 0, outstandingLoan: 35000, outstandingPledge: 0 },
+        { id: '27', ticker: 'WMT', cusip: '931142103', description: 'Walmart Inc.', quantity: 35000, marketValue: 5250000, priority: 'Medium', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 0, customerShorts: 0, nonCustomerShorts: 35000, firmShorts: 0 }, is204CNS: false, borrowRate: -0.7, sodQuantity: 35000, curedQuantity: 21000, remainingQuantity: 14000, cureOptions: ['Borrow', 'Recall'], isRegulatory: false, agingDays: 2, lastUpdate: new Date().toLocaleTimeString(), sector: 'Consumer Staples', borrowCost: 98000, cureMethod: 'Borrow', failedAttempts: 0, outstandingLoan: 25000, outstandingPledge: 0 },
+        
+        // Communication Services
+        { id: '28', ticker: 'DIS', cusip: '254687106', description: 'Walt Disney Co.', quantity: 30000, marketValue: 3000000, priority: 'Low', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 30000, customerShorts: 0, nonCustomerShorts: 0, firmShorts: 0 }, is204CNS: false, borrowRate: 0.1, sodQuantity: 30000, curedQuantity: 21000, remainingQuantity: 9000, cureOptions: ['Recall', 'Borrow'], isRegulatory: false, agingDays: 1, lastUpdate: new Date().toLocaleTimeString(), sector: 'Communication Services', borrowCost: 900, cureMethod: 'Recall', failedAttempts: 0, outstandingLoan: 22000, outstandingPledge: 0 },
+        
+        // Materials
+        { id: '29', ticker: 'DOW', cusip: '260557103', description: 'Dow Inc.', quantity: 40000, marketValue: 2000000, priority: 'Low', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 40000, customerShorts: 0, nonCustomerShorts: 0, firmShorts: 0 }, is204CNS: false, borrowRate: 0.3, sodQuantity: 40000, curedQuantity: 28000, remainingQuantity: 12000, cureOptions: ['Recall', 'Borrow'], isRegulatory: false, agingDays: 1, lastUpdate: new Date().toLocaleTimeString(), sector: 'Materials', borrowCost: 3600, cureMethod: 'Recall', failedAttempts: 0, outstandingLoan: 30000, outstandingPledge: 0 },
+        
+        // Real Estate
+        { id: '30', ticker: 'AMGN', cusip: '031162100', description: 'Amgen Inc.', quantity: 25000, marketValue: 5000000, priority: 'Medium', needReasons: { cnsDelivery: 0, dvpDelivery: 0, deficit: 0, customerShorts: 0, nonCustomerShorts: 25000, firmShorts: 0 }, is204CNS: false, borrowRate: -0.9, sodQuantity: 25000, curedQuantity: 15000, remainingQuantity: 10000, cureOptions: ['Borrow', 'Recall'], isRegulatory: false, agingDays: 2, lastUpdate: new Date().toLocaleTimeString(), sector: 'Healthcare', borrowCost: 90000, cureMethod: 'Borrow', failedAttempts: 0, outstandingLoan: 18000, outstandingPledge: 0 }
+      ]
+
+      const mockMetrics: DashboardMetrics = {
+        totalNeeds: 30,
+        totalNeedsChange: 5,
+        totalMarketValue: 185000000,
+        totalMarketValueChange: 15000000,
+        agingNeeds: 8,
+        agingNeedsChange: 2,
+        regShoSecurities: 3,
+        regShoChange: 1,
+        rule204Securities: 2,
+        dailyProgress: {
+          target: 45,
+          completed: 28,
+          remaining: 17
+        },
+        priorityBreakdown: {
+          critical: 3,
+          high: 8,
+          medium: 12,
+          low: 7
+        },
+        trendingNeeds: {
+          trendingUp: 15,
+          trendingDown: 8,
+          stable: 7
+        },
+        cureMethods: {
+          receives: 45,
+          recalls: 32,
+          returns: 18,
+          borrows: 52,
+          releases: 12
+        },
+        borrowRecallActivity: {
+          borrowsMade: 52,
+          borrowsPending: 8,
+          recallsMade: 32,
+          recallsPending: 5,
+          borrowsSuccessRate: 92,
+          recallsSuccessRate: 88
+        }
+      }
+
+      const mockAdvancedMetrics: AdvancedMetrics = {
+        borrowingCosts: {
+          averageRate: -1.84,
+          totalCost: 786500,
+          costChange: -125000,
+          highCostSecurities: 3,
+          counterpartyBreakdown: [
+            {
+              counterparty: 'Counterparty A',
+              borrowCount: 8,
+              totalBorrowAmount: 15000000,
+              weightedAverageRate: -1.5,
+              dailyCost: 225000
+            },
+            {
+              counterparty: 'Counterparty B',
+              borrowCount: 5,
+              totalBorrowAmount: 12000000,
+              weightedAverageRate: -2.1,
+              dailyCost: 252000
+            },
+            {
+              counterparty: 'Counterparty C',
+              borrowCount: 3,
+              totalBorrowAmount: 8000000,
+              weightedAverageRate: -1.8,
+              dailyCost: 144000
+            }
+          ]
+        },
+        operationalEfficiency: {
+          automationRate: 0.75,
+          averageTimeTocure: 2.3,
+          cureSuccessRate: 94,
+          failureReasons: [
+            { reason: 'No inventory available', count: 3 },
+            { reason: 'Rate too high', count: 2 },
+            { reason: 'Counterparty limit reached', count: 1 }
+          ]
+        },
+        riskMetrics: {
+          concentrationRisk: 0.35,
+          regulatoryDeadlines: [
+            { type: 'RegSHO Close-out', count: 1, urgency: 'Critical' },
+            { type: 'Rule 204 CNS', count: 1, urgency: 'Critical' },
+            { type: 'Aged Deficit', count: 2, urgency: 'High' }
+          ],
+          counterpartyExposure: [
+            { counterparty: 'Counterparty A', exposure: 15000000, limit: 25000000 },
+            { counterparty: 'Counterparty B', exposure: 12000000, limit: 20000000 },
+            { counterparty: 'Counterparty C', exposure: 8000000, limit: 15000000 }
+          ]
+        },
+        marketIntelligence: {
+          htbSecurities: 2,
+          rateVolatility: 0.15,
+          marketComparison: {
+            yourAvgRate: -1.84,
+            marketAvgRate: -1.65,
+            performance: 'Worse'
+          }
+        }
+      }
+
+      return { needs: mockNeeds, metrics: mockMetrics, advancedMetrics: mockAdvancedMetrics }
+    }
+
+    const { needs, metrics, advancedMetrics } = generateMockData()
+    setSecurityNeeds(needs)
+    setMetrics(metrics)
+    setAdvancedMetrics(advancedMetrics)
+  }, [])
 
   // Close filter panel when clicking outside
   useEffect(() => {
