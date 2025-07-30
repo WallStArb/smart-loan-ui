@@ -1,0 +1,3 @@
+[33m0677c55[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Fix build issues: remove problematic rollup dependency and add missing caniuse-lite
+[33mde656cd[m Update NeedsPage with Dow 30 mock data and fix dependencies
+[33m62e02b0[m chore: force commit all local changes for redeploy
